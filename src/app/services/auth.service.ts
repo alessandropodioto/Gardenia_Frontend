@@ -28,7 +28,6 @@ export interface AuthResponse {
   providedIn: 'root'
 })
 export class AuthService {
-  // TODO: Replace with your actual API endpoint
   private apiUrl = 'http://localhost:8080/rest/user';
 
   constructor(private http: HttpClient) {}
@@ -39,7 +38,6 @@ export class AuthService {
    * @returns Observable with authentication response
    */
   login(loginData: LoginData): Observable<AuthResponse> {
-    // TODO: Replace with actual login endpoint
     const endpoint = `${this.apiUrl}/login`;
 
     return this.http.post<AuthResponse>(endpoint, loginData).pipe(
@@ -53,7 +51,6 @@ export class AuthService {
    * @returns Observable with registration response
    */
   register(registerData: RegisterData): Observable<AuthResponse> {
-    // TODO: Replace with actual register endpoint
     const endpoint = `${this.apiUrl}/register`;
 
     return this.http.post<AuthResponse>(endpoint, registerData).pipe(
@@ -94,10 +91,8 @@ export class AuthService {
     let errorMessage = 'An error occurred';
 
     if (error.error instanceof ErrorEvent) {
-      // Client-side error
       errorMessage = `Error: ${error.error.message}`;
     } else {
-      // Server-side error
       errorMessage = `Error Code: ${error.status}\nMessage: ${error.message}`;
     }
 
