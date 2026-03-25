@@ -1,1 +1,18 @@
-<router-outlet></router-outlet>
+<app-header></app-header>
+<mat-sidenav-container class="sidenav-container">
+  
+  <mat-sidenav-content>
+    <button mat-raised-button color="primary" class="cart-btn" (click)="cartSidenav.toggle()">
+      <mat-icon>shopping_cart</mat-icon> Open Cart
+    </button>
+    
+    <router-outlet></router-outlet>
+  </mat-sidenav-content>
+
+  <mat-sidenav #cartSidenav position="end" mode="over" class="side-cart">
+    
+    <app-carrello (chiudi)="cartSidenav.close()"></app-carrello>
+
+  </mat-sidenav>
+</mat-sidenav-container>
+<app-footer></app-footer>
