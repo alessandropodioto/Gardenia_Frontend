@@ -58,25 +58,14 @@ export class AuthService {
     );
   }
 
-  /**
-   * Clear authentication data
-   */
   logout(): void {
     localStorage.removeItem('user_data');
   }
 
-  /**
-   * Store user data
-   * @param userData User information
-   */
   setUserData(userData: any): void {
     localStorage.setItem('user_data', JSON.stringify(userData));
   }
 
-  /**
-   * Get stored user data
-   * @returns User data or null
-   */
   getUserData(): any {
     const userData = localStorage.getItem('user_data');
     return userData ? JSON.parse(userData) : null;

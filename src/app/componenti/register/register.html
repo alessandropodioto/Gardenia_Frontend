@@ -2,7 +2,6 @@
   <mat-card class="register-card">
     <mat-card-header>
       <mat-card-title>Register</mat-card-title>
-      <mat-card-subtitle>Create your account to get started</mat-card-subtitle>
     </mat-card-header>
 
     <mat-card-content>
@@ -88,7 +87,7 @@
           color="primary"
           type="submit"
           class="register-button"
-          [disabled]="registerForm.invalid || isLoading"
+          [disabled]="registerForm.invalid"
         >
           <mat-spinner *ngIf="isLoading" diameter="20" class="spinner"></mat-spinner>
           <span *ngIf="!isLoading">Register</span>
