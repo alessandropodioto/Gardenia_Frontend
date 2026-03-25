@@ -1,0 +1,30 @@
+/* Footer */
+.cart-footer { padding: 20px; border-top: 1px solid #eee; background: white;}
+.subtotal { display: flex; justify-content: space-between; font-weight: bold; margin-bottom: 15px; font-size: 18px;}
+
+/* NUOVO STILE PULSANTE CHECKOUT VERDE */
+.checkout-btn {
+  width: 100%;
+  padding: 24px 0 !important; 
+  font-size: 16px;
+
+  background-color: #4CAF50 !important;
+
+
+  color: white !important;
+
+
+  border-radius: 8px;
+}
+
+
+.checkout-btn:hover {
+  background-color: #388E3C !important; 
+}
+.shipping-bar ::ng-deep .mat-mdc-progress-bar-fill::after {
+  background-color: #4CAF50 !important; 
+}
+
+.shipping-bar ::ng-deep .mat-mdc-progress-bar {
+  background-color: #C8E6C9 !important; /
+}

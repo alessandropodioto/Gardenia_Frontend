@@ -2,6 +2,8 @@ import { NgModule, provideBrowserGlobalErrorListeners } from '@angular/core';
 import { BrowserModule, provideClientHydration, withEventReplay } from '@angular/platform-browser';
 import { provideHttpClient, withFetch } from '@angular/common/http';
 
+import { MatSidenavModule } from '@angular/material/sidenav';
+import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatButtonModule } from '@angular/material/button';
@@ -16,10 +18,13 @@ import { Login } from './componenti/login/login';
 import { Register } from './componenti/register/register';
 import { AuthService } from './services/auth.service';
 
+import { CarrelloComponent } from './carrello/carrello';
+
 @NgModule({
-  declarations: [App, Login, Register],
+  declarations: [App, Login, Register, CarrelloComponent],
   imports: [
     BrowserModule,
+    BrowserAnimationsModule,
     AppRoutingModule,
     ReactiveFormsModule,
     MatInputModule,
@@ -27,6 +32,8 @@ import { AuthService } from './services/auth.service';
     MatButtonModule,
     MatCardModule,
     MatToolbarModule,
+    MatIconModule,
+    MatSidenavModule,
     MatProgressSpinnerModule
   ],
   providers: [
