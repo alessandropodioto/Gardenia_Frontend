@@ -17,6 +17,8 @@ import { ReactiveFormsModule } from '@angular/forms';
 import { AppRoutingModule } from './app-routing-module';
 
 import { App } from './app';
+import { ProductDetails } from './components/product-details/product-details';
+
 import { HeaderComponent } from './header/header';
 import { Footer } from './footer/footer';
 import { HomeComponent } from './home/home';
@@ -34,6 +36,7 @@ import { CommonModule } from '@angular/common';
   imports: [
     BrowserModule,
     AppRoutingModule,
+    ProductDetails
     CommonModule,
     MatIconModule,
     MatBadgeModule,
