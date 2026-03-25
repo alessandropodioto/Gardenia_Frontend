@@ -1,0 +1,47 @@
+<header class="main-header">
+  <div class="top-banner">
+  <div class="container">
+    <div class="carousel-wrapper">
+      @for (frase of frasi; track $index) {
+        @if ($index === indiceCorrente) {
+          <p class="fade-text">
+            {{ frase }}
+          </p>
+        }
+      }
+    </div>
+  </div>
+</div>
+
+  <div class="navbar-main">
+    <div class="container navbar-content">
+      <div class="logo">
+        <a routerLink="/">
+          <img src="img/image3.png" alt="Gardenia Logo" class="logo-img logo-small" />
+        </a>
+      </div>
+
+      <nav class="nav-menu">
+        <ul>
+          <li><a routerLink="/categoria/piante" routerLinkActive="active">Piante</a></li>
+          <li><a routerLink="/categoria/alberi" routerLinkActive="active">Alberi</a></li>
+          <li><a routerLink="/categoria/attrezzi" routerLinkActive="active">Attrezzi</a></li>
+          <li><a routerLink="/categoria/arredo" routerLinkActive="active">Arredo</a></li>
+          <li><a routerLink="/chi-siamo" routerLinkActive="active">Chi Siamo</a></li>
+        </ul>
+      </nav>
+
+      <div class="user-actions">
+        <a routerLink="/login" class="action-link enhanced-link">
+          <mat-icon>person</mat-icon>
+          <span>Accedi</span>
+        </a>
+        <a routerLink="/carrello" class="action-link cart-link enhanced-link">
+          <mat-icon>shopping_cart</mat-icon>
+          <span>Carrello</span>
+          <span class="cart-count">0</span>
+        </a>
+      </div>
+    </div>
+  </div>
+</header>
