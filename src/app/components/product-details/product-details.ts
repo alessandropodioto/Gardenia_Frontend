@@ -1,5 +1,4 @@
 import { Component, signal, computed } from '@angular/core';
-import { CommonModule } from '@angular/common';
  
 export interface ProductVariant {
   id: string;
@@ -17,8 +16,7 @@ export interface ProductImage {
  
 @Component({
   selector: 'app-product-details',
-  standalone: true,
-  imports: [CommonModule],
+  standalone: false,
   templateUrl: './product-details.html',
   styleUrl: './product-details.css'
 })

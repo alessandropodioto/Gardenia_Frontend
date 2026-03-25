@@ -1,8 +1,8 @@
-import { NgModule } from '@angular/core';
-import { BrowserModule } from '@angular/platform-browser';
 import { NgModule, provideBrowserGlobalErrorListeners } from '@angular/core';
 import { BrowserModule, provideClientHydration, withEventReplay } from '@angular/platform-browser';
 import { provideHttpClient, withFetch } from '@angular/common/http';
+import { ReactiveFormsModule } from '@angular/forms';
+import { CommonModule } from '@angular/common';
 
 import { MatSidenavModule } from '@angular/material/sidenav';
 import { MatIconModule } from '@angular/material/icon';
@@ -12,53 +12,25 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import { ReactiveFormsModule } from '@angular/forms';
+import { MatBadgeModule } from '@angular/material/badge';
+import {MatProgressBarModule} from '@angular/material/progress-bar';
 
 import { AppRoutingModule } from './app-routing-module';
 
 import { App } from './app';
 import { ProductDetails } from './components/product-details/product-details';
-
-import { HeaderComponent } from './header/header';
-import { Footer } from './footer/footer';
-import { HomeComponent } from './home/home';
-
-import { MatIconModule } from '@angular/material/icon';
-import { MatBadgeModule } from '@angular/material/badge';
-import { MatButtonModule } from '@angular/material/button';
-import { CommonModule } from '@angular/common';
-
-@NgModule({
-  declarations: [
-    App,
-    Footer 
-  ],
-  imports: [
-    BrowserModule,
-    AppRoutingModule,
-    ProductDetails
-    CommonModule,
-    MatIconModule,
-    MatBadgeModule,
-    MatButtonModule,
-    HeaderComponent, 
-    HomeComponent
-  ],
-  providers: [],
-  bootstrap: [App]
-})
-export class AppModule { }
-import { Login } from './componenti/login/login';
-import { Register } from './componenti/register/register';
+import { HeaderComponent } from './components/header/header';
+import { Footer } from './components/footer/footer';
+import { HomeComponent } from './components/home/home';
+import { Login } from './components/login/login';
+import { Register } from './components/register/register';
 import { AuthService } from './services/auth.service';
-
-import { CarrelloComponent } from './carrello/carrello';
+import { CarrelloComponent } from './components/carrello/carrello';
 
 @NgModule({
-  declarations: [App, Login, Register, CarrelloComponent],
+  declarations: [App, Login, Register, CarrelloComponent, ProductDetails, HeaderComponent, Footer, HomeComponent],
   imports: [
     BrowserModule,
-    BrowserAnimationsModule,
     AppRoutingModule,
     ReactiveFormsModule,
     MatInputModule,
@@ -68,7 +40,9 @@ import { CarrelloComponent } from './carrello/carrello';
     MatToolbarModule,
     MatIconModule,
     MatSidenavModule,
-    MatProgressSpinnerModule
+    MatProgressSpinnerModule,
+    MatProgressBarModule,
+    MatBadgeModule
   ],
   providers: [
     provideHttpClient(withFetch()),
