@@ -55,18 +55,3 @@
   font-size: 22px;
   margin: 0 0 10px 0;
 }
-
-.btn-shop {
-  background-color: white;
-  color: #333;
-  text-decoration: none;
-  padding: 8px 15px;
-  border-radius: 4px;
-  font-size: 14px;
-  font-weight: 500;
-  transition: background-color 0.3s;
-}
-
-.btn-shop:hover {
-  background-color: #eee;
-}
