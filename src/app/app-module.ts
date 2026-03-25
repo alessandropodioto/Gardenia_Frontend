@@ -3,6 +3,8 @@ import { BrowserModule, provideClientHydration, withEventReplay } from '@angular
 
 import { AppRoutingModule } from './app-routing-module';
 import { App } from './app';
+import { ProductDetails } from './components/product-details/product-details';
+
 
 @NgModule({
   declarations: [
@@ -10,7 +12,8 @@ import { App } from './app';
   ],
   imports: [
     BrowserModule,
-    AppRoutingModule
+    AppRoutingModule,
+    ProductDetails
   ],
   providers: [
     provideBrowserGlobalErrorListeners(),
