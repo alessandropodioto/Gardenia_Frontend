@@ -40,13 +40,8 @@ export class Login implements OnInit {
       this.authService.login(loginData).subscribe({
         next: (response) => {
           this.isLoading = false;
-          if (response.success) {
-            // Store user data and navigate to dashboard/home
-            this.authService.setUserData(response.user);
-            this.router.navigate(['/']);
-          } else {
-            this.errorMessage = response.message || 'Login failed';
-          }
+          this.authService.setUserData(response);
+          this.router.navigate(['/home']);
         },
         error: (error) => {
           this.isLoading = false;

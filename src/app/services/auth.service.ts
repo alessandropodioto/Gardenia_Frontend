@@ -18,10 +18,12 @@ export interface LoginData {
 }
 
 export interface AuthResponse {
-  success: boolean;
-  message?: string;
-  token?: string;
-  user?: any;
+  msg:string
+}
+
+export interface LoginResponse {
+  id: string,
+  role: string
 }
 
 @Injectable({
@@ -37,10 +39,10 @@ export class AuthService {
    * @param loginData Login credentials
    * @returns Observable with authentication response
    */
-  login(loginData: LoginData): Observable<AuthResponse> {
+  login(loginData: LoginData): Observable<LoginResponse> {
     const endpoint = `${this.apiUrl}/login`;
 
-    return this.http.post<AuthResponse>(endpoint, loginData).pipe(
+    return this.http.post<LoginResponse>(endpoint, loginData).pipe(
       catchError(this.handleError)
     );
   }

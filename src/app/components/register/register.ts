@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { AuthService, RegisterData } from '../../services/auth.service';
@@ -18,7 +18,8 @@ export class Register implements OnInit {
   constructor(
     private fb: FormBuilder,
     private authService: AuthService,
-    private router: Router
+    private router: Router,
+    private cdr: ChangeDetectorRef
   ) {
     this.registerForm = this.fb.group({
       userName: ['', [Validators.required]],
@@ -52,19 +53,22 @@ export class Register implements OnInit {
 
       this.authService.register(registerData).subscribe({
         next: (response) => {
+          console.log('Registration response:', response);
           this.isLoading = false;
-          if (response.success) {
+          if (response.msg === "rest_created") {
             this.successMessage = 'Registration successful! Redirecting to login...';
             setTimeout(() => {
               this.router.navigate(['/login']);
             }, 2000);
           } else {
-            this.errorMessage = response.message || 'Registration failed';
+            this.errorMessage = response.msg || 'Registration failed';
           }
+          this.cdr.detectChanges();
         },
         error: (error) => {
           this.isLoading = false;
           this.errorMessage = 'Registration failed. Please try again.';
+          this.cdr.detectChanges();
           console.error('Registration error:', error);
         }
       });
