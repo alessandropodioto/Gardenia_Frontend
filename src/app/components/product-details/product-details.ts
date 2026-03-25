@@ -26,11 +26,11 @@ export class ProductDetails {
   /* ── Immagini ── */
   images: ProductImage[] = [
     {
-      url: 'https://images.unsplash.com/photo-1614594975525-e45190c55d0b?w=900&q=85',
+      url: 'https://www.venditapianteonline.it/wp-content/uploads/2023/01/Ficus-elastica-Belize-.jpg',
       alt: 'Ficus elastica Belize - vista frontale'
     },
     {
-      url: 'https://images.unsplash.com/photo-1611211232932-da3113c5b960?w=900&q=85',
+      url: 'https://secretgarden.ro/cdn/shop/products/39915.jpg?v=1750189999&width=3840',
       alt: 'Ficus elastica Belize - dettaglio foglie'
     },
   ];
