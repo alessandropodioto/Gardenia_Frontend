@@ -28,7 +28,6 @@
   font-size: 13px;
   font-weight: 500;
   display: block;
-  /* Animazione semplificata per gestire solo l'ingresso del testo */
   animation: fadeInAndSlide 0.5s ease-out;
 }
 

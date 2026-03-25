@@ -2,10 +2,10 @@
   <div class="top-banner">
   <div class="container">
     <div class="carousel-wrapper">
-      @for (frase of frasi; track $index) {
-        @if ($index === indiceCorrente) {
+      @for (phrase of phrases; track $index) {
+        @if ($index === currentIndex) {
           <p class="fade-text">
-            {{ frase }}
+            {{ phrase }}
           </p>
         }
       }
@@ -23,24 +23,24 @@
 
       <nav class="nav-menu">
         <ul>
-          <li><a routerLink="/categoria/piante" routerLinkActive="active">Piante</a></li>
-          <li><a routerLink="/categoria/alberi" routerLinkActive="active">Alberi</a></li>
-          <li><a routerLink="/categoria/attrezzi" routerLinkActive="active">Attrezzi</a></li>
-          <li><a routerLink="/categoria/arredo" routerLinkActive="active">Arredo</a></li>
-          <li><a routerLink="/chi-siamo" routerLinkActive="active">Chi Siamo</a></li>
+          <li><a routerLink="/category/plants" routerLinkActive="active">Plants</a></li>
+          <li><a routerLink="/category/trees" routerLinkActive="active">Trees</a></li>
+          <li><a routerLink="/category/tools" routerLinkActive="active">Tools</a></li>
+          <li><a routerLink="/category/furniture" routerLinkActive="active">Furniture</a></li>
+          <li><a routerLink="/about-us" routerLinkActive="active">About Us</a></li>
         </ul>
       </nav>
 
       <div class="user-actions">
-        <a routerLink="/login" class="action-link enhanced-link">
-          <mat-icon>person</mat-icon>
-          <span>Accedi</span>
-        </a>
-        <a routerLink="/carrello" class="action-link cart-link enhanced-link">
+        <a routerLink="/cart" class="action-link cart-link enhanced-link">
           <mat-icon>shopping_cart</mat-icon>
-          <span>Carrello</span>
+          <span>Cart</span>
           <span class="cart-count">0</span>
         </a>
+        <a routerLink="/login" class="action-link enhanced-link">
+          <mat-icon>person</mat-icon>
+          <span>Login</span>
+        </a>      
       </div>
     </div>
   </div>

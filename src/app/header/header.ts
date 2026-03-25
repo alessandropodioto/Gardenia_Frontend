@@ -21,21 +21,21 @@ import { RouterLink, RouterLinkActive } from '@angular/router';
 })
 export class HeaderComponent implements OnInit, OnDestroy {
   
-  frasi: string[] = [
-    'Spedizione gratuita sopra i 79€',
-    'Consegna rapida in tutta Italia',
-    'Reso facile entro 30 giorni',
-    'Sconto 10% sul tuo primo ordine!'
+  phrases: string[] = [
+    'Free shipping on orders over €79',
+    'Fast delivery throughout Italy',
+    'Easy returns within 30 days',
+    '10% discount on your first order!'
   ];
 
-  indiceCorrente: number = 0;
+  currentIndex: number = 0;
   private intervalId: any;
 
   constructor(private cdr: ChangeDetectorRef) {}
 
   ngOnInit(): void {
     this.intervalId = setInterval(() => {
-      this.indiceCorrente = (this.indiceCorrente + 1) % this.frasi.length;
+      this.currentIndex = (this.currentIndex + 1) % this.phrases.length;
       this.cdr.detectChanges();
     }, 4000); 
   }

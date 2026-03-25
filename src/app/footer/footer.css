@@ -4,10 +4,10 @@
 }
 
 .main-footer {
-  background-color: #1b4d3e; /* Verde scuro tipo Viridea */
+  background-color: #1b4d3e;
   color: white;
   padding: 50px 0 20px 0;
-  margin-top: 50px; /* Spazio tra contenuto e footer */
+  margin-top: 50px;
 }
 
 .container {
@@ -19,7 +19,7 @@
 .footer-content {
   display: flex;
   justify-content: space-between;
-  flex-wrap: wrap; /* Importante per il cellulare */
+  flex-wrap: wrap;
   gap: 30px;
   border-bottom: 1px solid rgba(255,255,255,0.1);
   padding-bottom: 30px;
@@ -48,14 +48,14 @@
 }
 
 .footer-column a {
-  color: #bdc3c7; /* Grigio chiaro per i link meno importanti */
+  color: #bdc3c7;
   text-decoration: none;
   transition: color 0.3s;
   font-size: 14px;
 }
 
 .footer-column a:hover {
-  color: #2ecc71; /* Verde chiaro al passaggio */
+  color: #2ecc71;
 }
 
 /* Icone Social */
