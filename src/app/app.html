@@ -2,7 +2,7 @@
   
   <mat-sidenav-content>
     <button mat-raised-button color="primary" class="cart-btn" (click)="cartSidenav.toggle()">
-      <mat-icon>shopping_cart</mat-icon> Apri Carrello
+      <mat-icon>shopping_cart</mat-icon> Open Cart
     </button>
     
     <router-outlet></router-outlet>
@@ -10,41 +10,7 @@
 
   <mat-sidenav #cartSidenav position="end" mode="over" class="side-cart">
     
-    <div class="cart-header">
-      <h2>Il tuo carrello</h2>
-      <button mat-icon-button (click)="cartSidenav.close()">
-        <mat-icon>close</mat-icon>
-      </button>
-    </div>
-    
-    <div class="shipping-bar">
-      <p>Aggiungi <strong>15,00 €</strong> per la spedizione gratuita!</p>
-      <mat-progress-bar mode="determinate" value="70"></mat-progress-bar>
-    </div>
-
-    <div class="cart-items">
-      <div class="cart-item">
-        <img src="https://via.placeholder.com/80" alt="Pianta">
-        <div class="item-details">
-          <h4>Monstera Deliciosa</h4>
-          <p>Vaso: 12cm</p>
-          <div class="quantity-controls">
-            <button mat-icon-button><mat-icon>remove</mat-icon></button>
-            <span>1</span>
-            <button mat-icon-button><mat-icon>add</mat-icon></button>
-          </div>
-        </div>
-        <div class="item-price">25,00 €</div>
-      </div>
-    </div>
-
-    <div class="cart-footer">
-      <div class="subtotal">
-        <span>Subtotale:</span>
-        <span>25,00 €</span>
-      </div>
-      <button mat-flat-button color="primary" class="checkout-btn">Procedi al Checkout</button>
-    </div>
+    <app-carrello (chiudi)="cartSidenav.close()"></app-carrello>
 
   </mat-sidenav>
 </mat-sidenav-container>
