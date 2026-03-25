@@ -1,26 +1,5 @@
-/* Stile base del contenitore */
-.sidenav-container {
-  height: 100vh;
-}
-
-.side-cart {
-  width: 100%;
-  max-width: 400px;
-  background-color: #fff;
-}
-
-/* NUOVO STILE PULSANTE "OPEN CART" VERDE */
-.cart-btn {
-  margin: 20px;
-  
-  /* Sfondo VERDE (usiamo !important per sovrascrivere il blu di Material) */
-  background-color: #4CAF50 !important;
-  
-  /* Testo BIANCO e icone bianche */
-  color: white !important;
-}
-
-/* Effetto al passaggio del mouse (Hover) */
-.cart-btn:hover {
-  background-color: #388E3C !important; /* Verde leggermente più scuro */
+app-header {
+  background: green;
+  color: white;
+  display: block;
 }

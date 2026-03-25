@@ -1,0 +1,72 @@
+:host {
+  display: block;
+  width: 100%;
+}
+
+.home-container {
+  padding: 40px 0; /* Spazio verticale tra header/footer e contenuto */
+}
+
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 15px;
+}
+
+.grid-wrapper {
+  display: flex;
+  gap: 20px; /* Spazio tra le immagini */
+  flex-wrap: wrap; /* Importante per il mobile */
+  padding: 0 20px; /* Margine laterale per non toccare i bordi dello schermo */
+}
+
+.grid-item {
+  flex: 1; /* Ognuna occupa 1/3 dello spazio disponibile */
+  min-width: 220px; /* Ridotto per far stare 5 card in fila */
+  position: relative; /* Necessario per l'overlay del testo */
+  overflow: hidden; /* Taglia l'immagine se esce dal bordo */
+  border-radius: 8px; /* Angoli arrotondati */
+  height: 350px; /* Altezza fissa delle immagini */
+}
+
+.grid-item img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover; /* L'immagine riempie il blocco senza deformarsi */
+  transition: transform 0.5s; /* Effetto zoom al passaggio */
+}
+
+.grid-item:hover img {
+  transform: scale(1.05); /* Zoom leggero al passaggio del mouse */
+}
+
+/* Testo sopra l'immagine */
+.item-overlay {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  padding: 20px;
+  background: linear-gradient(to top, rgba(0,0,0,0.7), transparent); /* Sfumatura scura per leggere il testo */
+  color: white;
+}
+
+.item-overlay h3 {
+  font-size: 22px;
+  margin: 0 0 10px 0;
+}
+
+.btn-shop {
+  background-color: white;
+  color: #333;
+  text-decoration: none;
+  padding: 8px 15px;
+  border-radius: 4px;
+  font-size: 14px;
+  font-weight: 500;
+  transition: background-color 0.3s;
+}
+
+.btn-shop:hover {
+  background-color: #eee;
+}
