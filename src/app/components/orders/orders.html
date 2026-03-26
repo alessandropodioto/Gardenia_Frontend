@@ -1,0 +1,34 @@
+<div class="orders-container">
+  <h1 class="page-title">My Orders</h1>
+  <p class="page-subtitle">Here you can view your order history and monitor the status of your current orders.</p>
+
+  <div class="address-card">
+    <div class="card-header">
+      <div class="user-info">
+        <h3 class="user-name">Order #982347</h3>
+        <p class="address-details">
+          <strong>Date:</strong> 26/03/2026<br>
+          <strong>Total:</strong> 45,90 €<br>
+          <strong>Status:</strong> In transit
+        </p>
+      </div>
+      
+      <div class="badge-shipping">
+        Estimated delivery: March 30th
+      </div>
+    </div>
+
+    <div class="card-actions">
+      <a [routerLink]="['/user/orders', '982347']" class="action-link">
+        View order details
+      </a>
+      <a href="#" class="action-link secondary">Download invoice (PDF) →</a>
+    </div>
+  </div>
+
+  <div class="info-card" style="margin-top: 30px;" *ngIf="false">
+    <h3 class="info-card-title">Order Status</h3>
+    <p class="empty-state">You haven't placed any orders yet.</p>
+    <a routerLink="/home" class="edit-btn-text">Start exploring plants →</a>
+  </div>
+</div>

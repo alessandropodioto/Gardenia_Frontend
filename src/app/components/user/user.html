@@ -1,35 +1,7 @@
 <div class="user-dashboard-container">
   <div class="dashboard-grid">
-
-    <aside class="sidebar-box">
-      <h2 class="welcome-msg">Hello Alessandro!</h2>
-      <nav class="nav-menu">
-        <a routerLink="/account/overview" routerLinkActive="active" class="nav-item">Account Overview</a>
-        <a routerLink="/account/address-book" routerLinkActive="active" class="nav-item">Address Book</a>
-        <a routerLink="/account/orders" routerLinkActive="active" class="nav-item">My Orders</a>
-        <a href="#" class="nav-item logout">Logout</a>
-      </nav>
-    </aside>
-
-    <main class="content-box">
-      <h1 class="page-header">My Account</h1>
-      <p class="page-desc">This is your account overview. Here you can update your user details, take a look at your latest orders, your wishlist, and recently viewed items.</p>
-
-      <section class="info-card">
-        <h3 class="info-card-title">Basics</h3>
-        <div class="info-content">
-          <p><strong>Name</strong><br>Alessandro Podio</p>
-          <p><strong>E-mail</strong><br>alessandro.mailinutile@gmail.com</p>
-          <p><strong>Date of birth</strong><br>29/07/1999</p>
-        </div>
-        <a href="#" class="edit-btn-text">Edit personal details →</a>
-      </section>
-
-      <section class="info-card">
-        <h3 class="info-card-title">My latest order</h3>
-        <p class="empty-state">You haven't placed any orders yet</p>
-      </section>
+    <app-sidebar></app-sidebar> <main class="content-box">
+      <router-outlet></router-outlet> 
     </main>
-
   </div>
 </div>

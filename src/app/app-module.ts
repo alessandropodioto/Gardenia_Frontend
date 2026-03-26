@@ -28,6 +28,11 @@ import { AuthService } from './services/auth.service';
 import { CarrelloComponent } from './components/carrello/carrello';
 import { PagamentoComponent } from './components/pagamento/pagamento';
 import { User } from './components/user/user';
+import { Sidebar } from './components/sidebar/sidebar';
+import { Address } from './components/address/address';
+import { Overview } from './components/overview/overview';
+import { Orders } from './components/orders/orders';
+import { OrderDetail } from './components/order-detail/order-detail';
 
 @NgModule({
   declarations: [
@@ -41,6 +46,10 @@ import { User } from './components/user/user';
     HomeComponent,
     PagamentoComponent,
     User,
+    Address,
+    Overview,
+    Orders,
+    OrderDetail,
   ],
   imports: [
     BrowserModule,
@@ -56,6 +65,7 @@ import { User } from './components/user/user';
     MatProgressSpinnerModule,
     MatProgressBarModule,
     MatBadgeModule,
+    Sidebar,
   ],
   providers: [
     provideHttpClient(withFetch()),
