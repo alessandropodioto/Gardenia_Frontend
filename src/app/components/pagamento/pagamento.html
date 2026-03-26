@@ -1,0 +1,77 @@
+<div class="checkout-container">
+  <div class="checkout-header">
+    <h2>Checkout Sicuro</h2>
+    <p>Completa il tuo ordine inserendo i dati qui sotto.</p>
+  </div>
+
+  <div class="checkout-content">
+    
+    <div class="form-section">
+      <h3>Dati di Spedizione</h3>
+      <div class="form-group">
+        <input type="text" placeholder="Nome e Cognome" class="input-field">
+      </div>
+      <div class="form-group">
+        <input type="text" placeholder="Indirizzo (Via e Numero Civico)" class="input-field">
+      </div>
+      <div class="form-group row">
+        <input type="text" placeholder="Città" class="input-field half">
+        <input type="text" placeholder="CAP" class="input-field half">
+      </div>
+
+      <h3 class="mt-30">Metodo di Pagamento</h3>
+      <div class="payment-methods">
+        <button class="payment-btn" [class.active]="metodoScelto === 'carta'" (click)="impostaMetodo('carta')">
+          <mat-icon>credit_card</mat-icon> Carta di Credito
+        </button>
+        <button class="payment-btn" [class.active]="metodoScelto === 'paypal'" (click)="impostaMetodo('paypal')">
+          <mat-icon>account_balance_wallet</mat-icon> PayPal
+        </button>
+      </div>
+
+      <div class="card-details" *ngIf="metodoScelto === 'carta'">
+        <div class="form-group">
+          <input type="text" placeholder="Numero Carta" class="input-field">
+        </div>
+        <div class="form-group row">
+          <input type="text" placeholder="Scadenza (MM/AA)" class="input-field half">
+          <input type="text" placeholder="CVV" class="input-field half">
+        </div>
+      </div>
+
+      <div class="paypal-details" *ngIf="metodoScelto === 'paypal'">
+        <p>Verrai reindirizzato al sito di PayPal per completare il pagamento in modo sicuro.</p>
+      </div>
+    </div>
+
+    <div class="summary-section">
+      <h3>Riepilogo Ordine</h3>
+      
+      <div class="summary-item">
+        <span>Subtotale</span>
+        <span>{{ subtotale | currency:'EUR' }}</span>
+      </div>
+      <div class="summary-item">
+        <span>Spedizione</span>
+        <span class="free" *ngIf="costoSpedizione === 0">Gratis</span>
+        <span *ngIf="costoSpedizione > 0">{{ costoSpedizione | currency:'EUR' }}</span>
+      </div>
+      
+      <div class="divider"></div>
+      
+      <div class="summary-item total">
+        <span>Totale</span>
+        <span>{{ totale | currency:'EUR' }}</span>
+      </div>
+
+      <button mat-flat-button class="pay-btn" (click)="completaAcquisto()">
+        Conferma e Paga
+      </button>
+      
+      <div class="secure-badge">
+        <mat-icon>lock</mat-icon> Pagamento crittografato e sicuro
+      </div>
+    </div>
+
+  </div>
+</div>

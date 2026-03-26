@@ -1,35 +1,42 @@
-<div class="cart-header">
-  <h2>Your Cart</h2>
-  <button mat-icon-button (click)="chiudi.emit()">
-    <mat-icon>close</mat-icon>
+<div class="cart-page-container">
+  
+  <div class="cart-header">
+    <h2>Il tuo Carrello</h2>
+    </div>
+
+  <div class="shipping-bar">
+    <p *ngIf="mancanoPerSpedizione > 0">
+      Aggiungi <strong>{{ mancanoPerSpedizione | currency:'EUR' }}</strong> per la spedizione gratuita!
+    </p>
+    <p *ngIf="mancanoPerSpedizione <= 0"> Hai ottenuto la <strong>spedizione gratuita!</strong></p>
+    <mat-progress-bar mode="determinate" [value]="percentualeSpedizione"></mat-progress-bar>
+  </div>
+
+  <div class="cart-items">
+    <div class="cart-item" *ngFor="let item of items">
+      <img [src]="item.immagine" [alt]="item.nome">
+      <div class="item-details">
+        <h4>{{ item.nome }}</h4>
+        <p>{{ item.info }}</p>
+        <div class="quantity-controls">
+          <button mat-icon-button (click)="cambiaQuantita(item, -1)"><mat-icon>remove</mat-icon></button>
+          <span>{{ item.quantita }}</span>
+          <button mat-icon-button (click)="cambiaQuantita(item, 1)"><mat-icon>add</mat-icon></button>
+        </div>
+      </div>
+      <div class="item-price">{{ (item.prezzo * item.quantita) | currency:'EUR' }}</div>
+    </div>
+  </div>
+
+ <div class="cart-footer" *ngIf="items.length > 0">
+  <div class="subtotal">
+    <span>Subtotale:</span>
+    <span>{{ subtotal | currency:'EUR' }}</span>
+  </div>
+  
+  <button mat-flat-button class="checkout-btn" routerLink="/pagamento">
+    Procedi al Checkout
   </button>
 </div>
 
-<div class="shipping-bar">
-  <p>Add <strong>15.00 €</strong> for free shipping!</p>
-  <mat-progress-bar mode="determinate" value="70"></mat-progress-bar>
-</div>
-
-<div class="cart-items">
-  <div class="cart-item">
-    <img src="https://via.placeholder.com/80" alt="Plant">
-    <div class="item-details">
-      <h4>Monstera Deliciosa</h4>
-      <p>Pot: 12cm</p>
-      <div class="quantity-controls">
-        <button mat-icon-button><mat-icon>remove</mat-icon></button>
-        <span>1</span>
-        <button mat-icon-button><mat-icon>add</mat-icon></button>
-      </div>
-    </div>
-    <div class="item-price">25.00 €</div>
-  </div>
-</div>
-
-<div class="cart-footer">
-  <div class="subtotal">
-    <span>Subtotal:</span>
-    <span>25.00 €</span>
-  </div>
-  <button mat-flat-button color="primary" class="checkout-btn">Proceed to Checkout</button>
 </div>
