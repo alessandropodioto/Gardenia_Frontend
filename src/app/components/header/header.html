@@ -37,10 +37,23 @@
           <span>Cart</span>
           <span class="cart-count">0</span>
         </a>
-        <a routerLink="/login" class="action-link enhanced-link">
-          <mat-icon>person</mat-icon>
-          <span>Login</span>
-        </a>      
+        <a *ngIf="isAdmin" routerLink="/admin" class="action-link enhanced-link">
+          <mat-icon>admin_panel_settings</mat-icon>
+          <span>Admin</span>
+        </a>
+        <ng-container *ngIf="isLoggedIn; else loginLink">
+          <button (click)="logout()" class="action-link enhanced-link">
+            <mat-icon>logout</mat-icon>
+            <span>Logout</span>
+          </button>
+        </ng-container>
+
+        <ng-template #loginLink>
+          <a routerLink="/login" class="action-link enhanced-link">
+            <mat-icon>person</mat-icon>
+            <span>Login</span>
+          </a>
+        </ng-template>
       </div>
     </div>
   </div>

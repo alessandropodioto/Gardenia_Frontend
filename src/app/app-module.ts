@@ -13,7 +13,7 @@ import { MatCardModule } from '@angular/material/card';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatBadgeModule } from '@angular/material/badge';
-import {MatProgressBarModule} from '@angular/material/progress-bar';
+import { MatProgressBarModule } from '@angular/material/progress-bar';
 
 import { AppRoutingModule } from './app-routing-module';
 
@@ -26,9 +26,20 @@ import { Login } from './components/login/login';
 import { Register } from './components/register/register';
 import { AuthService } from './services/auth.service';
 import { CarrelloComponent } from './components/carrello/carrello';
+import { Admin } from './components/admin/admin';
 
 @NgModule({
-  declarations: [App, Login, Register, CarrelloComponent, ProductDetails, HeaderComponent, Footer, HomeComponent],
+  declarations: [
+    App,
+    Login,
+    Register,
+    CarrelloComponent,
+    ProductDetails,
+    HeaderComponent,
+    Footer,
+    HomeComponent,
+    Admin,
+  ],
   imports: [
     BrowserModule,
     AppRoutingModule,
@@ -42,13 +53,13 @@ import { CarrelloComponent } from './components/carrello/carrello';
     MatSidenavModule,
     MatProgressSpinnerModule,
     MatProgressBarModule,
-    MatBadgeModule
+    MatBadgeModule,
   ],
   providers: [
     provideHttpClient(withFetch()),
     provideBrowserGlobalErrorListeners(),
     provideClientHydration(withEventReplay()),
-    AuthService
+    AuthService,
   ],
   bootstrap: [App],
 })

@@ -18,16 +18,16 @@ export interface LoginData {
 }
 
 export interface AuthResponse {
-  msg:string
+  msg: string;
 }
 
 export interface LoginResponse {
-  id: string,
-  role: string
+  id: string;
+  role: string;
 }
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class AuthService {
   private apiUrl = 'http://localhost:8080/rest/user';
@@ -42,9 +42,7 @@ export class AuthService {
   login(loginData: LoginData): Observable<LoginResponse> {
     const endpoint = `${this.apiUrl}/login`;
 
-    return this.http.post<LoginResponse>(endpoint, loginData).pipe(
-      catchError(this.handleError)
-    );
+    return this.http.post<LoginResponse>(endpoint, loginData).pipe(catchError(this.handleError));
   }
 
   /**
@@ -55,9 +53,7 @@ export class AuthService {
   register(registerData: RegisterData): Observable<AuthResponse> {
     const endpoint = `${this.apiUrl}/register`;
 
-    return this.http.post<AuthResponse>(endpoint, registerData).pipe(
-      catchError(this.handleError)
-    );
+    return this.http.post<AuthResponse>(endpoint, registerData).pipe(catchError(this.handleError));
   }
 
   logout(): void {

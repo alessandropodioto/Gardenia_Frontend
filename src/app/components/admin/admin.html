@@ -1,0 +1,21 @@
+<p>admin works!</p><div class="admin-container">
+  <div *ngIf="isAdmin; else noAccess">
+    <h1>Admin Panel</h1>
+    <p>Welcome to the admin panel! You have administrative privileges.</p>
+
+    <!-- Admin content goes here -->
+    <div class="admin-content">
+      <h2>Admin Features</h2>
+      <p>This is where your admin functionality would be implemented.</p>
+      <!-- Add your admin components and features here -->
+    </div>
+  </div>
+
+  <ng-template #noAccess>
+    <div class="access-denied">
+      <h1>Access Denied</h1>
+      <p>You need admin privileges to access this page.</p>
+      <p>Please log in with an admin account.</p>
+    </div>
+  </ng-template>
+</div>
