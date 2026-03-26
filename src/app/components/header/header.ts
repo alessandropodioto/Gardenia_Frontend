@@ -1,6 +1,7 @@
 import { Component, OnInit, OnDestroy, ChangeDetectorRef } from '@angular/core';
 import { AuthService } from '../../services/auth.service';
 import { Router } from '@angular/router';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-header',
@@ -19,6 +20,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
 
   currentIndex: number = 0;
   private intervalId: any;
+  private authSubscription: Subscription | null = null;
   isAdmin: boolean = false;
   isLoggedIn: boolean = false;
 
@@ -34,12 +36,18 @@ export class HeaderComponent implements OnInit, OnDestroy {
       this.cdr.detectChanges();
     }, 4000);
 
-    // Check authentication state (only in browser)
+    // Check authentication state on browser (for SSR compatibility)
     if (typeof window !== 'undefined') {
       const userData = this.authService.getUserData();
+      this.authService.emitAuthState(userData); // Initialize BehaviorSubject with current state
+    }
+
+    // Subscribe to authentication state changes
+    this.authSubscription = this.authService.getAuthState().subscribe(userData => {
       this.isLoggedIn = !!userData;
       this.isAdmin = userData && userData.role === 'ADMIN';
-    }
+      this.cdr.detectChanges();
+    });
   }
 
   logout(): void {
@@ -52,6 +60,11 @@ export class HeaderComponent implements OnInit, OnDestroy {
   ngOnDestroy(): void {
     if (this.intervalId) {
       clearInterval(this.intervalId);
+    }
+    
+    // Unsubscribe from authentication state to prevent memory leaks
+    if (this.authSubscription) {
+      this.authSubscription.unsubscribe();
     }
   }
 }

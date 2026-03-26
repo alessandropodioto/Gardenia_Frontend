@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable, throwError } from 'rxjs';
+import { Observable, throwError, BehaviorSubject } from 'rxjs';
 import { catchError } from 'rxjs/operators';
 
 export interface RegisterData {
@@ -31,8 +31,25 @@ export interface LoginResponse {
 })
 export class AuthService {
   private apiUrl = 'http://localhost:8080/rest/user';
+  private authState = new BehaviorSubject<any>(null);
 
   constructor(private http: HttpClient) {}
+
+  /**
+   * Get authentication state as Observable
+   * @returns Observable with current authentication state
+   */
+  getAuthState(): Observable<any> {
+    return this.authState.asObservable();
+  }
+
+  /**
+   * Emit authentication state change
+   * @param userData User data or null for logout
+   */
+  emitAuthState(userData: any): void {
+    this.authState.next(userData);
+  }
 
   /**
    * Login user with userName and password
@@ -58,10 +75,12 @@ export class AuthService {
 
   logout(): void {
     localStorage.removeItem('user_data');
+    this.emitAuthState(null);
   }
 
   setUserData(userData: any): void {
     localStorage.setItem('user_data', JSON.stringify(userData));
+    this.emitAuthState(userData);
   }
 
   getUserData(): any {

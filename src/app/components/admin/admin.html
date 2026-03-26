@@ -1,21 +1,81 @@
-<p>admin works!</p><div class="admin-container">
+<div class="admin-container">
   <div *ngIf="isAdmin; else noAccess">
-    <h1>Admin Panel</h1>
-    <p>Welcome to the admin panel! You have administrative privileges.</p>
+    <h1>Gestione Utenti</h1>
+    
+    <div *ngIf="error" class="error-message">
+      <p>{{ error }}</p>
+      <button mat-button (click)="loadUsers()">Riprova</button>
+    </div>
 
-    <!-- Admin content goes here -->
-    <div class="admin-content">
-      <h2>Admin Features</h2>
-      <p>This is where your admin functionality would be implemented.</p>
-      <!-- Add your admin components and features here -->
+    <div *ngIf="!error" class="admin-content">
+      <div class="table-header">
+        <h2>Elenco Utenti</h2>
+      </div>
+
+      <div class="table-container">
+        <table mat-table [dataSource]="users" class="user-table">
+          
+          <!-- Name Column -->
+          <ng-container matColumnDef="name">
+            <th mat-header-cell *matHeaderCellDef>Nome</th>
+            <td mat-cell *matCellDef="let user">{{ user.firstName }} {{ user.lastName }}</td>
+          </ng-container>
+
+          <!-- Username Column -->
+          <ng-container matColumnDef="username">
+            <th mat-header-cell *matHeaderCellDef>Username</th>
+            <td mat-cell *matCellDef="let user">{{ user.userName }}</td>
+          </ng-container>
+
+          <!-- Email Column -->
+          <ng-container matColumnDef="email">
+            <th mat-header-cell *matHeaderCellDef>Email</th>
+            <td mat-cell *matCellDef="let user">{{ user.email }}</td>
+          </ng-container>
+
+          <!-- Phone Column -->
+          <ng-container matColumnDef="phone">
+            <th mat-header-cell *matHeaderCellDef>Telefono</th>
+            <td mat-cell *matCellDef="let user">{{ user.phone }}</td>
+          </ng-container>
+
+          <!-- Role Column -->
+          <ng-container matColumnDef="role">
+            <th mat-header-cell *matHeaderCellDef>Ruolo</th>
+            <td mat-cell *matCellDef="let user">{{ user.role }}</td>
+          </ng-container>
+
+          <!-- Actions Column -->
+          <ng-container matColumnDef="actions">
+            <th mat-header-cell *matHeaderCellDef>Azioni</th>
+            <td mat-cell *matCellDef="let user" class="actions-cell">
+              <button 
+                mat-raised-button 
+                color="warn" 
+                (click)="openDeleteDialog(user)"
+                class="delete-btn"
+              >
+                Elimina
+              </button>
+            </td>
+          </ng-container>
+
+          <tr mat-header-row *matHeaderRowDef="['name', 'username', 'email', 'phone', 'role', 'actions']"></tr>
+          <tr mat-row *matRowDef="let row; columns: ['name', 'username', 'email', 'phone', 'role', 'actions']"></tr>
+        </table>
+
+        <div *ngIf="users.length === 0" class="no-users">
+          <p>Nessun utente trovato</p>
+        </div>
+      </div>
     </div>
   </div>
 
   <ng-template #noAccess>
     <div class="access-denied">
-      <h1>Access Denied</h1>
-      <p>You need admin privileges to access this page.</p>
-      <p>Please log in with an admin account.</p>
+      <h1>Accesso Negato</h1>
+      <p>È necessario avere i privilegi di amministratore per accedere a questa pagina.</p>
+      <p>Effettua il login con un account amministratore.</p>
     </div>
   </ng-template>
 </div>

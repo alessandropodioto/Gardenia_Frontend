@@ -14,6 +14,8 @@ import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatBadgeModule } from '@angular/material/badge';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
+import { MatDialogModule } from '@angular/material/dialog';
+import { MatTableModule } from '@angular/material/table';
 
 import { AppRoutingModule } from './app-routing-module';
 
@@ -27,6 +29,7 @@ import { Register } from './components/register/register';
 import { AuthService } from './services/auth.service';
 import { CarrelloComponent } from './components/carrello/carrello';
 import { Admin } from './components/admin/admin';
+import { DeleteUser } from './dialogs/delete-user/delete-user';
 
 @NgModule({
   declarations: [
@@ -39,6 +42,7 @@ import { Admin } from './components/admin/admin';
     Footer,
     HomeComponent,
     Admin,
+    DeleteUser,
   ],
   imports: [
     BrowserModule,
@@ -54,6 +58,8 @@ import { Admin } from './components/admin/admin';
     MatProgressSpinnerModule,
     MatProgressBarModule,
     MatBadgeModule,
+    MatDialogModule,
+    MatTableModule,
   ],
   providers: [
     provideHttpClient(withFetch()),
