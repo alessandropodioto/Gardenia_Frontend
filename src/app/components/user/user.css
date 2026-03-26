@@ -1,0 +1,155 @@
+/* Forza lo sfondo verde sul box */
+aside.dashboard-sidebar-box {
+  background-color: #586445 !important; /* Il verde scuro di PLNTS */
+  padding: 30px;
+  border-radius: 4px;
+  display: block; /* Assicura che si veda come un blocco */
+  min-height: 100%;
+}
+
+/* Forza il titolo in bianco */
+.welcome-heading {
+  color: #ffffff !important;
+  font-size: 24px;
+  margin-bottom: 30px;
+  font-family: serif; /* Per quel tocco elegante degli screenshot */
+}
+
+/* Forza i link della navigazione */
+.sidebar-navigation .nav-link {
+  display: block;
+  color: rgba(255, 255, 255, 0.9) !important; /* Bianco leggermente trasparente */
+  text-decoration: none;
+  padding: 15px 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  font-size: 14px;
+  transition: all 0.3s ease;
+}
+
+/* Stato attivo o hover */
+.sidebar-navigation .nav-link:hover, 
+.sidebar-navigation .nav-link.active {
+  color: #ffffff !important;
+  font-weight: bold;
+  background-color: rgba(255, 255, 255, 0.05); /* Effetto feedback */
+}
+
+/* Rimuove il bordo dall'ultimo link (Esci) */
+.logout-link {
+  border-bottom: none !important;
+}/* Container principale che centra il contenuto */
+.user-dashboard-container {
+  max-width: 1200px;
+  margin: 40px auto;
+  padding: 0 20px;
+}
+
+.dashboard-grid {
+  display: flex;
+  gap: 30px;
+  align-items: flex-start;
+}
+
+/* --- SIDEBAR VERDE (Il tuo box richiesto) --- */
+.sidebar-box {
+  width: 300px;
+  background-color: var(--primary-color); /* Il tuo verde #506614 */
+  border-radius: 4px;
+  padding: 30px 20px;
+  color: var(--tertiary-color); /* Testo chiaro #e9efc9 */
+}
+
+.welcome-msg {
+  font-size: 24px;
+  margin-bottom: 25px;
+  font-weight: 500;
+  /* Se vuoi l'effetto serif dello screen: font-family: serif; */
+}
+
+.nav-menu {
+  display: flex;
+  flex-direction: column;
+}
+
+.nav-item {
+  text-decoration: none;
+  color: var(--tertiary-color);
+  padding: 15px 10px;
+  font-size: 14px;
+  border-bottom: 1px solid rgba(233, 239, 201, 0.2); /* Bordo semitrasparente */
+  transition: all 0.3s;
+  font-family: var(--secondary-font-family);
+}
+
+.nav-item:hover, .nav-item.active {
+  background-color: rgba(255, 255, 255, 0.1);
+  padding-left: 15px; /* Effetto movimento al passaggio */
+  color: #fff;
+}
+
+.nav-item.logout {
+  border-bottom: none;
+  margin-top: 10px;
+  font-weight: bold;
+}
+
+/* --- BOX CONTENUTO BIANCO --- */
+.content-box {
+  flex: 1;
+  font-family: var(--primary-font-family);
+}
+
+.page-header {
+  font-size: 32px;
+  color: var(--primary-color);
+  margin-bottom: 10px;
+}
+
+.page-desc {
+  font-size: 14px;
+  color: #666;
+  margin-bottom: 30px;
+  line-height: 1.6;
+}
+
+/* --- BOX DETTAGLI (Le Card interne) --- */
+.info-card {
+  border: 1px solid #eee;
+  border-radius: 4px;
+  padding: 25px;
+  margin-bottom: 25px;
+  background-color: #fff;
+}
+
+.info-card-title {
+  font-size: 20px;
+  color: var(--primary-color);
+  border-bottom: 1px solid #f0f0f0;
+  padding-bottom: 15px;
+  margin-bottom: 20px;
+}
+
+.info-content p {
+  margin-bottom: 15px;
+  font-size: 14px;
+  color: #333;
+}
+
+.info-content strong {
+  display: block;
+  font-size: 13px;
+  color: #888;
+  margin-bottom: 3px;
+}
+
+.edit-btn-text {
+  color: var(--primary-color);
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 14px;
+}
+
+.empty-state {
+  font-size: 14px;
+  color: #999;
+}

@@ -26,7 +26,8 @@ import { Login } from './components/login/login';
 import { Register } from './components/register/register';
 import { AuthService } from './services/auth.service';
 import { CarrelloComponent } from './components/carrello/carrello';
-import {  PagamentoComponent } from './components/pagamento/pagamento';
+import { PagamentoComponent } from './components/pagamento/pagamento';
+import { User } from './components/user/user';
 
 @NgModule({
   declarations: [
@@ -39,6 +40,7 @@ import {  PagamentoComponent } from './components/pagamento/pagamento';
     Footer,
     HomeComponent,
     PagamentoComponent,
+    User,
   ],
   imports: [
     BrowserModule,

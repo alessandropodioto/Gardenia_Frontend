@@ -6,6 +6,7 @@ import { Login } from './components/login/login';
 import { Register } from './components/register/register';
 import { CarrelloComponent } from './components/carrello/carrello';
 import { PagamentoComponent } from './components/pagamento/pagamento';
+import { User } from './components/user/user';
 
 const routes: Routes = [
   { path: '', redirectTo: '/home', pathMatch: 'full' },
@@ -14,6 +15,7 @@ const routes: Routes = [
   { path: 'product' , component:ProductDetails },
   { path: 'cart', component: CarrelloComponent },
   { path: 'home', component: HomeComponent },
+   { path: 'user', component: User },
  { path: 'pagamento', component: PagamentoComponent }
 ];
 
