@@ -1,0 +1,50 @@
+/* Il box verde laterale */
+.sidebar-box {
+  width: 300px;
+  background-color: #506614; /* Il verde scuro */
+  border-radius: 4px;
+  padding: 30px 20px;
+  color: #e9efc9; /* Testo chiaro */
+  min-height: 100%;
+  box-sizing: border-box; /* Evita che il padding sballi la larghezza */
+}
+
+.welcome-msg {
+  font-size: 24px;
+  margin-bottom: 25px;
+  font-weight: 500;
+  font-family: serif; /* Tocco elegante */
+  color: #ffffff;
+  margin-top: 0;
+}
+
+.nav-menu {
+  display: flex;
+  flex-direction: column;
+}
+
+.nav-item {
+  text-decoration: none;
+  color: rgba(233, 239, 201, 0.9);
+  padding: 15px 10px;
+  font-size: 14px;
+  border-bottom: 1px solid rgba(233, 239, 201, 0.2);
+  transition: all 0.3s ease;
+  display: block; /* Importante per rendere cliccabile tutta la riga */
+}
+
+/* Effetto quando passi sopra o quando la pagina è attiva tramite routerLinkActive */
+.nav-item:hover, 
+.nav-item.active {
+  background-color: rgba(255, 255, 255, 0.1);
+  padding-left: 15px;
+  color: #ffffff;
+  font-weight: bold;
+}
+
+/* Stile speciale per il tasto Logout */
+.nav-item.logout {
+  border-bottom: none;
+  margin-top: 10px;
+  font-weight: bold;
+}

@@ -7,15 +7,34 @@ import { Register } from './components/register/register';
 import { Admin } from './components/admin/admin';
 import { AdminGuard } from './guards/admin.guard';
 import { CarrelloComponent } from './components/carrello/carrello';
+import { PagamentoComponent } from './components/pagamento/pagamento';
+import { User } from './components/user/user';
+import { Address } from './components/address/address';
+import { Overview } from './components/overview/overview';
+import { Orders } from './components/orders/orders';
+import { OrderDetail } from './components/order-detail/order-detail';
 
 const routes: Routes = [
   { path: '', redirectTo: '/home', pathMatch: 'full' },
+  { path: 'home', component: HomeComponent },
   { path: 'login', component: Login },
   { path: 'register', component: Register },
   { path: 'product' , component:ProductDetails },
   { path: 'home', component: HomeComponent },
   { path: 'cart', component: CarrelloComponent },
-  { path: 'admin', component: Admin, canActivate: [AdminGuard] }
+  { path: 'admin', component: Admin, canActivate: [AdminGuard] },
+  { path: 'pagamento', component: PagamentoComponent },
+  { 
+    path: 'user', 
+    component: User,
+    children: [
+      { path: 'overview', component: Overview },
+      { path: 'address', component: Address },
+      { path: 'orders', component: Orders },
+      { path: 'orders/:id', component: OrderDetail },
+      { path: '', redirectTo: 'overview', pathMatch: 'full' }
+    ]
+  }
 ];
 
 @NgModule({

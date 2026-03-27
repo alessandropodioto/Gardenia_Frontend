@@ -1,0 +1,77 @@
+.orders-container {
+  padding: 10px;
+}
+
+.page-title {
+  font-size: 32px;
+  color: #506614;
+  font-family: serif;
+  margin-bottom: 10px;
+}
+
+.page-subtitle {
+  font-size: 14px;
+  color: #666;
+  margin-bottom: 25px;
+}
+
+/* Card Ordine (Stessa struttura di Address) */
+.address-card {
+  background-color: #fcf9f1;
+  border-radius: 8px;
+  padding: 25px;
+  border: 1px solid #f2ede0;
+  margin-bottom: 20px;
+}
+
+.card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 20px;
+}
+
+.user-name {
+  font-size: 18px;
+  color: #333;
+  margin-bottom: 10px;
+}
+
+.address-details {
+  font-size: 14px;
+  line-height: 1.6;
+  color: #555;
+}
+
+.badge-shipping {
+  font-size: 12px;
+  color: #506614;
+  font-weight: bold;
+  text-align: right;
+}
+
+.card-actions {
+  display: flex;
+  gap: 20px;
+  border-top: 1px solid #eee;
+  padding-top: 15px;
+}
+
+.action-link {
+  font-size: 13px;
+  color: #333;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+.action-link.secondary {
+  color: #506614;
+  font-weight: 600;
+}
+
+/* Stile per lo stato vuoto */
+.empty-state {
+  font-size: 14px;
+  color: #999;
+  margin-bottom: 15px;
+}

@@ -30,6 +30,13 @@ import { AuthService } from './services/auth.service';
 import { CarrelloComponent } from './components/carrello/carrello';
 import { Admin } from './components/admin/admin';
 import { DeleteUser } from './dialogs/delete-user/delete-user';
+import { PagamentoComponent } from './components/pagamento/pagamento';
+import { User } from './components/user/user';
+import { Sidebar } from './components/sidebar/sidebar';
+import { Address } from './components/address/address';
+import { Overview } from './components/overview/overview';
+import { Orders } from './components/orders/orders';
+import { OrderDetail } from './components/order-detail/order-detail';
 
 @NgModule({
   declarations: [
@@ -43,6 +50,12 @@ import { DeleteUser } from './dialogs/delete-user/delete-user';
     HomeComponent,
     Admin,
     DeleteUser,
+    PagamentoComponent,
+    User,
+    Address,
+    Overview,
+    Orders,
+    OrderDetail,
   ],
   imports: [
     BrowserModule,
@@ -60,6 +73,7 @@ import { DeleteUser } from './dialogs/delete-user/delete-user';
     MatBadgeModule,
     MatDialogModule,
     MatTableModule,
+    Sidebar
   ],
   providers: [
     provideHttpClient(withFetch()),
