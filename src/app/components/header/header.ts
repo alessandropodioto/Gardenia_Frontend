@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy, ChangeDetectorRef } from '@angular/core';
+import { Component, OnInit, OnDestroy, ChangeDetectorRef, HostListener } from '@angular/core';
 import { AuthService } from '../../services/auth.service';
 import { Router } from '@angular/router';
 import { Subscription } from 'rxjs';
@@ -24,6 +24,8 @@ export class HeaderComponent implements OnInit, OnDestroy {
   isAdmin: boolean = false;
   isLoggedIn: boolean = false;
 
+  activeMenu: string | null = null;
+
   constructor(
     private cdr: ChangeDetectorRef,
     private authService: AuthService,
@@ -36,18 +38,27 @@ export class HeaderComponent implements OnInit, OnDestroy {
       this.cdr.detectChanges();
     }, 4000);
 
-    // Check authentication state on browser (for SSR compatibility)
     if (typeof window !== 'undefined') {
       const userData = this.authService.getUserData();
-      this.authService.emitAuthState(userData); // Initialize BehaviorSubject with current state
+      this.authService.emitAuthState(userData);
     }
 
-    // Subscribe to authentication state changes
     this.authSubscription = this.authService.getAuthState().subscribe(userData => {
       this.isLoggedIn = !!userData;
       this.isAdmin = userData && userData.role === 'ADMIN';
       this.cdr.detectChanges();
     });
+  }
+
+  toggleMenu(menuName: string, event: Event): void {
+    event.preventDefault();
+    event.stopPropagation();
+    this.activeMenu = this.activeMenu === menuName ? null : menuName;
+  }
+
+  @HostListener('document:click', ['$event'])
+  onDocumentClick(event: MouseEvent): void {
+    this.activeMenu = null;
   }
 
   logout(): void {
@@ -62,7 +73,6 @@ export class HeaderComponent implements OnInit, OnDestroy {
       clearInterval(this.intervalId);
     }
     
-    // Unsubscribe from authentication state to prevent memory leaks
     if (this.authSubscription) {
       this.authSubscription.unsubscribe();
     }

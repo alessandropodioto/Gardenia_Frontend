@@ -9,11 +9,10 @@
   padding: 0 15px;
 }
 
+/* TOP BANNER E CAROSELLO */
 .top-banner {
   background-color: rgb(1, 86, 1);
   padding: 8px 0;
-  font-size: 12px;
-  text-align: center;
   border-bottom: 1px solid #eee;
 }
 
@@ -21,6 +20,9 @@
   height: 20px;
   overflow: hidden;
   position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 .fade-text {
@@ -28,20 +30,16 @@
   font-size: 13px;
   font-weight: 500;
   display: block;
+  color: white;
   animation: fadeInAndSlide 0.5s ease-out;
 }
 
 @keyframes fadeInAndSlide {
-  from {
-    opacity: 0;
-    transform: translateY(10px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 
+/* NAVBAR MAIN */
 .navbar-main {
   background-color: white;
   padding: 15px 0;
@@ -60,12 +58,17 @@
   display: block;
 }
 
+/* NAV MENU */
 .nav-menu ul {
   list-style: none;
   display: flex;
   gap: 25px;
   margin: 0;
   padding: 0;
+}
+
+.nav-menu li {
+  position: relative;
 }
 
 .nav-menu a {
@@ -79,6 +82,9 @@
   position: relative;
   letter-spacing: 1px;
   white-space: nowrap;
+  display: flex;
+  align-items: center;
+  cursor: pointer;
 }
 
 .nav-menu a::after {
@@ -102,6 +108,76 @@
   width: 100%;
 }
 
+/* TENDINA (MODALITÀ CLIC) */
+.submenu {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  background-color: white;
+  min-width: 220px;
+  box-shadow: 0 8px 16px rgba(0,0,0,0.1);
+  padding: 8px 0;
+  list-style: none;
+  display: block !important; /* Forza layout verticale */
+  margin: 0;
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(10px);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  z-index: 1000;
+  margin-top: 10px;
+  border-top: 3px solid #035826;
+  text-align: left;
+}
+
+.has-dropdown.open .submenu {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0);
+}
+
+.submenu li {
+  width: 100%;
+  display: block !important;
+  margin: 0;
+}
+
+.submenu li a {
+  padding: 12px 20px;
+  font-size: 15px;
+  text-transform: capitalize; /* Stile PLNTS */
+  color: #333;
+  display: block;
+  width: 100%;
+  letter-spacing: 0;
+  font-weight: 500;
+  box-sizing: border-box;
+  transition: background 0.2s;
+}
+
+.submenu li a::after { display: none !important; }
+
+.submenu li a:hover {
+  background-color: #f9f9f9;
+  color: #035826;
+}
+
+/* FRECCIA E ROTAZIONE */
+.arrow {
+  font-size: 9px;
+  margin-left: 8px;
+  opacity: 0.6;
+  transition: transform 0.3s ease;
+  display: inline-block;
+}
+
+.has-dropdown.open .arrow {
+  transform: rotate(180deg);
+  opacity: 1;
+  color: #035826;
+}
+
+/* AZIONI UTENTE (CARRELLO E ADMIN) */
 .user-actions {
   display: flex;
   gap: 15px;
@@ -120,6 +196,7 @@
   border-radius: 8px;
   border: 2px solid transparent;
   transition: all 0.3s ease;
+  background: none;
 }
 
 .action-link:hover,

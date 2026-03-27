@@ -1,17 +1,17 @@
 <header class="main-header">
   <div class="top-banner">
-  <div class="container">
-    <div class="carousel-wrapper">
-      @for (phrase of phrases; track $index) {
-        @if ($index === currentIndex) {
-          <p class="fade-text">
-            {{ phrase }}
-          </p>
+    <div class="container">
+      <div class="carousel-wrapper">
+        @for (phrase of phrases; track $index) {
+          @if ($index === currentIndex) {
+            <p class="fade-text">
+              {{ phrase }}
+            </p>
+          }
         }
-      }
+      </div>
     </div>
   </div>
-</div>
 
   <div class="navbar-main">
     <div class="container navbar-content">
@@ -23,10 +23,47 @@
 
       <nav class="nav-menu">
         <ul>
-          <li><a routerLink="/category/plants" routerLinkActive="active">Plants</a></li>
-          <li><a routerLink="/category/trees" routerLinkActive="active">Trees</a></li>
-          <li><a routerLink="/category/tools" routerLinkActive="active">Tools</a></li>
-          <li><a routerLink="/category/furniture" routerLinkActive="active">Furniture</a></li>
+          <li class="has-dropdown" [class.open]="activeMenu === 'plants'">
+            <a href="javascript:void(0)" (click)="toggleMenu('plants', $event)" routerLinkActive="active">
+              Plants <span class="arrow">▼</span>
+            </a>
+            <ul class="submenu" (click)="$event.stopPropagation()">
+              <li><a routerLink="/category/plants/sub1">Subcategory 1</a></li>
+              <li><a routerLink="/category/plants/sub2">Subcategory 2</a></li>
+              <li><a routerLink="/category/plants/sub3">Subcategory 3</a></li>
+            </ul>
+          </li>
+
+          <li class="has-dropdown" [class.open]="activeMenu === 'trees'">
+            <a href="javascript:void(0)" (click)="toggleMenu('trees', $event)" routerLinkActive="active">
+              Trees <span class="arrow">▼</span>
+            </a>
+            <ul class="submenu" (click)="$event.stopPropagation()">
+              <li><a routerLink="/category/trees/sub1">Subcategory 1</a></li>
+              <li><a routerLink="/category/trees/sub2">Subcategory 2</a></li>
+            </ul>
+          </li>
+
+          <li class="has-dropdown" [class.open]="activeMenu === 'tools'">
+            <a href="javascript:void(0)" (click)="toggleMenu('tools', $event)" routerLinkActive="active">
+              Tools <span class="arrow">▼</span>
+            </a>
+            <ul class="submenu" (click)="$event.stopPropagation()">
+              <li><a routerLink="/category/tools/sub1">Subcategory 1</a></li>
+              <li><a routerLink="/category/tools/sub2">Subcategory 2</a></li>
+            </ul>
+          </li>
+
+          <li class="has-dropdown" [class.open]="activeMenu === 'furniture'">
+            <a href="javascript:void(0)" (click)="toggleMenu('furniture', $event)" routerLinkActive="active">
+              Furniture <span class="arrow">▼</span>
+            </a>
+            <ul class="submenu" (click)="$event.stopPropagation()">
+              <li><a routerLink="/category/furniture/sub1">Subcategory 1</a></li>
+              <li><a routerLink="/category/furniture/sub2">Subcategory 2</a></li>
+            </ul>
+          </li>
+
           <li><a routerLink="/about-us" routerLinkActive="active">About Us</a></li>
         </ul>
       </nav>
