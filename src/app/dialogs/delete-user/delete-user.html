@@ -1,0 +1,29 @@
+<div class="delete-user-dialog">
+  <h2 mat-dialog-title>Conferma Eliminazione Utente</h2>
+  <mat-dialog-content class="dialog-content">
+    <p>Sei sicuro di voler eliminare l'utente seguente?</p>
+    
+    <div class="user-info">
+      <div class="user-detail">
+        <strong>Nome:</strong> {{ data.user.firstName }} {{ data.user.lastName }}
+      </div>
+      <div class="user-detail">
+        <strong>Username:</strong> {{ data.user.userName }}
+      </div>
+      <div class="user-detail">
+        <strong>Email:</strong> {{ data.user.email }}
+      </div>
+    </div>
+    
+    <p class="warning-text">Attenzione: Questa azione è irreversibile.</p>
+  </mat-dialog-content>
+  
+  <mat-dialog-actions class="dialog-actions">
+    <button mat-button (click)="onCancel()" class="cancel-btn">
+      Annulla
+    </button>
+    <button mat-raised-button color="warn" (click)="onConfirm()" class="confirm-btn">
+      Elimina
+    </button>
+  </mat-dialog-actions>
+</div>

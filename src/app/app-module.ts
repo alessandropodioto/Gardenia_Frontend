@@ -14,6 +14,8 @@ import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatBadgeModule } from '@angular/material/badge';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
+import { MatDialogModule } from '@angular/material/dialog';
+import { MatTableModule } from '@angular/material/table';
 
 import { AppRoutingModule } from './app-routing-module';
 
@@ -26,6 +28,8 @@ import { Login } from './components/login/login';
 import { Register } from './components/register/register';
 import { AuthService } from './services/auth.service';
 import { CarrelloComponent } from './components/carrello/carrello';
+import { Admin } from './components/admin/admin';
+import { DeleteUser } from './dialogs/delete-user/delete-user';
 import { PagamentoComponent } from './components/pagamento/pagamento';
 import { User } from './components/user/user';
 import { Sidebar } from './components/sidebar/sidebar';
@@ -44,6 +48,8 @@ import { OrderDetail } from './components/order-detail/order-detail';
     HeaderComponent,
     Footer,
     HomeComponent,
+    Admin,
+    DeleteUser,
     PagamentoComponent,
     User,
     Address,
@@ -65,7 +71,9 @@ import { OrderDetail } from './components/order-detail/order-detail';
     MatProgressSpinnerModule,
     MatProgressBarModule,
     MatBadgeModule,
-    Sidebar,
+    MatDialogModule,
+    MatTableModule,
+    Sidebar
   ],
   providers: [
     provideHttpClient(withFetch()),
