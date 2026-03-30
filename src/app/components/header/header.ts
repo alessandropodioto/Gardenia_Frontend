@@ -2,6 +2,8 @@ import { Component, OnInit, OnDestroy, ChangeDetectorRef, HostListener } from '@
 import { AuthService } from '../../services/auth.service';
 import { Router } from '@angular/router';
 import { Subscription } from 'rxjs';
+import { CategoryService } from '../../services/category.service';
+import { SubcategoryService, Subcategory } from '../../services/subcategory.service';
 
 @Component({
   selector: 'app-header',
@@ -25,10 +27,14 @@ export class HeaderComponent implements OnInit, OnDestroy {
   isLoggedIn: boolean = false;
 
   activeMenu: string | null = null;
+  categories: any[] = [];
+  subcategoriesMap: { [categoryId: number]: Subcategory[] } = {};
 
   constructor(
     private cdr: ChangeDetectorRef,
     private authService: AuthService,
+    private categoryService: CategoryService,
+    private subcategoryService: SubcategoryService,
     private router: Router
   ) {}
 
@@ -47,6 +53,27 @@ export class HeaderComponent implements OnInit, OnDestroy {
       this.isLoggedIn = !!userData;
       this.isAdmin = userData && userData.role === 'ADMIN';
       this.cdr.detectChanges();
+    });
+
+    this.categoryService.getCategories().subscribe({
+      next: (categories) => {
+        this.categories = categories;
+
+        categories.forEach(category => {
+          this.subcategoryService.getSubcategoriesByCategory(category.id).subscribe({
+            next: (subcategories) => {
+              this.subcategoriesMap[category.id] = subcategories;
+              this.cdr.detectChanges();
+            },
+            error: (error) => {
+              console.error(`Error fetching subcategories for category ${category.id}:`, error);
+            }
+          });
+        });
+      },
+      error: (error) => {
+        console.error('Error fetching categories:', error);
+      }
     });
   }
 

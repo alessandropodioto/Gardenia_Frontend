@@ -3,7 +3,7 @@ import { MatDialog } from '@angular/material/dialog';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { AuthService } from '../../services/auth.service';
-import { AdminServices, User } from '../../services/admin-services';
+import { AdminServices, User } from '../../services/admin.service';
 import { DeleteUser } from '../../dialogs/delete-user/delete-user';
 
 @Component({

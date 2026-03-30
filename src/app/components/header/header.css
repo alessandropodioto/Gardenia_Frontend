@@ -69,6 +69,8 @@
 
 .nav-menu li {
   position: relative;
+  display: inline-block;
+  margin-right: 15px;
 }
 
 .nav-menu a {
@@ -108,7 +110,6 @@
   width: 100%;
 }
 
-/* TENDINA (MODALITÀ CLIC) */
 .submenu {
   position: absolute;
   top: 100%;
@@ -118,7 +119,7 @@
   box-shadow: 0 8px 16px rgba(0,0,0,0.1);
   padding: 8px 0;
   list-style: none;
-  display: block !important; /* Forza layout verticale */
+  display: block !important;
   margin: 0;
   opacity: 0;
   visibility: hidden;
