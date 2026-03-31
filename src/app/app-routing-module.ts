@@ -17,15 +17,15 @@ import { OrderDetail } from './components/order-detail/order-detail';
 const routes: Routes = [
   { path: '', redirectTo: '/home', pathMatch: 'full' },
   { path: 'home', component: HomeComponent },
+  { path: 'category/:categoryName/:subcategoryName', component: HomeComponent },
   { path: 'login', component: Login },
   { path: 'register', component: Register },
-  { path: 'product' , component:ProductDetails },
-  { path: 'home', component: HomeComponent },
+  { path: 'product/:id' , component: ProductDetails },
   { path: 'cart', component: CarrelloComponent },
   { path: 'admin', component: Admin, canActivate: [AdminGuard] },
   { path: 'pagamento', component: PagamentoComponent },
-  { 
-    path: 'user', 
+  {
+    path: 'user',
     component: User,
     children: [
       { path: 'overview', component: Overview },

@@ -31,7 +31,7 @@
             <ul class="submenu" (click)="$event.stopPropagation()">
               @for (sub of subcategoriesMap[category.id]; track sub.id) {
               <li>
-                <a routerLink="/category/{{ category.name }}/{{ sub.subcategoryName }}">
+                <a routerLink="/category/{{ category.name }}/{{ sub.subcategoryName }}" [queryParams]="{ subcategoryId: sub.id }">
                   {{ sub.subcategoryName }}
                 </a>
               </li>

@@ -1,5 +1,7 @@
-import { Component, signal, computed } from '@angular/core';
- 
+import { Component, signal, computed, OnInit } from '@angular/core';
+import { ActivatedRoute, Router } from '@angular/router';
+import { ProductService, Product } from '../../services/product.service';
+
 export interface ProductVariant {
   id: string;
   label: string;
@@ -8,12 +10,12 @@ export interface ProductVariant {
   originalPrice?: number;
   available: boolean;
 }
- 
+
 export interface ProductImage {
   url: string;
   alt: string;
 }
- 
+
 @Component({
   selector: 'app-product-details',
   standalone: false,
@@ -21,7 +23,12 @@ export interface ProductImage {
   styleUrl: './product-details.css'
 })
 
-export class ProductDetails {
+export class ProductDetails implements OnInit {
+
+  /* ── Product Data from API ── */
+  product = signal<Product | null>(null);
+  loading = signal<boolean>(true);
+  error = signal<string | null>(null);
 
   /* ── Immagini ── */
   images: ProductImage[] = [
@@ -34,9 +41,9 @@ export class ProductDetails {
       alt: 'Ficus elastica Belize - dettaglio foglie'
     },
   ];
- 
+
   activeImageIndex = signal(0);
- 
+
   /* ── Varianti ── */
   variants: ProductVariant[] = [
     {
@@ -69,12 +76,12 @@ export class ProductDetails {
       available: false
     }
   ];
- 
+
   selectedVariant = signal<ProductVariant>(this.variants[1]);
   quantity = signal(1);
   addedToCart = signal(false);
   wishlistActive = signal(false);
- 
+
   /* ── Computed ── */
   currentPrice = computed(() => this.selectedVariant().price);
   originalPrice = computed(() => this.selectedVariant().originalPrice);
@@ -83,37 +90,72 @@ export class ProductDetails {
     if (!orig) return null;
     return Math.round((1 - this.currentPrice() / orig) * 100);
   });
- 
+
+  constructor(
+    private activatedRoute: ActivatedRoute,
+    private router: Router,
+    private productService: ProductService
+  ) {}
+
+  ngOnInit(): void {
+    this.activatedRoute.params.subscribe(params => {
+      const productId = params['id'];
+      if (productId) {
+        this.loadProduct(parseInt(productId, 10));
+      } else {
+        this.error.set('Invalid product ID');
+        this.loading.set(false);
+      }
+    });
+  }
+
+  loadProduct(productId: number): void {
+    this.loading.set(true);
+    this.error.set(null);
+
+    this.productService.getProductById(productId).subscribe({
+      next: (product) => {
+        this.product.set(product);
+        this.loading.set(false);
+      },
+      error: (err) => {
+        console.error('Error loading product:', err);
+        this.error.set('Failed to load product details');
+        this.loading.set(false);
+      }
+    });
+  }
+
   /* ── Metodi ── */
   selectImage(index: number): void {
     this.activeImageIndex.set(index);
   }
- 
+
   selectVariant(variant: ProductVariant): void {
     if (variant.available) {
       this.selectedVariant.set(variant);
     }
   }
- 
+
   decreaseQty(): void {
     if (this.quantity() > 1) this.quantity.update(q => q - 1);
   }
- 
+
   increaseQty(): void {
     this.quantity.update(q => q + 1);
   }
- 
+
   setQty(event: Event): void {
     const val = parseInt((event.target as HTMLInputElement).value, 10);
     if (!isNaN(val) && val >= 1) this.quantity.set(val);
   }
- 
+
   addToCart(): void {
     if (!this.selectedVariant().available) return;
     this.addedToCart.set(true);
     setTimeout(() => this.addedToCart.set(false), 2200);
   }
- 
+
   toggleWishlist(): void {
     this.wishlistActive.update(v => !v);
   }

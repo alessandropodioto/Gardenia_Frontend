@@ -1,4 +1,20 @@
 <div class="product-wrap">
+  <!-- Loading State -->
+  @if (loading()) {
+    <div class="loading-container">
+      <p>Loading product details...</p>
+    </div>
+  }
+
+  <!-- Error State -->
+  @if (error()) {
+    <div class="error-container">
+      <p>{{ error() }}</p>
+    </div>
+  }
+
+  <!-- Product Content -->
+  @if (!loading() && !error() && product()) {
 
   <!-- ════════════════════════════════
        COLONNA SINISTRA — GALLERIA
@@ -34,16 +50,14 @@
   <div class="info-col">
 
     <!-- Titolo -->
-    <h1 class="product-title">Ficus elastica "Belize"</h1>
+    <h1 class="product-title">{{ product()!.name }}</h1>
 
     <!-- Prezzo -->
     <div class="price-block">
+      <span class="price-current">€ {{ product()!.price.toFixed(2) }}</span>
       <ng-container *ngIf="originalPrice()">
         <span class="price-original">€ {{ originalPrice()! | number:'1.2-2' }}</span>
       </ng-container>
-      <!-- <span class="price-current" [class.is-sale]="!!originalPrice()">
-        € {{ currentPrice() | number:'1.2-2' }}
-      </span> -->
       <span class="vat-note">IVA included</span>
     </div>
 
@@ -51,12 +65,7 @@
 
     <!-- Descrizione breve -->
     <p class="short-desc">
-      Il <strong><em> Ficus elastica </em> "Belize"</strong> is a variegated variety with spectacular foliage: each leaf
-      is a work of art with shades of green, cream, and pink.
-      Perfect for bright spaces, it is hardy and easy to care for. 
-      This plant is suitable for indoor environments and requires a constantly moist substrate. 
-      For its nutrition, it may be useful to purchase a liquid fertilizer for green plants.
-      
+      {{ product()!.description }}
     </p>
 
     <hr class="divider" />
@@ -123,5 +132,7 @@
 
 
   </div><!-- /info-col -->
+
+  } <!-- End of product content conditional -->
 
 </div><!-- /product-wrap -->
