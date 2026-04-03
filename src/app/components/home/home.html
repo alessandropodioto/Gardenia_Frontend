@@ -22,7 +22,7 @@
             <div class="product-card" (click)="navigateToProductDetails(product.id)">
               <div class="product-image">
                 <img
-                  src="https://images.unsplash.com/photo-1485955900006-10f4d324d411?auto=format&fit=crop&w=400&q=80"
+                  [src]="product?.images?.[0]?.link || 'assets/placeholder.png'"
                   alt="{{ product.name }}"
                   class="card-image"
                 />
