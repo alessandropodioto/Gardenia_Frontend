@@ -29,6 +29,7 @@ export class ProductDetails implements OnInit {
   product = signal<Product | null>(null);
   loading = signal<boolean>(true);
   error = signal<string | null>(null);
+  suggestedProducts = signal<Product[]>([]);
 
   /* ── Immagini ── */
   images: ProductImage[] = [
@@ -112,16 +113,32 @@ export class ProductDetails implements OnInit {
   loadProduct(productId: number): void {
     this.loading.set(true);
     this.error.set(null);
+    this.suggestedProducts.set([]);
 
     this.productService.getProductById(productId).subscribe({
       next: (product) => {
         this.product.set(product);
         this.loading.set(false);
+        this.loadSuggestedProducts(product.subcategoryId, product.id);
       },
       error: (err) => {
         console.error('Error loading product:', err);
         this.error.set('Failed to load product details');
         this.loading.set(false);
+      }
+    });
+  }
+
+  loadSuggestedProducts(subcategoryId: number, currentProductId: number): void {
+    this.productService.getProductsBySubcategory(subcategoryId).subscribe({
+      next: (products) => {
+        const filtered = products
+          .filter(p => p.id !== currentProductId && !p.isDeleted)
+          .slice(0, 4);
+        this.suggestedProducts.set(filtered);
+      },
+      error: (err) => {
+        console.error('Error loading suggested products:', err);
       }
     });
   }

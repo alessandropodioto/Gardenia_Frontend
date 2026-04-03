@@ -89,6 +89,15 @@
         <span>{{ addedToCart() ? 'Added to cart!' : 'Add to cart' }}</span>
       </button>
     </div>
+              <!-- Lista con check -->
+
+    <div class="checklist">
+      <ul class="feature-list">
+        <p><span>✓</span> Delivery throughout Italy within 24 hours </p>
+        <p><span>✓</span>  Plants in excellent health</p>
+        <p><span>✓</span> Biodegradable packaging materials</p>
+      </ul>
+    </div>
 
 
   </div><!-- /info-col -->
@@ -96,3 +105,22 @@
   } <!-- End of product content conditional -->
 
 </div><!-- /product-wrap -->
+
+@if (suggestedProducts().length > 0) {
+<section class="suggestions-section">
+  <h2 class="suggestions-title">We also suggest...</h2>
+  <div class="suggestions-grid">
+    @for (p of suggestedProducts(); track p.id) {
+    <a class="suggestion-card" [routerLink]="['/product', p.id]">
+      <div class="suggestion-img-wrap">
+        <img src="https://www.venditapianteonline.it/wp-content/uploads/2023/01/Ficus-elastica-Belize-.jpg" [alt]="p.name" loading="lazy" />
+      </div>
+      <div class="suggestion-info">
+        <p class="suggestion-name">{{ p.name }}</p>
+        <p class="suggestion-price">€ {{ p.price.toFixed(2) }}</p>
+      </div>
+    </a>
+    }
+  </div>
+</section>
+}
