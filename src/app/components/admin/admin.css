@@ -1,6 +1,6 @@
 .admin-container {
   padding: 20px;
-  max-width: 1200px;
+  max-width: 1400px;
   margin: 0 auto;
 }
 
@@ -11,6 +11,19 @@
   font-weight: 500;
 }
 
+/* Admin Layout with Sidebar */
+.admin-layout {
+  display: flex;
+  gap: 24px;
+  align-items: flex-start;
+}
+
+.admin-content-wrapper {
+  flex: 1;
+  min-width: 0;
+}
+
+/* Loading Container */
 .loading-container {
   display: flex;
   flex-direction: column;
@@ -24,6 +37,7 @@
   max-width: 300px;
 }
 
+/* Error Message */
 .error-message {
   background-color: #ffebee;
   border: 1px solid #f44336;
@@ -41,6 +55,7 @@
   font-weight: 500;
 }
 
+/* Admin Content */
 .admin-content {
   background: #fff;
   border-radius: 8px;
@@ -48,6 +63,7 @@
   overflow: hidden;
 }
 
+/* Table Header */
 .table-header {
   padding: 20px;
   border-bottom: 1px solid #e0e0e0;
@@ -61,22 +77,42 @@
   font-weight: 500;
 }
 
-.table-subtitle {
-  margin: 0;
-  color: #666;
-  font-size: 0.9rem;
+.table-header.with-button {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 }
 
+.table-header.with-button h2 {
+  margin: 0;
+}
+
+/* Create Button */
+.create-btn {
+  background-color: #2d5016 !important;
+  color: white !important;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  font-size: 0.85rem;
+}
+
+.create-btn:hover {
+  background-color: #204010 !important;
+}
+
+/* Table Container */
 .table-container {
   padding: 20px;
 }
 
-.user-table {
+/* Material Table */
+.mat-table {
   width: 100%;
   border-collapse: collapse;
 }
 
-.user-table th {
+.mat-table th {
   font-weight: 600;
   color: #555;
   font-size: 0.875rem;
@@ -87,35 +123,64 @@
   text-align: left;
 }
 
-.user-table td {
+.mat-table td {
   padding: 12px 8px;
   border-bottom: 1px solid #f0f0f0;
   font-size: 0.9rem;
   color: #333;
 }
 
-.user-table tr:hover {
+.mat-table tr:hover {
   background-color: #f9f9f9;
 }
 
+/* Actions Cell */
 .actions-cell {
-  text-align: left;
+  display: flex;
+  gap: 8px;
+}
+
+/* Action Buttons */
+.action-btn {
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  font-size: 0.75rem;
+  padding: 0 12px;
+  min-width: 80px;
+}
+
+.edit-btn {
+  background-color: #1976d2 !important;
+  color: white !important;
+}
+
+.edit-btn:hover {
+  background-color: #1565c0 !important;
 }
 
 .delete-btn {
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.5px;
-  font-size: 0.8rem;
+  font-size: 0.75rem;
 }
 
-.no-users {
+/* Low Stock Indicator */
+.low-stock {
+  color: #d9534f;
+  font-weight: 600;
+}
+
+/* No Data Message */
+.no-data {
   text-align: center;
   padding: 40px 20px;
   color: #666;
   font-style: italic;
 }
 
+/* Access Denied */
 .access-denied {
   text-align: center;
   padding: 60px 20px;
@@ -132,4 +197,30 @@
   line-height: 1.6;
   max-width: 600px;
   margin: 0 auto 20px auto;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .admin-layout {
+    flex-direction: column;
+  }
+
+  .admin-sidebar {
+    width: 100%;
+  }
+
+  .table-header.with-button {
+    flex-direction: column;
+    gap: 15px;
+    align-items: flex-start;
+  }
+
+  .actions-cell {
+    flex-direction: column;
+  }
+
+  .mat-table {
+    display: block;
+    overflow-x: auto;
+  }
 }

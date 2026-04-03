@@ -1,14 +1,14 @@
 <div class="cart-page-container">
   
   <div class="cart-header">
-    <h2>Il tuo Carrello</h2>
+    <h2>Your Cart</h2>
     </div>
 
   <div class="shipping-bar">
     <p *ngIf="mancanoPerSpedizione > 0">
-      Aggiungi <strong>{{ mancanoPerSpedizione | currency:'EUR' }}</strong> per la spedizione gratuita!
+      Add <strong>{{ mancanoPerSpedizione | currency:'EUR' }}</strong> for free shipping!
     </p>
-    <p *ngIf="mancanoPerSpedizione <= 0"> Hai ottenuto la <strong>spedizione gratuita!</strong></p>
+    <p *ngIf="mancanoPerSpedizione <= 0"> You've unlocked <strong>free shipping!</strong></p>
     <mat-progress-bar mode="determinate" [value]="percentualeSpedizione"></mat-progress-bar>
   </div>
 
@@ -30,12 +30,12 @@
 
  <div class="cart-footer" *ngIf="items.length > 0">
   <div class="subtotal">
-    <span>Subtotale:</span>
+    <span>Subtotal:</span>
     <span>{{ subtotal | currency:'EUR' }}</span>
   </div>
   
   <button mat-flat-button class="checkout-btn" routerLink="/pagamento">
-    Procedi al Checkout
+    Proceed to Checkout
   </button>
 </div>
 

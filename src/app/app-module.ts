@@ -1,7 +1,7 @@
 import { NgModule, provideBrowserGlobalErrorListeners } from '@angular/core';
 import { BrowserModule, provideClientHydration, withEventReplay } from '@angular/platform-browser';
 import { provideHttpClient, withFetch } from '@angular/common/http';
-import { ReactiveFormsModule } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 
 import { MatSidenavModule } from '@angular/material/sidenav';
@@ -16,6 +16,7 @@ import { MatBadgeModule } from '@angular/material/badge';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatDialogModule } from '@angular/material/dialog';
 import { MatTableModule } from '@angular/material/table';
+import { MatSelectModule } from '@angular/material/select';
 
 import { AppRoutingModule } from './app-routing-module';
 
@@ -29,7 +30,9 @@ import { Register } from './components/register/register';
 import { AuthService } from './services/auth.service';
 import { CarrelloComponent } from './components/carrello/carrello';
 import { Admin } from './components/admin/admin';
+import { AdminSidebar } from './components/admin-sidebar/admin-sidebar';
 import { DeleteUser } from './dialogs/delete-user/delete-user';
+import { ProductDialog } from './dialogs/product-dialog/product-dialog';
 import { PagamentoComponent } from './components/pagamento/pagamento';
 import { User } from './components/user/user';
 import { Sidebar } from './components/sidebar/sidebar';
@@ -50,6 +53,7 @@ import { OrderDetail } from './components/order-detail/order-detail';
     HomeComponent,
     Admin,
     DeleteUser,
+    ProductDialog,
     PagamentoComponent,
     User,
     Address,
@@ -61,6 +65,7 @@ import { OrderDetail } from './components/order-detail/order-detail';
     BrowserModule,
     AppRoutingModule,
     ReactiveFormsModule,
+    FormsModule,
     MatInputModule,
     MatFormFieldModule,
     MatButtonModule,
@@ -73,7 +78,9 @@ import { OrderDetail } from './components/order-detail/order-detail';
     MatBadgeModule,
     MatDialogModule,
     MatTableModule,
-    Sidebar
+    MatSelectModule,
+    Sidebar,
+    AdminSidebar
   ],
   providers: [
     provideHttpClient(withFetch()),
