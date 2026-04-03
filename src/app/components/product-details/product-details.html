@@ -19,30 +19,31 @@
   <!-- ════════════════════════════════
        COLONNA SINISTRA — GALLERIA
        ════════════════════════════════ -->
-  <div class="gallery-col">
+ <div class="gallery-col">
 
-    <!-- Miniature verticali -->
-    <div class="thumbs-rail">
-      <button *ngFor="let img of images; let i = index" class="thumb" [class.is-active]="i === activeImageIndex()"
-        (click)="selectImage(i)" [attr.aria-label]="img.alt">
-        <img [src]="img.url" [alt]="img.alt" loading="lazy" />
-      </button>
-    </div>
-
-    <!-- Immagine principale -->
-    <div class="main-img-box">
-
-
-      <img class="main-img" [src]="images[activeImageIndex()].url" [alt]="images[activeImageIndex()].alt" />
-
-      <!-- Dot navigation (mobile) -->
-      <div class="dots">
-        <button *ngFor="let img of images; let i = index" class="dot" [class.is-active]="i === activeImageIndex()"
-          (click)="selectImage(i)"></button>
-      </div>
-    </div>
-
+  <div class="thumbs-rail">
+    <button *ngFor="let img of images(); let i = index" 
+            class="thumb" 
+            [class.is-active]="i === activeImageIndex()"
+            (click)="selectImage(i)">
+      <img [src]="img.url" [alt]="img.alt" loading="lazy" />
+    </button>
   </div>
+
+  <div class="main-img-box">
+    <img class="main-img" 
+         [src]="images()[activeImageIndex()].url" 
+         [alt]="images()[activeImageIndex()].alt" />
+
+    <div class="dots">
+      <button *ngFor="let img of images(); let i = index" 
+              class="dot" 
+              [class.is-active]="i === activeImageIndex()"
+              (click)="selectImage(i)"></button>
+    </div>
+  </div>
+
+</div>
 
   <!-- ════════════════════════════════
        COLONNA DESTRA — DETTAGLI
@@ -113,7 +114,9 @@
     @for (p of suggestedProducts(); track p.id) {
     <a class="suggestion-card" [routerLink]="['/product', p.id]">
       <div class="suggestion-img-wrap">
-        <img src="https://www.venditapianteonline.it/wp-content/uploads/2023/01/Ficus-elastica-Belize-.jpg" [alt]="p.name" loading="lazy" />
+        <img [src]="(p.images && p.images.length > 0) ? p.images[0].link : 'assets/placeholder.png'" 
+             [alt]="p.name" 
+             loading="lazy" />      
       </div>
       <div class="suggestion-info">
         <p class="suggestion-name">{{ p.name }}</p>

@@ -31,17 +31,20 @@ export class ProductDetails implements OnInit {
   error = signal<string | null>(null);
   suggestedProducts = signal<Product[]>([]);
 
-  /* ── Immagini ── */
-  images: ProductImage[] = [
-    {
-      url: 'https://www.venditapianteonline.it/wp-content/uploads/2023/01/Ficus-elastica-Belize-.jpg',
-      alt: 'Ficus elastica Belize - vista frontale'
-    },
-    {
-      url: 'https://secretgarden.ro/cdn/shop/products/39915.jpg?v=1750189999&width=3840',
-      alt: 'Ficus elastica Belize - dettaglio foglie'
-    },
-  ];
+/* ── Immagini ── */
+images = computed<ProductImage[]>(() => {
+  const p = this.product();
+  if (p && p.images && p.images.length > 0) {
+    return p.images.map(img => ({
+      url: img.link, // 'link' è il nome della colonna nel tuo DB
+      alt: p.name
+    }));
+  }
+  // Immagine di fallback se il DB è vuoto per quel prodotto
+  return [{ url: 'https://via.placeholder.com/600', alt: 'No image' }];
+});
+
+
 
   activeImageIndex = signal(0);
 
@@ -110,24 +113,23 @@ export class ProductDetails implements OnInit {
     });
   }
 
-  loadProduct(productId: number): void {
-    this.loading.set(true);
-    this.error.set(null);
-    this.suggestedProducts.set([]);
+loadProduct(productId: number): void {
+  this.loading.set(true);
+  this.error.set(null);
+  this.activeImageIndex.set(0); // Reset alla prima immagine quando cambi prodotto
 
-    this.productService.getProductById(productId).subscribe({
-      next: (product) => {
-        this.product.set(product);
-        this.loading.set(false);
-        this.loadSuggestedProducts(product.subcategoryId, product.id);
-      },
-      error: (err) => {
-        console.error('Error loading product:', err);
-        this.error.set('Failed to load product details');
-        this.loading.set(false);
-      }
-    });
-  }
+  this.productService.getProductById(productId).subscribe({
+    next: (product) => {
+      this.product.set(product);
+      this.loading.set(false);
+      this.loadSuggestedProducts(product.subcategoryId, product.id);
+    },
+    error: (err) => {
+      this.error.set('Failed to load product details');
+      this.loading.set(false);
+    }
+  });
+}
 
   loadSuggestedProducts(subcategoryId: number, currentProductId: number): void {
     this.productService.getProductsBySubcategory(subcategoryId).subscribe({
