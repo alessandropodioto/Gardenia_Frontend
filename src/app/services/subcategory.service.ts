@@ -26,4 +26,13 @@ export class SubcategoryService {
       })
     );
   }
+
+  getAllSubcategories(): Observable<Subcategory[]> {
+    return this.http.get<Subcategory[]>(`${this.apiUrl}/list`).pipe(
+      catchError(error => {
+        console.error('Error fetching all subcategories:', error);
+        return throwError(() => new Error('Failed to fetch subcategories'));
+      })
+    );
+  }
 }

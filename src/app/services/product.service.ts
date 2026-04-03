@@ -53,4 +53,31 @@ export class ProductService {
       })
     );
   }
+
+  create(product: Product): Observable<Product> {
+    return this.http.post<Product>(`${this.apiUrl}/create`, product).pipe(
+      catchError(error => {
+        console.error('Error creating product:', error);
+        return throwError(() => new Error('Failed to create product'));
+      })
+    );
+  }
+
+  update(product: Product): Observable<Product> {
+    return this.http.put<Product>(`${this.apiUrl}/update`, product).pipe(
+      catchError(error => {
+        console.error('Error updating product:', error);
+        return throwError(() => new Error('Failed to update product'));
+      })
+    );
+  }
+
+  delete(id: number): Observable<void> {
+    return this.http.delete<void>(`${this.apiUrl}/delete/${id}`).pipe(
+      catchError(error => {
+        console.error(`Error deleting product with id ${id}:`, error);
+        return throwError(() => new Error('Failed to delete product'));
+      })
+    );
+  }
 }

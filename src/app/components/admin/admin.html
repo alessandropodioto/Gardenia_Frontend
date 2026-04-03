@@ -1,71 +1,166 @@
 <div class="admin-container">
   <div *ngIf="isAdmin; else noAccess">
-    <h1>Gestione Utenti</h1>
-    
-    <div *ngIf="error" class="error-message">
-      <p>{{ error }}</p>
-      <button mat-button (click)="loadUsers()">Riprova</button>
-    </div>
+    <div class="admin-layout">
+      <!-- Admin Sidebar -->
+      <app-admin-sidebar (viewChange)="onViewChange($event)"></app-admin-sidebar>
 
-    <div *ngIf="!error" class="admin-content">
-      <div class="table-header">
-        <h2>Elenco Utenti</h2>
-      </div>
+      <!-- Main Content Area -->
+      <div class="admin-content-wrapper">
+        <div *ngIf="error" class="error-message">
+          <p>{{ error }}</p>
+          <button mat-button (click)="activeView === 'users' ? loadUsers() : loadProducts()">Retry</button>
+        </div>
 
-      <div class="table-container">
-        <table mat-table [dataSource]="users" class="user-table">
-          
-          <!-- Name Column -->
-          <ng-container matColumnDef="name">
-            <th mat-header-cell *matHeaderCellDef>Nome</th>
-            <td mat-cell *matCellDef="let user">{{ user.firstName }} {{ user.lastName }}</td>
-          </ng-container>
+        <div *ngIf="!error" class="admin-content">
+          <!-- Users Section -->
+          <div *ngIf="activeView === 'users'">
+            <div class="table-header">
+              <h2>User List</h2>
+            </div>
 
-          <!-- Username Column -->
-          <ng-container matColumnDef="username">
-            <th mat-header-cell *matHeaderCellDef>Username</th>
-            <td mat-cell *matCellDef="let user">{{ user.userName }}</td>
-          </ng-container>
+            <div class="table-container">
+              <table mat-table [dataSource]="users" class="mat-table">
+                
+                <!-- Name Column -->
+                <ng-container matColumnDef="name">
+                  <th mat-header-cell *matHeaderCellDef>Name</th>
+                  <td mat-cell *matCellDef="let user">{{ user.firstName }} {{ user.lastName }}</td>
+                </ng-container>
 
-          <!-- Email Column -->
-          <ng-container matColumnDef="email">
-            <th mat-header-cell *matHeaderCellDef>Email</th>
-            <td mat-cell *matCellDef="let user">{{ user.email }}</td>
-          </ng-container>
+                <!-- Username Column -->
+                <ng-container matColumnDef="username">
+                  <th mat-header-cell *matHeaderCellDef>Username</th>
+                  <td mat-cell *matCellDef="let user">{{ user.userName }}</td>
+                </ng-container>
 
-          <!-- Phone Column -->
-          <ng-container matColumnDef="phone">
-            <th mat-header-cell *matHeaderCellDef>Telefono</th>
-            <td mat-cell *matCellDef="let user">{{ user.phone }}</td>
-          </ng-container>
+                <!-- Email Column -->
+                <ng-container matColumnDef="email">
+                  <th mat-header-cell *matHeaderCellDef>Email</th>
+                  <td mat-cell *matCellDef="let user">{{ user.email }}</td>
+                </ng-container>
 
-          <!-- Role Column -->
-          <ng-container matColumnDef="role">
-            <th mat-header-cell *matHeaderCellDef>Ruolo</th>
-            <td mat-cell *matCellDef="let user">{{ user.role }}</td>
-          </ng-container>
+                <!-- Phone Column -->
+                <ng-container matColumnDef="phone">
+                  <th mat-header-cell *matHeaderCellDef>Phone</th>
+                  <td mat-cell *matCellDef="let user">{{ user.phone }}</td>
+                </ng-container>
 
-          <!-- Actions Column -->
-          <ng-container matColumnDef="actions">
-            <th mat-header-cell *matHeaderCellDef>Azioni</th>
-            <td mat-cell *matCellDef="let user" class="actions-cell">
+                <!-- Role Column -->
+                <ng-container matColumnDef="role">
+                  <th mat-header-cell *matHeaderCellDef>Role</th>
+                  <td mat-cell *matCellDef="let user">{{ user.role }}</td>
+                </ng-container>
+
+                <!-- Actions Column -->
+                <ng-container matColumnDef="actions">
+                  <th mat-header-cell *matHeaderCellDef>Actions</th>
+                  <td mat-cell *matCellDef="let user" class="actions-cell">
+                    <button 
+                      mat-raised-button 
+                      color="warn" 
+                      (click)="openDeleteUserDialog(user)"
+                      class="action-btn delete-btn"
+                    >
+                      Delete
+                    </button>
+                  </td>
+                </ng-container>
+
+                <tr mat-header-row *matHeaderRowDef="['name', 'username', 'email', 'phone', 'role', 'actions']"></tr>
+                <tr mat-row *matRowDef="let row; columns: ['name', 'username', 'email', 'phone', 'role', 'actions']"></tr>
+              </table>
+
+              <div *ngIf="users.length === 0" class="no-data">
+                <p>No users found</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Products Section -->
+          <div *ngIf="activeView === 'products'">
+            <div class="table-header with-button">
+              <h2>Product List</h2>
               <button 
                 mat-raised-button 
-                color="warn" 
-                (click)="openDeleteDialog(user)"
-                class="delete-btn"
+                class="create-btn"
+                (click)="openCreateProductDialog()"
               >
-                Elimina
+                + New Product
               </button>
-            </td>
-          </ng-container>
+            </div>
 
-          <tr mat-header-row *matHeaderRowDef="['name', 'username', 'email', 'phone', 'role', 'actions']"></tr>
-          <tr mat-row *matRowDef="let row; columns: ['name', 'username', 'email', 'phone', 'role', 'actions']"></tr>
-        </table>
+            <div class="table-container">
+              <table mat-table [dataSource]="products" class="mat-table">
+                
+                <!-- ID Column -->
+                <ng-container matColumnDef="id">
+                  <th mat-header-cell *matHeaderCellDef>ID</th>
+                  <td mat-cell *matCellDef="let product">{{ product.id }}</td>
+                </ng-container>
 
-        <div *ngIf="users.length === 0" class="no-users">
-          <p>Nessun utente trovato</p>
+                <!-- Name Column -->
+                <ng-container matColumnDef="name">
+                  <th mat-header-cell *matHeaderCellDef>Name</th>
+                  <td mat-cell *matCellDef="let product">{{ product.name }}</td>
+                </ng-container>
+
+                <!-- Description Column -->
+                <ng-container matColumnDef="description">
+                  <th mat-header-cell *matHeaderCellDef>Description</th>
+                  <td mat-cell *matCellDef="let product">{{ product.description | slice:0:50 }}{{ product.description.length > 50 ? '...' : '' }}</td>
+                </ng-container>
+
+                <!-- Price Column -->
+                <ng-container matColumnDef="price">
+                  <th mat-header-cell *matHeaderCellDef>Price</th>
+                  <td mat-cell *matCellDef="let product">€{{ product.price.toFixed(2) }}</td>
+                </ng-container>
+
+                <!-- Stock Column -->
+                <ng-container matColumnDef="stock">
+                  <th mat-header-cell *matHeaderCellDef>Stock</th>
+                  <td mat-cell *matCellDef="let product" [class.low-stock]="product.stock < 5">
+                    {{ product.stock }}
+                  </td>
+                </ng-container>
+
+                <!-- Subcategory Column -->
+                <ng-container matColumnDef="subcategory">
+                  <th mat-header-cell *matHeaderCellDef>Subcategory</th>
+                  <td mat-cell *matCellDef="let product">{{ product.subcategoryName }}</td>
+                </ng-container>
+
+                <!-- Actions Column -->
+                <ng-container matColumnDef="actions">
+                  <th mat-header-cell *matHeaderCellDef>Actions</th>
+                  <td mat-cell *matCellDef="let product" class="actions-cell">
+                    <button 
+                      mat-raised-button 
+                      class="action-btn edit-btn"
+                      (click)="openEditProductDialog(product)"
+                    >
+                      Edit
+                    </button>
+                    <button 
+                      mat-raised-button 
+                      color="warn" 
+                      (click)="openDeleteProductDialog(product)"
+                      class="action-btn delete-btn"
+                    >
+                      Delete
+                    </button>
+                  </td>
+                </ng-container>
+
+                <tr mat-header-row *matHeaderRowDef="['id', 'name', 'description', 'price', 'stock', 'subcategory', 'actions']"></tr>
+                <tr mat-row *matRowDef="let row; columns: ['id', 'name', 'description', 'price', 'stock', 'subcategory', 'actions']"></tr>
+              </table>
+
+              <div *ngIf="products.length === 0" class="no-data">
+                <p>No products found</p>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </div>
@@ -73,9 +168,9 @@
 
   <ng-template #noAccess>
     <div class="access-denied">
-      <h1>Accesso Negato</h1>
-      <p>È necessario avere i privilegi di amministratore per accedere a questa pagina.</p>
-      <p>Effettua il login con un account amministratore.</p>
+      <h1>Access Denied</h1>
+      <p>You must have administrator privileges to access this page.</p>
+      <p>Please log in with an administrator account.</p>
     </div>
   </ng-template>
 </div>

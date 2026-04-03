@@ -1,0 +1,51 @@
+<div class="dialog-container">
+  <h2 class="dialog-title">{{ isEditMode ? 'Edit Product' : 'New Product' }}</h2>
+  
+  <form [formGroup]="productForm" class="dialog-form">
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Product Name</mat-label>
+      <input matInput formControlName="name" placeholder="Enter product name" />
+      <mat-error *ngIf="name?.hasError('required')">Name is required</mat-error>
+      <mat-error *ngIf="name?.hasError('minlength')">Name must be at least 3 characters</mat-error>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Description</mat-label>
+      <textarea matInput formControlName="description" rows="3" placeholder="Enter product description"></textarea>
+      <mat-error *ngIf="description?.hasError('required')">Description is required</mat-error>
+    </mat-form-field>
+
+    <div class="form-row">
+      <mat-form-field appearance="outline" class="half-width">
+        <mat-label>Price (€)</mat-label>
+        <input matInput type="number" step="0.01" formControlName="price" placeholder="0.00" />
+        <mat-error *ngIf="price?.hasError('required')">Price is required</mat-error>
+        <mat-error *ngIf="price?.hasError('min')">Price must be greater than or equal to 0</mat-error>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="half-width">
+        <mat-label>Stock</mat-label>
+        <input matInput type="number" formControlName="stock" placeholder="0" />
+        <mat-error *ngIf="stock?.hasError('required')">Stock is required</mat-error>
+        <mat-error *ngIf="stock?.hasError('min')">Stock must be greater than or equal to 0</mat-error>
+      </mat-form-field>
+    </div>
+
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Subcategory</mat-label>
+      <mat-select formControlName="subcategoryId" [disabled]="loadingSubcategories">
+        <mat-option *ngFor="let sub of subcategories" [value]="sub.id">
+          {{ sub.subcategoryName }}
+        </mat-option>
+      </mat-select>
+      <mat-error *ngIf="subcategoryId?.hasError('required')">Subcategory is required</mat-error>
+    </mat-form-field>
+
+    <div class="dialog-actions">
+      <button mat-button type="button" (click)="onCancel()">Cancel</button>
+      <button mat-raised-button color="primary" type="button" (click)="onConfirm()" [disabled]="productForm.invalid">
+        {{ isEditMode ? 'Save Changes' : 'Create Product' }}
+      </button>
+    </div>
+  </form>
+</div>

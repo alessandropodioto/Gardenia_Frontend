@@ -46,6 +46,8 @@ export class HeaderComponent implements OnInit, OnDestroy {
 
     if (typeof window !== 'undefined') {
       const userData = this.authService.getUserData();
+      this.isLoggedIn = !!userData;
+      this.isAdmin = userData && userData.role === 'ADMIN';
       this.authService.emitAuthState(userData);
     }
 

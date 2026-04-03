@@ -19,8 +19,8 @@
       } @else {
         <div class="products-grid">
           @for (product of products(); track product.id) {
-            <div class="product-card" (click)="navigateToProductDetails(product.id)">
-              <div class="product-image">
+            <div class="product-card">
+              <div class="product-image" (click)="navigateToProductDetails(product.id)">
                 <img
                   [src]="product?.images?.[0]?.link || 'assets/placeholder.png'"
                   alt="{{ product.name }}"
@@ -28,14 +28,11 @@
                 />
               </div>
               <div class="product-info">
-                <h3 class="product-name">{{ product.name }}</h3>
+                <h3 class="product-name" (click)="navigateToProductDetails(product.id)">{{ product.name }}</h3>
                 <p class="product-price">€{{ product.price.toFixed(2) }}</p>
                 <p class="product-stock" [class.low-stock]="product.stock < 5">
                   Stock: {{ product.stock }}
                 </p>
-              </div>
-              <div class="product-overlay">
-                <button class="view-details-btn">View Details</button>
               </div>
             </div>
           }
