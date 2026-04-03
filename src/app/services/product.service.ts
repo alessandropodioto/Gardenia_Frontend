@@ -3,14 +3,18 @@ import { HttpClient, HttpParams } from '@angular/common/http';
 import { catchError, Observable, throwError } from 'rxjs';
 
 export interface Product {
-  id: number,
-  name: string,
-  description: string,
-  price: number,
-  stock: number,
-  subcategoryId: number,
-  subcategoryName: string,
-  isDeleted: boolean
+  id: number;
+  name: string;
+  description: string;
+  price: number;
+  stock: number;
+  subcategoryId: number;
+  subcategoryName: string;
+  isDeleted: boolean;
+  images?: {
+    id: number;
+    link: string;
+  }[];
 }
 
 @Injectable({
