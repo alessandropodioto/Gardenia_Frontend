@@ -13,6 +13,7 @@ export class HomeComponent implements OnInit {
   products = signal<Product[]>([]);
   loading = signal<boolean>(false);
   error = signal<string | null>(null);
+  isHome = signal<boolean>(false);
 
   constructor(
     private productService: ProductService,
@@ -22,11 +23,15 @@ export class HomeComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
+    const snapshot = this.activatedRoute.snapshot.params;
+    this.isHome.set(!(snapshot['categoryName'] && snapshot['subcategoryName']));
+
     this.activatedRoute.params.subscribe(params => {
       const categoryName = params['categoryName'];
       const subcategoryName = params['subcategoryName'];
 
       if (categoryName && subcategoryName) {
+        this.isHome.set(false);
         // Check if subcategoryId is provided as query param
         this.activatedRoute.queryParams.subscribe(queryParams => {
           const subcategoryId = queryParams['subcategoryId'];
@@ -37,6 +42,7 @@ export class HomeComponent implements OnInit {
           }
         });
       } else {
+        this.isHome.set(true);
         // Default home page - show all products
         this.loadAllProducts();
       }

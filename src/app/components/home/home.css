@@ -59,6 +59,60 @@
 }
 
 /* ═══════════════════════════════════════════════════════════════ */
+/* WELCOME BANNER */
+/* ═══════════════════════════════════════════════════════════════ */
+
+.banner-wrapper {
+  background: linear-gradient(135deg, #1a4a1a 0%, #2d6e2d 40%, #3d8b3d 70%, #1e5c1e 100%);
+  padding: 20px;
+  position: relative;
+  overflow: hidden;
+}
+
+.banner-wrapper::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image:
+    radial-gradient(ellipse 60px 80px at 5% 30%, rgba(255,255,255,0.04) 0%, transparent 70%),
+    radial-gradient(ellipse 50px 70px at 95% 70%, rgba(255,255,255,0.04) 0%, transparent 70%),
+    radial-gradient(ellipse 40px 60px at 20% 80%, rgba(255,255,255,0.03) 0%, transparent 70%),
+    radial-gradient(ellipse 45px 65px at 80% 20%, rgba(255,255,255,0.03) 0%, transparent 70%);
+  pointer-events: none;
+}
+
+.banner-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 20px;
+}
+
+.banner-content {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 24px;
+  padding: 32px 0;
+}
+
+.banner-text {
+  font-size: 48px;
+  font-weight: 300;
+  color: #f5f0e8;
+  letter-spacing: 2px;
+  font-family: Georgia, 'Times New Roman', serif;
+  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+  white-space: nowrap;
+}
+
+.banner-logo {
+  height: 90px;
+  width: auto;
+  filter: brightness(0) invert(1);
+  drop-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+}
+
+/* ═══════════════════════════════════════════════════════════════ */
 /* PRODUCTS SECTION STYLES */
 /* ═══════════════════════════════════════════════════════════════ */
 
@@ -154,6 +208,19 @@
 
 /* Responsive Design */
 @media (max-width: 768px) {
+  .banner-text {
+    font-size: 32px;
+  }
+
+  .banner-logo {
+    height: 65px;
+  }
+
+  .banner-content {
+    gap: 16px;
+    padding: 24px 0;
+  }
+
   .products-grid {
     grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
     gap: 15px;
@@ -171,6 +238,20 @@
 }
 
 @media (max-width: 480px) {
+  .banner-text {
+    font-size: 22px;
+    letter-spacing: 1px;
+  }
+
+  .banner-logo {
+    height: 48px;
+  }
+
+  .banner-content {
+    gap: 12px;
+    padding: 20px 0;
+  }
+
   .products-grid {
     grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
     gap: 10px;
