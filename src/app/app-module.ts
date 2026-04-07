@@ -40,6 +40,7 @@ import { Address } from './components/address/address';
 import { Overview } from './components/overview/overview';
 import { Orders } from './components/orders/orders';
 import { OrderDetail } from './components/order-detail/order-detail';
+import { AboutUs } from './components/about-us/about-us';
 
 @NgModule({
   declarations: [
@@ -81,7 +82,7 @@ import { OrderDetail } from './components/order-detail/order-detail';
     MatTableModule,
     MatSelectModule,
     Sidebar,
-    AdminSidebar
+    AdminSidebar,
   ],
   providers: [
     provideHttpClient(withFetch()),
