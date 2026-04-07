@@ -46,7 +46,6 @@ import { OrderDetail } from './components/order-detail/order-detail';
     App,
     Login,
     Register,
-    CarrelloComponent,
     ProductDetails,
     HeaderComponent,
     Footer,
@@ -60,9 +59,11 @@ import { OrderDetail } from './components/order-detail/order-detail';
     Overview,
     Orders,
     OrderDetail,
+    CarrelloComponent 
   ],
   imports: [
     BrowserModule,
+    CommonModule,
     AppRoutingModule,
     ReactiveFormsModule,
     FormsModule,
