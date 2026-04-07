@@ -60,7 +60,8 @@ import { AboutUs } from './components/about-us/about-us';
     Overview,
     Orders,
     OrderDetail,
-    CarrelloComponent 
+    CarrelloComponent,
+    AboutUs 
   ],
   imports: [
     BrowserModule,
