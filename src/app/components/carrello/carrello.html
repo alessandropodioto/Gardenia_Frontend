@@ -1,18 +1,18 @@
 <div class="cart-page-container">
   
   <div class="cart-header">
-    <h2>Your Cart</h2>
+    <h2>Your Shopping Cart</h2>
   </div>
 
   <div class="cart-items">
     <div class="cart-item" *ngFor="let item of items; trackBy: trackById">
       
-      <a [routerLink]="['/product', item.idProduct]">
+      <a [routerLink]="['/product', item.idProduct]" class="img-link">
         <img [src]="item.immagine" [alt]="item.nome" class="product-img">
       </a>
       
       <div class="item-details">
-        <a [routerLink]="['/product', item.idProduct]" style="text-decoration: none; color: inherit;">
+        <a [routerLink]="['/product', item.idProduct]" class="title-link">
           <h4>{{ item.nome }}</h4>
         </a>
         
@@ -21,7 +21,7 @@
             <mat-icon>{{ item.amount > 1 ? 'remove' : 'delete_outline' }}</mat-icon>
           </button>
           
-          <span>{{ item.amount }}</span>
+          <span class="amount-badge">{{ item.amount }}</span>
           
           <button mat-icon-button (click)="cambiaQuantita(item, 1)">
             <mat-icon>add</mat-icon>
@@ -30,20 +30,37 @@
       </div>
       
       <div class="item-price">
-        {{ item.price | currency:'EUR' }}
+        {{ (item.price * item.amount) | currency:'EUR' }}
       </div>
     </div>
   </div>
 
   <div class="cart-footer" *ngIf="items.length > 0">
-    <button mat-flat-button class="checkout-btn" routerLink="/pagamento">
+    <div class="subtotal-container">
+      <span class="subtotal-label">Order Total</span>
+      <span class="subtotal-amount">{{ subtotal | currency:'EUR' }}</span>
+    </div>
+    
+    <button mat-flat-button color="primary" class="checkout-btn" routerLink="/pagamento">
       Proceed to Checkout
     </button>
   </div>
 
-  <div *ngIf="items.length === 0" style="text-align: center; margin-top: 50px;">
-    <p>Your cart is empty.</p>
-    <button mat-stroked-button routerLink="/home">Go back to shop</button>
+  <div *ngIf="items.length === 0" class="empty-cart">
+    <mat-icon class="empty-icon">shopping_basket</mat-icon>
+    <p>Your cart is currently empty.</p>
+    <button mat-stroked-button routerLink="/home">Back to Shop</button>
   </div>
 
 </div>
+
+<ng-template #confirmDialog>
+  <h2 mat-dialog-title>Remove Item</h2>
+  <mat-dialog-content>
+    Are you sure you want to remove this item from your cart?
+  </mat-dialog-content>
+  <mat-dialog-actions align="end">
+    <button mat-button mat-dialog-close>Cancel</button>
+    <button mat-flat-button color="warn" [mat-dialog-close]="true">Remove</button>
+  </mat-dialog-actions>
+</ng-template>
