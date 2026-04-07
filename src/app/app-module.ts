@@ -47,7 +47,6 @@ import { AboutUs } from './components/about-us/about-us';
     App,
     Login,
     Register,
-    CarrelloComponent,
     ProductDetails,
     HeaderComponent,
     Footer,
@@ -61,10 +60,11 @@ import { AboutUs } from './components/about-us/about-us';
     Overview,
     Orders,
     OrderDetail,
-    AboutUs,
+    CarrelloComponent 
   ],
   imports: [
     BrowserModule,
+    CommonModule,
     AppRoutingModule,
     ReactiveFormsModule,
     FormsModule,

@@ -1,15 +1,7 @@
 import { Component, signal, computed, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ProductService, Product } from '../../services/product.service';
-
-export interface ProductVariant {
-  id: string;
-  label: string;
-  description: string;
-  price: number;
-  originalPrice?: number;
-  available: boolean;
-}
+import { CartService } from '../../services/cart.service';
 
 export interface ProductImage {
   url: string;
@@ -22,83 +14,38 @@ export interface ProductImage {
   templateUrl: './product-details.html',
   styleUrl: './product-details.css'
 })
-
 export class ProductDetails implements OnInit {
 
-  /* ── Product Data from API ── */
+  /* ── Dati Prodotto ── */
   product = signal<Product | null>(null);
   loading = signal<boolean>(true);
   error = signal<string | null>(null);
   suggestedProducts = signal<Product[]>([]);
 
-/* ── Immagini ── */
-images = computed<ProductImage[]>(() => {
-  const p = this.product();
-  if (p && p.images && p.images.length > 0) {
-    return p.images.map(img => ({
-      url: img.link, // 'link' è il nome della colonna nel tuo DB
-      alt: p.name
-    }));
-  }
-  // Immagine di fallback se il DB è vuoto per quel prodotto
-  return [{ url: 'https://via.placeholder.com/600', alt: 'No image' }];
-});
-
-
+  /* ── Gestione Immagini ── */
+  images = computed<ProductImage[]>(() => {
+    const p = this.product();
+    if (p && p.images && p.images.length > 0) {
+      return p.images.map(img => ({
+        url: img.link,
+        alt: p.name
+      }));
+    }
+    return [{ url: 'assets/placeholder.png', alt: 'No image available' }];
+  });
 
   activeImageIndex = signal(0);
 
-  /* ── Varianti ── */
-  variants: ProductVariant[] = [
-    {
-      id: 's',
-      label: 'Vaso Ø 12 cm',
-      description: 'Altezza ~40 cm',
-      price: 12.90,
-      available: true
-    },
-    {
-      id: 'm',
-      label: 'Vaso Ø 17 cm',
-      description: 'Altezza ~65 cm',
-      price: 22.90,
-      originalPrice: 27.90,
-      available: true
-    },
-    {
-      id: 'l',
-      label: 'Vaso Ø 21 cm',
-      description: 'Altezza ~95 cm',
-      price: 38.90,
-      available: true
-    },
-    {
-      id: 'xl',
-      label: 'Vaso Ø 27 cm',
-      description: 'Altezza ~130 cm',
-      price: 64.90,
-      available: false
-    }
-  ];
-
-  selectedVariant = signal<ProductVariant>(this.variants[1]);
+  /* ── Stato UI ── */
   quantity = signal(1);
   addedToCart = signal(false);
   wishlistActive = signal(false);
 
-  /* ── Computed ── */
-  currentPrice = computed(() => this.selectedVariant().price);
-  originalPrice = computed(() => this.selectedVariant().originalPrice);
-  discount = computed(() => {
-    const orig = this.originalPrice();
-    if (!orig) return null;
-    return Math.round((1 - this.currentPrice() / orig) * 100);
-  });
-
   constructor(
     private activatedRoute: ActivatedRoute,
     private router: Router,
-    private productService: ProductService
+    private productService: ProductService,
+    public cartService: CartService 
   ) {}
 
   ngOnInit(): void {
@@ -107,29 +54,30 @@ images = computed<ProductImage[]>(() => {
       if (productId) {
         this.loadProduct(parseInt(productId, 10));
       } else {
-        this.error.set('Invalid product ID');
+        this.error.set('ID prodotto non valido');
         this.loading.set(false);
       }
     });
   }
 
-loadProduct(productId: number): void {
-  this.loading.set(true);
-  this.error.set(null);
-  this.activeImageIndex.set(0); // Reset alla prima immagine quando cambi prodotto
+  loadProduct(productId: number): void {
+    this.loading.set(true);
+    this.error.set(null);
+    this.activeImageIndex.set(0); 
+    this.quantity.set(1); // Reset quantità al cambio prodotto
 
-  this.productService.getProductById(productId).subscribe({
-    next: (product) => {
-      this.product.set(product);
-      this.loading.set(false);
-      this.loadSuggestedProducts(product.subcategoryId, product.id);
-    },
-    error: (err) => {
-      this.error.set('Failed to load product details');
-      this.loading.set(false);
-    }
-  });
-}
+    this.productService.getProductById(productId).subscribe({
+      next: (product) => {
+        this.product.set(product);
+        this.loading.set(false);
+        this.loadSuggestedProducts(product.subcategoryId, product.id);
+      },
+      error: (err) => {
+        this.error.set('Impossibile caricare i dettagli del prodotto');
+        this.loading.set(false);
+      }
+    });
+  }
 
   loadSuggestedProducts(subcategoryId: number, currentProductId: number): void {
     this.productService.getProductsBySubcategory(subcategoryId).subscribe({
@@ -139,43 +87,57 @@ loadProduct(productId: number): void {
           .slice(0, 4);
         this.suggestedProducts.set(filtered);
       },
-      error: (err) => {
-        console.error('Error loading suggested products:', err);
-      }
+      error: (err) => console.error('Errore suggeriti:', err)
     });
   }
 
-  /* ── Metodi ── */
   selectImage(index: number): void {
     this.activeImageIndex.set(index);
   }
 
-  selectVariant(variant: ProductVariant): void {
-    if (variant.available) {
-      this.selectedVariant.set(variant);
-    }
-  }
-
+  /* ── Gestione Quantità e Stock ── */
   decreaseQty(): void {
     if (this.quantity() > 1) this.quantity.update(q => q - 1);
   }
 
   increaseQty(): void {
-    this.quantity.update(q => q + 1);
+    const stockAvailable = this.product()?.stock || 0;
+    if (this.quantity() < stockAvailable) {
+      this.quantity.update(q => q + 1);
+    }
   }
 
   setQty(event: Event): void {
     const val = parseInt((event.target as HTMLInputElement).value, 10);
-    if (!isNaN(val) && val >= 1) this.quantity.set(val);
+    const stockAvailable = this.product()?.stock || 0;
+    
+    if (!isNaN(val) && val >= 1) {
+      this.quantity.set(val > stockAvailable ? stockAvailable : val);
+    }
   }
 
+  /* ── LOGICA CORE: Aggiunta al carrello senza varianti ── */
   addToCart(): void {
-    if (!this.selectedVariant().available) return;
-    this.addedToCart.set(true);
-    setTimeout(() => this.addedToCart.set(false), 2200);
-  }
+    const p = this.product();
+    if (!p || p.stock <= 0) return;
 
-  toggleWishlist(): void {
-    this.wishlistActive.update(v => !v);
+    // Passiamo i dati direttamente dal prodotto caricato dal DB
+    this.cartService.addItem(
+      p.id, 
+      this.quantity(), 
+      p.price // <--- Prezzo diretto dal prodotto
+    ).subscribe({
+      next: () => {
+        this.addedToCart.set(true);
+        
+        // Scaliamo lo stock locale per feedback immediato
+        this.product.update(prod => prod ? { ...prod, stock: prod.stock - this.quantity() } : null);
+
+        setTimeout(() => this.addedToCart.set(false), 2000);
+      },
+      error: (err) => {
+        console.error("Errore durante l'invio a Spring Boot", err);
+      }
+    });
   }
 }

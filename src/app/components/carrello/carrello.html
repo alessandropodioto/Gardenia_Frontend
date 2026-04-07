@@ -2,41 +2,48 @@
   
   <div class="cart-header">
     <h2>Your Cart</h2>
-    </div>
-
-  <div class="shipping-bar">
-    <p *ngIf="mancanoPerSpedizione > 0">
-      Add <strong>{{ mancanoPerSpedizione | currency:'EUR' }}</strong> for free shipping!
-    </p>
-    <p *ngIf="mancanoPerSpedizione <= 0"> You've unlocked <strong>free shipping!</strong></p>
-    <mat-progress-bar mode="determinate" [value]="percentualeSpedizione"></mat-progress-bar>
   </div>
 
   <div class="cart-items">
-    <div class="cart-item" *ngFor="let item of items">
-      <img [src]="item.immagine" [alt]="item.nome">
+    <div class="cart-item" *ngFor="let item of items; trackBy: trackById">
+      
+      <a [routerLink]="['/product', item.idProduct]">
+        <img [src]="item.immagine" [alt]="item.nome" class="product-img">
+      </a>
+      
       <div class="item-details">
-        <h4>{{ item.nome }}</h4>
-        <p>{{ item.info }}</p>
+        <a [routerLink]="['/product', item.idProduct]" style="text-decoration: none; color: inherit;">
+          <h4>{{ item.nome }}</h4>
+        </a>
+        
         <div class="quantity-controls">
-          <button mat-icon-button (click)="cambiaQuantita(item, -1)"><mat-icon>remove</mat-icon></button>
-          <span>{{ item.quantita }}</span>
-          <button mat-icon-button (click)="cambiaQuantita(item, 1)"><mat-icon>add</mat-icon></button>
+          <button mat-icon-button (click)="cambiaQuantita(item, -1)">
+            <mat-icon>{{ item.amount > 1 ? 'remove' : 'delete_outline' }}</mat-icon>
+          </button>
+          
+          <span>{{ item.amount }}</span>
+          
+          <button mat-icon-button (click)="cambiaQuantita(item, 1)">
+            <mat-icon>add</mat-icon>
+          </button>
         </div>
       </div>
-      <div class="item-price">{{ (item.prezzo * item.quantita) | currency:'EUR' }}</div>
+      
+      <div class="item-price">
+        {{ item.price | currency:'EUR' }}
+      </div>
     </div>
   </div>
 
- <div class="cart-footer" *ngIf="items.length > 0">
-  <div class="subtotal">
-    <span>Subtotal:</span>
-    <span>{{ subtotal | currency:'EUR' }}</span>
+  <div class="cart-footer" *ngIf="items.length > 0">
+    <button mat-flat-button class="checkout-btn" routerLink="/pagamento">
+      Proceed to Checkout
+    </button>
   </div>
-  
-  <button mat-flat-button class="checkout-btn" routerLink="/pagamento">
-    Proceed to Checkout
-  </button>
-</div>
+
+  <div *ngIf="items.length === 0" style="text-align: center; margin-top: 50px;">
+    <p>Your cart is empty.</p>
+    <button mat-stroked-button routerLink="/home">Go back to shop</button>
+  </div>
 
 </div>
