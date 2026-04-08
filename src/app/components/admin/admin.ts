@@ -58,7 +58,9 @@ export class Admin implements OnInit, OnDestroy {
     this.cdr.markForCheck();
   }
 
-  // User Management Methods
+  // ==============================
+  // USER MANAGEMENT METHODS
+  // ==============================
   loadUsers(): void {
     this.error = null;
 
@@ -115,7 +117,9 @@ export class Admin implements OnInit, OnDestroy {
       });
   }
 
-  // Product Management Methods
+  // ==============================
+  // PRODUCT MANAGEMENT METHODS
+  // ==============================
   loadProducts(): void {
     this.error = null;
 
@@ -136,25 +140,53 @@ export class Admin implements OnInit, OnDestroy {
 
   openCreateProductDialog(): void {
     const dialogRef = this.dialog.open(ProductDialog, {
-      width: '500px',
-      data: {
-        product: null,
-        mode: 'create'
-      } as ProductDialogData,
+      width: '600px',
+      data: { mode: 'create', product: null } as ProductDialogData,
     });
 
     dialogRef.afterClosed()
       .pipe(takeUntil(this.destroy$))
       .subscribe(result => {
-        if (result) {
-          this.createProduct(result);
-        }
+        if (!result) return;
+
+        // Estraiamo i dati
+        const productToSave = result.productData; 
+        const imageFile = result.file; 
+
+        // Creazione prodotto
+        this.productService.create(productToSave)
+          .pipe(takeUntil(this.destroy$))
+          .subscribe({
+            next: (response: any) => {
+              // Se l'utente ha messo l'immagine, la carichiamo subito dopo!
+              if (imageFile && response && response.id) {
+                this.productService.uploadProductImage(imageFile, response.id)
+                  .pipe(takeUntil(this.destroy$))
+                  .subscribe({
+                    next: () => {
+                      this.loadProducts(); 
+                    },
+                    error: (err) => {
+                      console.error("Errore caricamento immagine", err);
+                      this.loadProducts(); 
+                    }
+                  });
+              } else {
+                this.loadProducts();
+              }
+            },
+            error: (err) => {
+              this.error = 'Error creating product';
+              this.cdr.markForCheck();
+              console.error("Errore durante la creazione del prodotto:", err);
+            }
+          });
       });
   }
 
   openEditProductDialog(product: Product): void {
     const dialogRef = this.dialog.open(ProductDialog, {
-      width: '500px',
+      width: '600px',
       data: {
         product: product,
         mode: 'edit'
@@ -164,8 +196,51 @@ export class Admin implements OnInit, OnDestroy {
     dialogRef.afterClosed()
       .pipe(takeUntil(this.destroy$))
       .subscribe(result => {
-        if (result) {
-          this.updateProduct(result);
+        if (!result) return;
+        
+        const productToUpdate = result.productData;
+        const newImageFile = result.file;
+        let imageIdToDelete = result.deletedImageId;
+
+        // TRUCCO MAGICO: Se hai caricato una foto nuova (il fiore), eliminiamo 
+        // quella vecchia in automatico per non creare doppioni nel Database!
+        if (newImageFile && product.images && product.images.length > 0 && !imageIdToDelete) {
+            const imgData: any = product.images[0];
+            imageIdToDelete = imgData.imageId || imgData.id;
+        }
+
+        // Se c'è un'immagine da eliminare, la eliminiamo prima di aggiornare il prodotto
+        if (imageIdToDelete) {
+           this.productService.deleteImage(imageIdToDelete)
+             .pipe(takeUntil(this.destroy$))
+             .subscribe({
+               next: () => this.updateProduct(productToUpdate, newImageFile),
+               error: () => this.updateProduct(productToUpdate, newImageFile) // Aggiorniamo comunque in caso di errore
+             });
+        } else {
+           // Se non hai toccato l'immagine, salva solo le modifiche al testo
+           this.updateProduct(productToUpdate, newImageFile);
+        }
+      });
+  }
+  updateProduct(product: Product, file: File | null = null): void {
+    this.productService.update(product)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: (updatedProduct: any) => {
+          // Se durante la modifica è stata caricata una nuova immagine, la salviamo
+          if (file && product && product.id) {
+             this.productService.uploadProductImage(file, product.id)
+               .pipe(takeUntil(this.destroy$))
+               .subscribe(() => this.loadProducts());
+          } else {
+             this.loadProducts();
+          }
+        },
+        error: (err) => {
+          this.error = 'Error updating product';
+          this.cdr.markForCheck();
+          console.error('Error updating product:', err);
         }
       });
   }
@@ -188,41 +263,6 @@ export class Admin implements OnInit, OnDestroy {
       .subscribe(result => {
         if (result === true) {
           this.deleteProduct(product.id);
-        }
-      });
-  }
-
-  createProduct(product: Product): void {
-    this.productService.create(product)
-      .pipe(takeUntil(this.destroy$))
-      .subscribe({
-        next: (newProduct) => {
-          this.products.push(newProduct);
-          this.cdr.markForCheck();
-        },
-        error: (err) => {
-          this.error = 'Error creating product';
-          this.cdr.markForCheck();
-          console.error('Error creating product:', err);
-        }
-      });
-  }
-
-  updateProduct(product: Product): void {
-    this.productService.update(product)
-      .pipe(takeUntil(this.destroy$))
-      .subscribe({
-        next: (updatedProduct) => {
-          const index = this.products.findIndex(p => p.id === updatedProduct.id);
-          if (index !== -1) {
-            this.products[index] = updatedProduct;
-          }
-          this.cdr.markForCheck();
-        },
-        error: (err) => {
-          this.error = 'Error updating product';
-          this.cdr.markForCheck();
-          console.error('Error updating product:', err);
         }
       });
   }

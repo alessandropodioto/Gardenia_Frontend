@@ -24,17 +24,18 @@ export class ProductDetails implements OnInit {
   error = signal<string | null>(null);
   suggestedProducts = signal<Product[]>([]);
 
-  /* ── Image Management ── */
-  images = computed<ProductImage[]>(() => {
-    const p = this.product();
-    if (p && p.images && p.images.length > 0) {
-      return p.images.map(img => ({
-        url: img.link,
-        alt: p.name
-      }));
-    }
-    return [{ url: 'assets/placeholder.png', alt: 'No image available' }];
-  });
+/* ── Immagini ── */
+images = computed<ProductImage[]>(() => {
+  const p = this.product();
+  if (p && p.images && p.images.length > 0) {
+    return p.images.map(img => ({
+      url: img.link.startsWith('http') ? img.link : 'http://localhost:8080/rest/image/file/' + img.link,
+      alt: p.name
+    }));
+  }
+  return [{ url: 'assets/no-image.png', alt: 'Nessuna immagine' }];
+});
+
 
   activeImageIndex = signal(0);
 

@@ -99,9 +99,11 @@
     @for (p of suggestedProducts(); track p.id) {
     <a class="suggestion-card" [routerLink]="['/product', p.id]">
       <div class="suggestion-img-wrap">
-        <img [src]="(p.images && p.images.length > 0) ? p.images[0].link : 'assets/placeholder.png'" 
-             [alt]="p.name" 
-             loading="lazy" />      
+        <img [src]="(p.images && p.images.length > 0) ? 
+           (p.images[0].link.startsWith('http') ? p.images[0].link : 'http://localhost:8080/uploads/' + p.images[0].link) 
+           : '/no_image.png'" 
+     [alt]="p.name" 
+     loading="lazy" />    
       </div>
       <div class="suggestion-info">
         <p class="suggestion-name">{{ p.name }}</p>
