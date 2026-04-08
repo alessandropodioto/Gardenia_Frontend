@@ -31,77 +31,90 @@ export interface LoginResponse {
 })
 export class AuthService {
   private apiUrl = 'http://localhost:8080/rest/user';
-  private authState = new BehaviorSubject<any>(null);
+  
+  // Inizializziamo authState con i dati presenti nel localStorage (se esistono)
+  private authState = new BehaviorSubject<any>(this.getUserData());
 
   constructor(private http: HttpClient) {}
 
   /**
-   * Get authentication state as Observable
-   * @returns Observable with current authentication state
+   * Controlla se l'utente è loggato (usato nel template HTML e TS)
+   */
+  isLoggedIn(): boolean {
+    return !!this.getUserData();
+  }
+
+  /**
+   * Ritorna lo stato di autenticazione come Observable
    */
   getAuthState(): Observable<any> {
     return this.authState.asObservable();
   }
 
   /**
-   * Emit authentication state change
-   * @param userData User data or null for logout
+   * Emette un cambiamento nello stato di autenticazione
    */
   emitAuthState(userData: any): void {
     this.authState.next(userData);
   }
 
   /**
-   * Login user with userName and password
-   * @param loginData Login credentials
-   * @returns Observable with authentication response
+   * Login utente
    */
   login(loginData: LoginData): Observable<LoginResponse> {
     const endpoint = `${this.apiUrl}/login`;
-
-    return this.http.post<LoginResponse>(endpoint, loginData).pipe(catchError(this.handleError));
+    return this.http.post<LoginResponse>(endpoint, loginData).pipe(
+      catchError(this.handleError)
+    );
   }
 
   /**
-   * Register new user with all required fields
-   * @param registerData User registration data
-   * @returns Observable with registration response
+   * Registrazione nuovo utente
    */
   register(registerData: RegisterData): Observable<AuthResponse> {
     const endpoint = `${this.apiUrl}/register`;
-
-    return this.http.post<AuthResponse>(endpoint, registerData).pipe(catchError(this.handleError));
+    return this.http.post<AuthResponse>(endpoint, registerData).pipe(
+      catchError(this.handleError)
+    );
   }
 
+  /**
+   * Logout: cancella i dati e notifica lo stato null
+   */
   logout(): void {
     localStorage.removeItem('user_data');
     this.emitAuthState(null);
   }
 
+  /**
+   * Salva i dati utente nel localStorage e aggiorna lo stato
+   */
   setUserData(userData: any): void {
     localStorage.setItem('user_data', JSON.stringify(userData));
     this.emitAuthState(userData);
   }
 
+  /**
+   * Recupera i dati dal localStorage
+   */
   getUserData(): any {
-    const userData = localStorage.getItem('user_data');
-    return userData ? JSON.parse(userData) : null;
+    if (typeof window !== 'undefined') {
+      const userData = localStorage.getItem('user_data');
+      return userData ? JSON.parse(userData) : null;
+    }
+    return null;
   }
 
   /**
-   * Handle HTTP errors
-   * @param error Error response
-   * @returns Observable with error message
+   * Gestione errori HTTP
    */
   private handleError(error: any): Observable<never> {
     let errorMessage = 'An error occurred';
-
     if (error.error instanceof ErrorEvent) {
       errorMessage = `Error: ${error.error.message}`;
     } else {
       errorMessage = `Error Code: ${error.status}\nMessage: ${error.message}`;
     }
-
     console.error(errorMessage);
     return throwError(() => new Error(errorMessage));
   }

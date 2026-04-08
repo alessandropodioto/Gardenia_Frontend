@@ -1,7 +1,8 @@
-import { Component, signal, computed, OnInit } from '@angular/core';
+import { Component, signal, computed, OnInit, ViewChild, ElementRef } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ProductService, Product } from '../../services/product.service';
 import { CartService } from '../../services/cart.service';
+import { AuthService } from '../../services/auth.service';
 
 export interface ProductImage {
   url: string;
@@ -15,8 +16,9 @@ export interface ProductImage {
   styleUrl: './product-details.css'
 })
 export class ProductDetails implements OnInit {
+  @ViewChild('authDialog') authDialog!: ElementRef<HTMLDialogElement>;
 
-  /* ── Dati Prodotto ── */
+  /* ── Product Data ── */
   product = signal<Product | null>(null);
   loading = signal<boolean>(true);
   error = signal<string | null>(null);
@@ -37,7 +39,7 @@ images = computed<ProductImage[]>(() => {
 
   activeImageIndex = signal(0);
 
-  /* ── Stato UI ── */
+  /* ── UI State ── */
   quantity = signal(1);
   addedToCart = signal(false);
   wishlistActive = signal(false);
@@ -46,7 +48,8 @@ images = computed<ProductImage[]>(() => {
     private activatedRoute: ActivatedRoute,
     private router: Router,
     private productService: ProductService,
-    public cartService: CartService 
+    public cartService: CartService,
+    public authService: AuthService
   ) {}
 
   ngOnInit(): void {
@@ -55,7 +58,7 @@ images = computed<ProductImage[]>(() => {
       if (productId) {
         this.loadProduct(parseInt(productId, 10));
       } else {
-        this.error.set('ID prodotto non valido');
+        this.error.set('Invalid product ID');
         this.loading.set(false);
       }
     });
@@ -65,7 +68,7 @@ images = computed<ProductImage[]>(() => {
     this.loading.set(true);
     this.error.set(null);
     this.activeImageIndex.set(0); 
-    this.quantity.set(1); // Reset quantità al cambio prodotto
+    this.quantity.set(1); 
 
     this.productService.getProductById(productId).subscribe({
       next: (product) => {
@@ -73,8 +76,8 @@ images = computed<ProductImage[]>(() => {
         this.loading.set(false);
         this.loadSuggestedProducts(product.subcategoryId, product.id);
       },
-      error: (err) => {
-        this.error.set('Impossibile caricare i dettagli del prodotto');
+      error: () => {
+        this.error.set('Unable to load product details');
         this.loading.set(false);
       }
     });
@@ -88,7 +91,7 @@ images = computed<ProductImage[]>(() => {
           .slice(0, 4);
         this.suggestedProducts.set(filtered);
       },
-      error: (err) => console.error('Errore suggeriti:', err)
+      error: (err) => console.error('Suggestions error:', err)
     });
   }
 
@@ -96,49 +99,66 @@ images = computed<ProductImage[]>(() => {
     this.activeImageIndex.set(index);
   }
 
-  /* ── Gestione Quantità e Stock ── */
+  /* ── Quantity & Stock Management ── */
   decreaseQty(): void {
-    if (this.quantity() > 1) this.quantity.update(q => q - 1);
+    if (this.quantity() > 1) this.quantity.update(q => q - 0);
   }
 
   increaseQty(): void {
     const stockAvailable = this.product()?.stock || 0;
-    if (this.quantity() < stockAvailable) {
+    const currentQty = this.quantity();
+    if (currentQty < 10 && currentQty < stockAvailable) {
       this.quantity.update(q => q + 1);
     }
   }
 
   setQty(event: Event): void {
-    const val = parseInt((event.target as HTMLInputElement).value, 10);
+    const input = event.target as HTMLInputElement;
+    let val = parseInt(input.value, 10);
     const stockAvailable = this.product()?.stock || 0;
-    
-    if (!isNaN(val) && val >= 1) {
-      this.quantity.set(val > stockAvailable ? stockAvailable : val);
-    }
+    const maxAllowed = Math.min(10, stockAvailable);
+
+    if (isNaN(val) || val < 1) val = 1;
+    else if (val > maxAllowed) val = maxAllowed;
+
+    this.quantity.set(val);
+    input.value = val.toString();
   }
 
-  /* ── LOGICA CORE: Aggiunta al carrello senza varianti ── */
-  addToCart(): void {
-    const p = this.product();
-    if (!p || p.stock <= 0) return;
+  /* ── Dialog Management ── */
+  goTo(path: string): void {
+    this.closeDialog();
+    this.router.navigate([path]);
+  }
 
-    // Passiamo i dati direttamente dal prodotto caricato dal DB
-    this.cartService.addItem(
-      p.id, 
-      this.quantity(), 
-      p.price // <--- Prezzo diretto dal prodotto
-    ).subscribe({
+  closeDialog(): void {
+    this.authDialog.nativeElement.close();
+  }
+
+  /* ── Add to Cart Logic ── */
+  addToCart(): void {
+    if (!this.authService.isLoggedIn()) {
+      this.authDialog.nativeElement.showModal();
+      return;
+    }
+
+    const p = this.product();
+    const qty = this.quantity();
+    
+    if (!p || p.stock <= 0) return;
+    if (qty > p.stock || qty > 10) return;
+
+    this.cartService.addItem(p.id, qty, p.price).subscribe({
       next: () => {
         this.addedToCart.set(true);
+        this.product.update(prod => prod ? { ...prod, stock: prod.stock - qty } : null);
         
-        // Scaliamo lo stock locale per feedback immediato
-        this.product.update(prod => prod ? { ...prod, stock: prod.stock - this.quantity() } : null);
+        const newStock = (p.stock - qty);
+        if (this.quantity() > newStock) this.quantity.set(newStock > 0 ? newStock : 0);
 
         setTimeout(() => this.addedToCart.set(false), 2000);
       },
-      error: (err) => {
-        console.error("Errore durante l'invio a Spring Boot", err);
-      }
+      error: (err) => console.error("Cart error", err)
     });
   }
 }
