@@ -1,4 +1,4 @@
-import { Component, Inject, OnInit } from '@angular/core';
+import { Component, Inject, OnInit, ChangeDetectorRef } from '@angular/core'; // AGGIUNTO ChangeDetectorRef QUI
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Product } from '../../services/product.service';
@@ -23,11 +23,16 @@ export class ProductDialog implements OnInit {
   subcategories: Subcategory[] = [];
   loadingSubcategories = false;
 
+  selectedFile: File | null = null;
+  fileName: string = '';
+  imagePreview: string | null = null;
+  imageToDeleteId: number | null = null;
   constructor(
     public dialogRef: MatDialogRef<ProductDialog>,
     @Inject(MAT_DIALOG_DATA) public data: ProductDialogData,
     private fb: FormBuilder,
-    private subcategoryService: SubcategoryService
+    private subcategoryService: SubcategoryService,
+    private cdr: ChangeDetectorRef // AGGIUNTO QUI NEL COSTRUTTORE
   ) {
     this.mode = data.mode;
     this.isEditMode = data.mode === 'edit';
@@ -46,60 +51,90 @@ export class ProductDialog implements OnInit {
 
   ngOnInit(): void {
     this.loadSubcategories();
+
+    if (this.isEditMode && this.data.product?.images && this.data.product.images.length > 0) {
+        const savedFileName = this.data.product.images[0].link;
+        this.imagePreview = 'http://localhost:8080/uploads/' + savedFileName; 
+    }
   }
 
+ // 1. MODIFICA QUESTA FUNZIONE PER RISOLVERE L'ERRORE ROSSO
   loadSubcategories(): void {
-    this.loadingSubcategories = true;
-    this.subcategoryService.getAllSubcategories()
-      .subscribe({
+    // Il setTimeout "calma" Angular e gli dà il tempo di aggiornare la grafica
+    setTimeout(() => {
+      this.loadingSubcategories = true;
+      this.subcategoryService.getAllSubcategories().subscribe({
         next: (subcategories) => {
           this.subcategories = subcategories;
           this.loadingSubcategories = false;
-          // If editing and subcategoryId is set, ensure it's valid
-          if (this.isEditMode && this.data.product?.subcategoryId) {
-            const exists = subcategories.find(s => s.id === this.data.product!.subcategoryId);
-            if (!exists) {
-              // If the current subcategoryId is not in the list, the API might not have a list endpoint
-              // In that case, we'll just keep the ID and let the select show empty
-            }
-          }
+          this.cdr.detectChanges(); // Diciamo ad Angular di aggiornarsi
         },
         error: (err) => {
           console.error('Error loading subcategories:', err);
           this.loadingSubcategories = false;
+          this.cdr.detectChanges();
         }
       });
+    });
+  }
+
+  // 2. AGGIUNGI QUESTA NUOVA FUNZIONE (sotto a onFileSelected)
+  removeImage(): void {
+    this.selectedFile = null;
+    this.fileName = '';
+    this.imagePreview = null;
+    
+    // Salviamo l'ID dell'immagine nel DB (usiamo 'any' per evitare problemi con i nomi del DTO Java)
+    if (this.isEditMode && this.data.product?.images && this.data.product.images.length > 0) {
+      const imgData: any = this.data.product.images[0];
+      this.imageToDeleteId = imgData.imageId || imgData.id; 
+    }
+    
+    this.cdr.detectChanges();
+  }
+
+  onFileSelected(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    if (input.files && input.files.length > 0) {
+      this.selectedFile = input.files[0];
+      this.fileName = this.selectedFile.name;
+
+      const reader = new FileReader();
+      reader.onload = () => {
+        this.imagePreview = reader.result as string;
+        
+        // AGGIUNGI QUESTA RIGA PER RISOLVERE L'ERRORE ROSSO
+        this.cdr.detectChanges(); 
+      };
+      reader.readAsDataURL(this.selectedFile);
+    }
   }
 
   onConfirm(): void {
     if (this.productForm.valid) {
-      this.dialogRef.close(this.productForm.value);
+      // Includiamo l'ID del prodotto nei dati del form
+      const finalProductData = {
+         ...this.productForm.value,
+         id: this.data.product?.id
+      };
+
+      this.dialogRef.close({
+        productData: finalProductData,
+        file: this.selectedFile,
+        deletedImageId: this.imageToDeleteId // <-- Passiamo l'ID da cancellare ad admin.ts!
+      });
     } else {
       this.productForm.markAllAsTouched();
     }
-  }
-
+}
   onCancel(): void {
     this.dialogRef.close(false);
   }
 
-  get name() {
-    return this.productForm.get('name');
-  }
 
-  get description() {
-    return this.productForm.get('description');
-  }
-
-  get price() {
-    return this.productForm.get('price');
-  }
-
-  get stock() {
-    return this.productForm.get('stock');
-  }
-
-  get subcategoryId() {
-    return this.productForm.get('subcategoryId');
-  }
+  get name() { return this.productForm.get('name'); }
+  get description() { return this.productForm.get('description'); }
+  get price() { return this.productForm.get('price'); }
+  get stock() { return this.productForm.get('stock'); }
+  get subcategoryId() { return this.productForm.get('subcategoryId'); }
 }

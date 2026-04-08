@@ -1,6 +1,5 @@
 <div class="home-container">
 
-  <!-- Welcome Banner -->
   @if (isHome()) {
   <div class="banner-wrapper">
     <div class="banner-container">
@@ -12,7 +11,6 @@
   </div>
   }
 
-  <!-- Products Section -->
   <section class="products-section">
     <div class="products-container">
       @if (loading()) {
@@ -31,13 +29,15 @@
         <div class="products-grid">
           @for (product of products(); track product.id) {
             <div class="product-card">
+              
               <div class="product-image" (click)="navigateToProductDetails(product.id)">
                 <img
-                  [src]="product?.images?.[0]?.link || 'assets/placeholder.png'"
+                  [src]="getImageUrl(product)"
                   alt="{{ product.name }}"
                   class="card-image"
                 />
               </div>
+              
               <div class="product-info">
                 <h3 class="product-name" (click)="navigateToProductDetails(product.id)">{{ product.name }}</h3>
                 <p class="product-price">€{{ product.price.toFixed(2) }}</p>
