@@ -418,3 +418,66 @@ input[type='number'] {
 }
 
 .error-container { color: var(--c-sale); font-weight: 600; }
+
+/* ─────────────────────────────────────────────
+    CUSTOM ALERT (TOAST)
+───────────────────────────────────────────── */
+.custom-alert {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  z-index: 10000;
+  visibility: hidden;
+  opacity: 0;
+  transform: translateX(50px);
+  transition: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+}
+
+.custom-alert.active {
+  visibility: visible;
+  opacity: 1;
+  transform: translateX(0);
+}
+
+.alert-body {
+  background: var(--c-white);
+  border-left: 5px solid var(--c-green);
+  box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  padding: 16px 20px;
+  min-width: 320px;
+  max-width: 450px;
+  gap: 15px;
+}
+
+.alert-icon {
+  color: var(--c-green);
+  width: 24px;
+  height: 24px;
+  flex-shrink: 0;
+}
+
+.alert-text p {
+  margin: 0;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--c-text);
+  line-height: 1.4;
+}
+
+.alert-close {
+  background: none;
+  border: none;
+  font-size: 18px;
+  color: #ccc;
+  margin-left: auto;
+  padding-left: 10px;
+  cursor: pointer;
+  transition: color 0.2s;
+}
+
+.alert-close:hover {
+  color: var(--c-sale);
+}
