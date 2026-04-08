@@ -33,13 +33,34 @@
 
     <mat-form-field appearance="outline" class="full-width">
       <mat-label>Subcategory</mat-label>
-      <mat-select formControlName="subcategoryId" [disabled]="loadingSubcategories">
+      <mat-select formControlName="subcategoryId">
         <mat-option *ngFor="let sub of subcategories" [value]="sub.id">
           {{ sub.subcategoryName }}
         </mat-option>
       </mat-select>
       <mat-error *ngIf="subcategoryId?.hasError('required')">Subcategory is required</mat-error>
     </mat-form-field>
+
+    <div class="image-section" style="margin-bottom: 25px; padding: 15px; border: 1px dashed #ccc; border-radius: 5px;">
+        <p style="margin-top: 0; margin-bottom: 10px; color: #555;"><strong>Immagine Prodotto</strong></p>
+        
+        <button mat-raised-button color="accent" type="button" (click)="fileInput.click()">
+            <mat-icon>upload</mat-icon> Scegli immagine
+        </button>
+        <span style="margin-left: 10px; font-style: italic; color: #777;">
+            {{ fileName || 'Nessun file selezionato' }}
+        </span>
+
+        <input #fileInput type="file" accept="image/*" style="display: none" (change)="onFileSelected($event)">
+
+        <div *ngIf="imagePreview" style="margin-top: 15px; text-align: center;">
+            <img [src]="imagePreview" alt="Anteprima" style="max-width: 200px; max-height: 200px; border-radius: 8px; box-shadow: 0px 4px 8px rgba(0,0,0,0.2);">
+            
+            <button mat-button color="warn" type="button" (click)="removeImage()" style="display: block; margin: 10px auto 0;">
+                <mat-icon>delete</mat-icon> Rimuovi Immagine
+            </button>
+        </div>
+    </div>
 
     <div class="dialog-actions">
       <button mat-button type="button" (click)="onCancel()">Cancel</button>

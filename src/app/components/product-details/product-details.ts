@@ -36,14 +36,15 @@ images = computed<ProductImage[]>(() => {
   const p = this.product();
   if (p && p.images && p.images.length > 0) {
     return p.images.map(img => ({
-      url: img.link, // 'link' è il nome della colonna nel tuo DB
+      // ...
+      url: img.link.startsWith('http') ? img.link : 'http://localhost:8080/rest/image/file/' + img.link,
+// ... 
       alt: p.name
     }));
   }
-  // Immagine di fallback se il DB è vuoto per quel prodotto
-  return [{ url: 'https://via.placeholder.com/600', alt: 'No image' }];
+  // Usa l'immagine Base64 qui!
+  return [{ url: 'assets/no-image.png', alt: 'Nessuna immagine' }];
 });
-
 
 
   activeImageIndex = signal(0);

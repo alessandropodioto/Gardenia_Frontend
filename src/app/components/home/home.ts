@@ -100,4 +100,20 @@ export class HomeComponent implements OnInit {
   navigateToProductDetails(productId: number): void {
     this.router.navigate(['/product', productId]);
   }
+  getImageUrl(product: any): string {
+    // 1. Se non ci sono immagini, restituisce un'immagine grigia in Base64 (non darà mai 404!)
+   if (!product || !product.images || product.images.length === 0) {
+   return 'assets/no-image.png'; 
+}
+    
+    // 2. Se c'è l'immagine, la carica dal tuo server
+    const link = product.images[0].link;
+    if (link.startsWith('http')) {
+      return link;
+    } else {
+      
+      return 'http://localhost:8080/rest/image/file/' + link;
+    }
+  }
+    
 }
