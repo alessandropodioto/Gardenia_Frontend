@@ -1,50 +1,46 @@
-import { Component } from '@angular/core';
-
-// Definiamo la struttura di un prodotto nel carrello
-interface CartItem {
-  id: number;
-  nome: string;
-  info: string;
-  prezzo: number;
-  quantita: number;
-  immagine: string;
-}
+import { Component, ViewChild, TemplateRef } from '@angular/core';
+import { CartService } from '../../services/cart.service';
+import { MatDialog } from '@angular/material/dialog';
 
 @Component({
   selector: 'app-carrello',
   standalone: false,
   templateUrl: './carrello.html',
-  styleUrls: ['./carrello.css']
+  styleUrl: './carrello.css'
 })
 export class CarrelloComponent {
-  
-  // Ecco la variabile 'items' che Angular non trovava!
-  items: CartItem[] = [
-    { id: 1, nome: 'Monstera Deliciosa', info: 'Vaso: 12cm', prezzo: 25.00, quantita: 1, immagine: 'https://via.placeholder.com/80' },
-    { id: 2, nome: 'Ficus Lyrata', info: 'Vaso: 15cm', prezzo: 35.00, quantita: 1, immagine: 'https://via.placeholder.com/80' }
-  ];
+  // Riferimento al template nel file HTML
+  @ViewChild('confirmDialog') confirmDialog!: TemplateRef<any>;
 
-  sogliaSpedizione = 50.00;
+  constructor(
+    private cartService: CartService,
+    private dialog: MatDialog
+  ) {}
 
-  // Ecco la variabile 'subtotal'
+  get items() {
+    return this.cartService.cartItems();
+  }
+
   get subtotal(): number {
-    return this.items.reduce((acc, item) => acc + (item.prezzo * item.quantita), 0);
+    return this.items.reduce((acc, item) => acc + (item.price * item.amount), 0);
   }
 
-  get mancanoPerSpedizione(): number {
-    const diff = this.sogliaSpedizione - this.subtotal;
-    return diff > 0 ? diff : 0;
-  }
+  cambiaQuantita(item: any, delta: number) {
+    const nuovaQty = item.amount + delta;
 
-  get percentualeSpedizione(): number {
-    return Math.min((this.subtotal / this.sogliaSpedizione) * 100, 100);
-  }
-
-  // Ecco la funzione 'cambiaQuantita' per i bottoni + e -
-  cambiaQuantita(item: CartItem, delta: number) {
-    item.quantita += delta;
-    if (item.quantita <= 0) {
-      this.items = this.items.filter(i => i.id !== item.id);
+    if (nuovaQty > 0) {
+      this.cartService.updateQuantity(item.id, nuovaQty, item.price).subscribe();
+    } else {
+      // APRE IL DIALOG UTILIZZANDO IL TEMPLATE INLINE
+      this.dialog.open(this.confirmDialog).afterClosed().subscribe(result => {
+        if (result === true) {
+          this.cartService.removeItem(item.id).subscribe();
+        }
+      });
     }
+  }
+
+  trackById(index: number, item: any): number {
+    return item.id;
   }
 }

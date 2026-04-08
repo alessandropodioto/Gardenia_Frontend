@@ -1,113 +1,101 @@
 <div class="product-wrap">
-  <!-- Loading State -->
   @if (loading()) {
     <div class="loading-container">
       <p>Loading product details...</p>
     </div>
   }
 
-  <!-- Error State -->
   @if (error()) {
     <div class="error-container">
       <p>{{ error() }}</p>
     </div>
   }
 
-  <!-- Product Content -->
   @if (!loading() && !error() && product()) {
 
-  <!-- ════════════════════════════════
-       COLONNA SINISTRA — GALLERIA
-       ════════════════════════════════ -->
- <div class="gallery-col">
-
-  <div class="thumbs-rail">
-    <button *ngFor="let img of images(); let i = index" 
-            class="thumb" 
-            [class.is-active]="i === activeImageIndex()"
-            (click)="selectImage(i)">
-      <img [src]="img.url" [alt]="img.alt" loading="lazy" />
-    </button>
-  </div>
-
-  <div class="main-img-box">
-    <img class="main-img" 
-         [src]="images()[activeImageIndex()].url" 
-         [alt]="images()[activeImageIndex()].alt" />
-
-    <div class="dots">
-      <button *ngFor="let img of images(); let i = index" 
-              class="dot" 
-              [class.is-active]="i === activeImageIndex()"
-              (click)="selectImage(i)"></button>
-    </div>
-  </div>
-
-</div>
-
-  <!-- ════════════════════════════════
-       COLONNA DESTRA — DETTAGLI
-       ════════════════════════════════ -->
-  <div class="info-col">
-
-    <!-- Titolo -->
-    <h1 class="product-title">{{ product()!.name }}</h1>
-
-    <!-- Prezzo -->
-    <div class="price-block">
-      <span class="price-original">€ {{ product()!.price.toFixed(2) }}</span>
-    </div>
-
-    <hr class="divider" />
-
-    <!-- Descrizione breve -->
-    <p class="short-desc">
-      {{ product()!.description }}
-    </p>
-
-    <hr class="divider" />
-
-    <div class="buy-row">
-
-      <div class="qty-box">
-        <button class="qty-btn" (click)="decreaseQty()" [disabled]="quantity() <= 1">−</button>
-        <input class="qty-input" type="number" min="1" [value]="quantity()" (change)="setQty($event)" />
-        <button class="qty-btn" (click)="increaseQty()">+</button>
+    <div class="gallery-col">
+      <div class="thumbs-rail">
+        <button *ngFor="let img of images(); let i = index" 
+                class="thumb" 
+                [class.is-active]="i === activeImageIndex()"
+                (click)="selectImage(i)">
+          <img [src]="img.url" [alt]="img.alt" loading="lazy" />
+        </button>
       </div>
 
-      <button class="cart-btn" (click)="addToCart()" [class.is-added]="addedToCart()"
-        [disabled]="!selectedVariant().available">
-        <svg *ngIf="!addedToCart()" class="cart-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-          stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <circle cx="9" cy="21" r="1" />
-          <circle cx="20" cy="21" r="1" />
-          <path d="M1 1h4l2.68 13.39A2 2 0 0 0 9.64 16h9.72a2 2 0 0 0 1.97-1.67L23 6H6" />
-        </svg>
-        <svg *ngIf="addedToCart()" class="cart-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-          stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-          <polyline points="20 6 9 17 4 12" />
-        </svg>
-        <span>{{ addedToCart() ? 'Added to cart!' : 'Add to cart' }}</span>
-      </button>
-    </div>
-              <!-- Lista con check -->
+      <div class="main-img-box">
+        <img class="main-img" 
+             [src]="images()[activeImageIndex()].url" 
+             [alt]="images()[activeImageIndex()].alt" />
 
-    <div class="checklist">
-      <ul class="feature-list">
-        <p><span>✓</span> Delivery throughout Italy within 24 hours </p>
-        <p><span>✓</span>  Plants in excellent health</p>
-        <p><span>✓</span> Biodegradable packaging materials</p>
-      </ul>
+        <div class="dots">
+          <button *ngFor="let img of images(); let i = index" 
+                  class="dot" 
+                  [class.is-active]="i === activeImageIndex()"
+                  (click)="selectImage(i)"></button>
+        </div>
+      </div>
     </div>
 
+    <div class="info-col">
 
-  </div><!-- /info-col -->
+      <h1 class="product-title">{{ product()!.name }}</h1>
 
-  } <!-- End of product content conditional -->
+      <div class="price-block">
+        <span class="price-original">€ {{ product()!.price.toFixed(2) }}</span>
+      </div>
 
-</div><!-- /product-wrap -->
+      <hr class="divider" />
 
-@if (suggestedProducts().length > 0) {
+      <p class="short-desc">
+        {{ product()!.description }}
+      </p>
+
+      <hr class="divider" />
+
+      <div class="buy-row">
+        <div class="qty-box">
+          <button class="qty-btn" (click)="decreaseQty()" [disabled]="quantity() <= 1">−</button>
+          <input class="qty-input" type="number" min="1" [value]="quantity()" (change)="setQty($event)" />
+          <button class="qty-btn" (click)="increaseQty()">+</button>
+        </div>
+
+        <button class="cart-btn" (click)="addToCart()" [class.is-added]="addedToCart()"
+          [disabled]="product()!.stock <= 0">
+          
+          <ng-container *ngIf="!addedToCart()">
+            <svg class="cart-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+              stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="9" cy="21" r="1" />
+              <circle cx="20" cy="21" r="1" />
+              <path d="M1 1h4l2.68 13.39A2 2 0 0 0 9.64 16h9.72a2 2 0 0 0 1.97-1.67L23 6H6" />
+            </svg>
+            <span>Add to cart</span>
+          </ng-container>
+
+          <ng-container *ngIf="addedToCart()">
+            <svg class="cart-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+              stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="20 6 9 17 4 12" />
+            </svg>
+            <span>Added to cart!</span>
+          </ng-container>
+        </button>
+      </div>
+
+      <p class="stock-status" [style.color]="product()!.stock > 0 ? '#2ecc71' : '#e74c3c'">
+        {{ product()!.stock > 0 ? 'Available: ' + product()!.stock : 'Out of stock' }}
+      </p>
+
+      <div class="checklist">
+        <ul class="feature-list">
+          <li><span>✓</span> Delivery throughout Italy within 24 hours</li>
+          <li><span>✓</span> Plants in excellent health</li>
+          <li><span>✓</span> Biodegradable packaging materials</li>
+        </ul>
+      </div>
+
+    </div>} </div>@if (suggestedProducts().length > 0) {
 <section class="suggestions-section">
   <h2 class="suggestions-title">We also suggest...</h2>
   <div class="suggestions-grid">

@@ -4,7 +4,6 @@ import { NgIf } from '@angular/common';
 @Component({
   selector: 'app-admin-sidebar',
   standalone: true,
-  imports: [NgIf],
   templateUrl: './admin-sidebar.html',
   styleUrl: './admin-sidebar.css'
 })

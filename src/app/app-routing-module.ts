@@ -13,6 +13,7 @@ import { Address } from './components/address/address';
 import { Overview } from './components/overview/overview';
 import { Orders } from './components/orders/orders';
 import { OrderDetail } from './components/order-detail/order-detail';
+import { AboutUs } from './components/about-us/about-us';
 
 const routes: Routes = [
   { path: '', redirectTo: '/home', pathMatch: 'full' },
@@ -24,6 +25,7 @@ const routes: Routes = [
   { path: 'cart', component: CarrelloComponent },
   { path: 'admin', component: Admin, canActivate: [AdminGuard] },
   { path: 'pagamento', component: PagamentoComponent },
+  { path: 'about-us', component: AboutUs },
   {
     path: 'user',
     component: User,
