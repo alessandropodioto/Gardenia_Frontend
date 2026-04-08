@@ -55,8 +55,9 @@
         <div class="qty-box">
           <button class="qty-btn" (click)="decreaseQty()" [disabled]="quantity() <= 1">−</button>
           <input class="qty-input" type="number" [value]="quantity()" (change)="setQty($event)" />
-          <button class="qty-btn" (click)="increaseQty()" 
-                  [disabled]="quantity() >= 10 || quantity() >= (product()?.stock || 0)">+</button>
+          <button class="qty-btn" 
+        (click)="increaseQty()" 
+        [disabled]="quantity() >= 10 || quantity() >= (product()?.stock || 0)">+</button>
         </div>
 
         <button class="cart-btn" (click)="addToCart()" [class.is-added]="addedToCart()" [disabled]="product()?.stock! <= 0">

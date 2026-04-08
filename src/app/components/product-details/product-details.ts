@@ -101,7 +101,9 @@ images = computed<ProductImage[]>(() => {
 
   /* ── Quantity & Stock Management ── */
   decreaseQty(): void {
-    if (this.quantity() > 1) this.quantity.update(q => q - 0);
+    if (this.quantity() > 1) {
+      this.quantity.update(q => q - 1);
+    }
   }
 
   increaseQty(): void {
@@ -146,19 +148,22 @@ images = computed<ProductImage[]>(() => {
     const qty = this.quantity();
     
     if (!p || p.stock <= 0) return;
-    if (qty > p.stock || qty > 10) return;
+    if (qty > p.stock || qty > 10) {
+        alert("Not enough stock available or limit reached.");
+        return;
+      }
 
     this.cartService.addItem(p.id, qty, p.price).subscribe({
-      next: () => {
-        this.addedToCart.set(true);
-        this.product.update(prod => prod ? { ...prod, stock: prod.stock - qty } : null);
-        
-        const newStock = (p.stock - qty);
-        if (this.quantity() > newStock) this.quantity.set(newStock > 0 ? newStock : 0);
+    next: () => {
+      // Mostriamo solo l'animazione "Added!"
+      this.addedToCart.set(true);
+      
+      // NON scaliamo più lo stock qui. 
+      // Lo stock scenderà solo quando il database riceverà l'ordine finale.
 
-        setTimeout(() => this.addedToCart.set(false), 2000);
-      },
-      error: (err) => console.error("Cart error", err)
+      setTimeout(() => this.addedToCart.set(false), 2000);
+    },
+    error: (err) => console.error("Cart error", err)
     });
   }
 }
