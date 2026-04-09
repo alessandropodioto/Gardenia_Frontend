@@ -17,6 +17,7 @@ import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatDialogModule } from '@angular/material/dialog';
 import { MatTableModule } from '@angular/material/table';
 import { MatSelectModule } from '@angular/material/select';
+import { MatPaginatorModule } from '@angular/material/paginator';
 
 import { AppRoutingModule } from './app-routing-module';
 
@@ -82,6 +83,7 @@ import { AboutUs } from './components/about-us/about-us';
     MatDialogModule,
     MatTableModule,
     MatSelectModule,
+    MatPaginatorModule,
     Sidebar,
     AdminSidebar,
   ],

@@ -57,35 +57,27 @@
     </button>
   </div>
 
-  <div *ngIf="items.length === 0" class="empty-cart">
-    <img
-      src="https://cdn-icons-png.flaticon.com/512/11329/11329060.png"
-      alt="Empty Cart"
-      class="empty-cart-img"
-    />
-
-    <h3>Your cart feels a bit light!</h3>
-    <p>Looks like you hasn't added anything to your cart yet.</p>
-
-    <button mat-flat-button color="primary" class="go-shop-btn" routerLink="/home">
-      Go Shopping
-    </button>
-  </div>
+<div *ngIf="items.length === 0" class="empty-cart">
+  <img 
+    src="https://cdn-icons-png.flaticon.com/512/11329/11329060.png" 
+    alt="Empty Cart" 
+    class="empty-cart-img"
+  />
+  
+  <h3>Your cart feels a bit light!</h3>
+  <p>Looks like you hasn't added anything to your cart yet.</p>
+  
+  <button mat-flat-button color="primary" class="go-shop-btn" routerLink="/home">
+    Go Shopping
+  </button>
+</div>
 </div>
 
 <div class="custom-alert" [class.active]="showToast()">
   <div class="alert-body">
     <div class="alert-icon">
-      <svg
-        viewBox="0 0 24 24"
-        fill="none"
-        stroke="currentColor"
-        stroke-width="2"
-        style="width: 24px; height: 24px; color: #2ecc71"
-      >
-        <circle cx="12" cy="12" r="10" />
-        <line x1="12" y1="8" x2="12" y2="12" />
-        <line x1="12" y1="16" x2="12.01" y2="16" />
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 24px; height: 24px; color: #2ecc71">
+        <circle cx="12" cy="12" r="10" /><line x1="12" y1="8" x2="12" y2="12" /><line x1="12" y1="16" x2="12.01" y2="16" />
       </svg>
     </div>
     <div class="alert-text">

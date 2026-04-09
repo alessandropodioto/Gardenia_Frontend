@@ -279,3 +279,134 @@
     font-size: 16px;
   }
 }
+
+/* =================================================================
+   PAGINAZIONE GLASSMORPHISM (STILE GARDENIA)
+   ================================================================= */
+/* CONTAINER ESTERNO */
+.pagination-wrapper {
+  margin: 50px auto;
+  width: fit-content;
+  background: rgba(255, 255, 255, 0.6) !important;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.4);
+  border-radius: 50px;
+  padding: 12px 25px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.05);
+}
+
+/* FILA UNICA ORIZZONTALE */
+.pagination-row {
+  display: flex;
+  align-items: center;
+  gap: 8px; /* Spazio tra frecce e numeri */
+}
+
+/* STILE FRECCE (Material Icons) */
+.nav-arrow {
+  background: transparent;
+  border: none;
+  color: #035826;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 4px;
+  border-radius: 50%;
+  transition: all 0.2s ease;
+}
+
+.nav-arrow:disabled {
+  color: #bdc3c7;
+  cursor: not-allowed;
+  transform: scale(1) !important;
+}
+
+.nav-arrow:hover:not(:disabled) {
+  background-color: rgba(3, 88, 38, 0.05);
+  transform: scale(1.1);
+}
+
+.nav-arrow .material-icons {
+  font-size: 22px;
+}
+
+/* BLOCCO NUMERI */
+.page-numbers-row {
+  display: flex;
+  gap: 6px;
+  margin: 0 5px;
+}
+
+.page-num-btn {
+  background: white;
+  border: 1px solid #f0f0f0;
+  color: #576574;
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.page-num-btn:hover {
+  border-color: #035826;
+  color: #035826;
+}
+
+.page-num-btn.active {
+  background: #035826;
+  color: white;
+  border-color: #035826;
+  box-shadow: 0 4px 10px rgba(3, 88, 38, 0.2);
+}
+
+/* INFO TESTUALE INFERIORE */
+.pagination-info {
+  font-size: 10px;
+  color: #95a5a6;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1.2px;
+  opacity: 0.8;
+}
+
+.total-count {
+  font-weight: 400;
+  color: #bdc3c7;
+}
+
+.dots {
+  color: #bdc3c7;
+  padding: 0 5px;
+  font-weight: bold;
+  align-self: center;
+}
+
+/* Assicurati che la riga dei numeri non vada a capo su schermi piccoli */
+.page-numbers-row {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+}
+
+@media (max-width: 480px) {
+  .page-num-btn {
+    width: 30px; /* Più piccoli su mobile */
+    height: 30px;
+    font-size: 12px;
+  }
+  .pagination-row {
+    gap: 4px;
+  }
+}
