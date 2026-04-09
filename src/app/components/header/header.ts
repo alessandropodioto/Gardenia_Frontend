@@ -4,6 +4,7 @@ import { Router } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { CategoryService } from '../../services/category.service';
 import { SubcategoryService, Subcategory } from '../../services/subcategory.service';
+import { CartService } from '../../services/cart.service';
 
 @Component({
   selector: 'app-header',
@@ -35,7 +36,8 @@ export class HeaderComponent implements OnInit, OnDestroy {
     private authService: AuthService,
     private categoryService: CategoryService,
     private subcategoryService: SubcategoryService,
-    private router: Router
+    private router: Router,
+    public cartService: CartService
   ) {}
 
   ngOnInit(): void {

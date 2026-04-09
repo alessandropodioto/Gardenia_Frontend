@@ -1,4 +1,4 @@
-import { Injectable, signal } from '@angular/core';
+import { computed, Injectable, signal } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { tap } from 'rxjs/operators';
 import { Observable } from 'rxjs';
@@ -9,6 +9,10 @@ export class CartService {
   
   // Signal che contiene gli elementi nel carrello
   cartItems = signal<any[]>([]);
+
+  cartCount = computed(() => {
+    return this.cartItems().reduce((acc, item) => acc + item.amount, 0);
+  });
 
   constructor(private http: HttpClient) {
     this.loadCart();
