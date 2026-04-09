@@ -127,15 +127,15 @@
 
 .subtotal-amount {
   display: block;
-  font-size: 3.5rem;
+  font-size: 2.5rem;
   font-weight: 900;
   color: #2c3e50;
 }
 
 .checkout-btn {
-  width: 400px !important; 
-  height: 65px !important;
-  font-size: 1.2rem !important;
+  width: 250px !important; 
+  height: 30px !important;
+  font-size: 0.8rem !important;
   font-weight: 800 !important;
   background-color: #2ecc71 !important;
   color: white !important;
