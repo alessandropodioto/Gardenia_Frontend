@@ -33,7 +33,7 @@ export class CarrelloComponent {
    */
   cambiaQuantita(item: any, delta: number) {
     console.log('Dati elemento:', item); // <--- Guarda la console del browser (F12)
-  console.log('Stock disponibile:', item.productStock);
+    console.log('Stock disponibile:', item.productStock);
     const nuovaQty = item.amount + delta;
     const maxAvailable = item.productStock; // Assicurati che il backend lo invii
 
@@ -76,5 +76,19 @@ export class CarrelloComponent {
 
   trackById(index: number, item: any): number {
     return item.id;
+  }
+
+  rimuoviTutto(item: any) {
+    this.dialog
+      .open(this.confirmDialog)
+      .afterClosed()
+      .subscribe((result) => {
+        if (result === true) {
+          this.cartService.removeItem(item.id).subscribe({
+            next: () => this.notify('Item removed'),
+            error: () => this.notify('Error removing item'),
+          });
+        }
+      });
   }
 }

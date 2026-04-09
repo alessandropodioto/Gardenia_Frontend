@@ -30,30 +30,27 @@
   align-items: center;
 }
 
-/* Fix Immagine */
 .product-img {
   width: 110px;
   height: 110px;
   object-fit: cover;
   border-radius: 12px;
-  transition: transform 0.2s ease, opacity 0.2s ease;
+  transition: transform 0.2s ease;
 }
 
 .img-link:hover .product-img {
-  opacity: 0.85;
   transform: scale(1.02);
+  opacity: 0.9;
 }
 
-/* FIX HOVER TITOLO (Solo sulla scritta) */
 .item-details {
   flex: 1;
-  max-width: 500px;
 }
 
 .title-link {
   text-decoration: none !important;
   color: inherit !important;
-  display: inline-block; /* Fondamentale: il link stringe sul testo */
+  display: inline-block;
 }
 
 .title-link h4 {
@@ -68,30 +65,57 @@
   color: #2ecc71 !important;
 }
 
-/* CONTROLLI QUANTITÀ */
-.quantity-controls {
+/* CONTROLLI QUANTITÀ & ALLINEAMENTO LATERALE */
+.controls-wrapper {
   display: flex;
   align-items: center;
   gap: 15px;
-  user-select: none;
+  margin-top: 10px;
+}
+
+.quantity-controls {
+  display: flex;
+  align-items: center;
+  background: #f1f3f5;
+  border-radius: 30px;
+  padding: 2px 8px;
 }
 
 .amount-badge {
   font-weight: 800;
   font-size: 18px;
-  min-width: 25px;
+  min-width: 30px;
   text-align: center;
 }
 
+.low-stock-warning {
+  color: #e67e22;
+  font-size: 13px;
+  font-weight: 700;
+  white-space: nowrap;
+  animation: fadeInRight 0.3s ease-out;
+}
+
+/* PREZZO E CESTINO */
 .item-price {
   font-size: 24px;
   font-weight: 800;
   color: #2c3e50;
-  min-width: 140px;
+  margin-left: auto;
+  min-width: 120px;
   text-align: right;
 }
 
-/* FOOTER E TOTALE */
+.remove-all-btn {
+  color: #95a5a6 !important;
+  transition: color 0.2s;
+}
+
+.remove-all-btn:hover {
+  color: #e74c3c !important;
+}
+
+/* FOOTER E BOTTONE CHECKOUT */
 .cart-footer {
   display: flex;
   flex-direction: column;
@@ -101,74 +125,35 @@
   border-top: 3px solid #f8f9fa;
 }
 
-.subtotal-container {
-  text-align: right;
-  margin-bottom: 25px;
-}
-
-.subtotal-label {
-  display: block;
-  font-size: 1.1rem;
-  font-weight: 700;
-  color: #95a5a6;
-  text-transform: uppercase;
-  letter-spacing: 1.5px;
-  margin-bottom: 5px;
-}
-
 .subtotal-amount {
   display: block;
-  font-size: 4rem;
+  font-size: 3.5rem;
   font-weight: 900;
   color: #2c3e50;
-  line-height: 1;
 }
 
-/* BOTTONE CHECKOUT */
 .checkout-btn {
-  /* Larghezza fissa grande ma non eccessiva (950px era troppo) */
-  width: 450px !important; 
-  height: 75px !important;
-  font-size: 1.4rem !important;
+  width: 400px !important; 
+  height: 65px !important;
+  font-size: 1.2rem !important;
   font-weight: 800 !important;
   background-color: #2ecc71 !important;
   color: white !important;
-  border-radius: 50px !important; /* Arrotondato moderno */
+  border-radius: 50px !important;
   text-transform: uppercase;
-  letter-spacing: 1.5px;
-  box-shadow: 0 10px 20px rgba(46, 204, 113, 0.2);
-  transition: all 0.3s ease !important;
+  letter-spacing: 1px;
+  box-shadow: 0 8px 15px rgba(46, 204, 113, 0.2);
   border: none;
   cursor: pointer;
+  transition: all 0.3s ease !important;
 }
 
 .checkout-btn:hover {
   background-color: #27ae60 !important;
-  transform: scale(1.02);
-  box-shadow: 0 15px 25px rgba(39, 174, 96, 0.3);
+  transform: translateY(-2px);
 }
 
-/* STATO VUOTO */
-.empty-cart {
-  text-align: center;
-  padding: 80px 0;
-}
-
-.empty-icon {
-  font-size: 60px;
-  width: 60px;
-  height: 60px;
-  color: #dfe6e9;
-  margin-bottom: 20px;
-}
-
-/* Bottoni disabilitati quando lo stock è pieno */
-button[mat-icon-button][disabled] {
-  opacity: 0.3;
-  cursor: not-allowed;
-}
-
-/* Stile per la notifica Toast */
+/* TOAST NOTIFICA */
 .custom-alert {
   position: fixed;
   top: 30px;
@@ -188,49 +173,65 @@ button[mat-icon-button][disabled] {
 
 .alert-body {
   background: white;
-  border-left: 5px solid #2ecc71; /* Verde coerente col tuo checkout */
+  border-left: 5px solid #2ecc71;
   box-shadow: 0 10px 40px rgba(0,0,0,0.12);
   border-radius: 10px;
   display: flex;
   align-items: center;
   padding: 16px 24px;
-  min-width: 320px;
   gap: 15px;
 }
 
-/* Contenitore che tiene uniti i bottoni e la scritta */
-.controls-wrapper {
-  display: flex;
-  align-items: center; /* Allinea verticalmente al centro */
-  gap: 20px;           /* Spazio tra i bottoni e il messaggio */
-  margin-top: 10px;
+.close-toast {
+  background: none; border: none; color: #ccc; cursor: pointer; margin-left: auto;
 }
 
-.quantity-controls {
-  display: flex;
-  align-items: center;
-  background: #f8f9fa;
-  border-radius: 30px;
-  padding: 2px 8px;
+/* ANIMAZIONI E STATI */
+button[disabled] {
+  opacity: 0.3;
+  cursor: not-allowed;
 }
 
-/* Messaggio di errore a destra */
-.low-stock-warning {
-  color: #e67e22;      /* Arancione scuro/Ambra */
-  font-size: 13px;
-  font-weight: 700;
-  white-space: nowrap; /* Evita che la scritta vada a capo */
-  animation: fadeInRight 0.3s ease-out; /* Effetto comparsa fluida */
-}
-
-/* Opzionale: un piccolo effetto di entrata da destra */
 @keyframes fadeInRight {
-  from {
-    opacity: 0;
-    transform: translateX(10px);
-  }
-  to {
-    opacity: 1;
-    transform: translateX(0);
-  }
+  from { opacity: 0; transform: translateX(10px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+
+.empty-cart {
+  text-align: center;
+  padding: 60px 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 15px;
+}
+
+.empty-cart-img {
+  width: 250px; /* Regola la grandezza come preferisci */
+  height: auto;
+  margin-bottom: 20px;
+  opacity: 0.8; /* Un po' trasparente per un look più pulito */
+}
+
+.empty-cart h3 {
+  font-size: 24px;
+  font-weight: 700;
+  color: #2c3e50;
+  margin: 0;
+}
+
+.empty-cart p {
+  color: #95a5a6;
+  font-size: 16px;
+  margin-bottom: 20px;
+}
+
+.go-shop-btn {
+  padding: 0 40px !important;
+  height: 50px !important;
+  border-radius: 25px !important;
+  font-weight: 700 !important;
+  background-color: #2ecc71 !important;
+  color: white !important;
+  text-transform: uppercase;
 }
