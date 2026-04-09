@@ -1,0 +1,51 @@
+<div class="dialog-container">
+  <h2 class="dialog-title">{{ isEditMode ? 'Edit Address' : 'Add Address' }}</h2>
+
+  <form [formGroup]="addressForm" class="dialog-form">
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Street</mat-label>
+      <input matInput formControlName="street" placeholder="Enter street name" />
+      <mat-error *ngIf="street?.hasError('required')">Street is required</mat-error>
+      <mat-error *ngIf="street?.hasError('minlength')">Street must be at least 3 characters</mat-error>
+    </mat-form-field>
+
+    <div class="form-row">
+      <mat-form-field appearance="outline" class="half-width">
+        <mat-label>Number</mat-label>
+        <input matInput formControlName="number" placeholder="0" />
+        <mat-error *ngIf="number?.hasError('required')">Number is required</mat-error>
+        <mat-error *ngIf="number?.hasError('min')">Number must be greater than 0</mat-error>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="half-width">
+        <mat-label>City</mat-label>
+        <input matInput formControlName="city" placeholder="Enter city" />
+        <mat-error *ngIf="city?.hasError('required')">City is required</mat-error>
+        <mat-error *ngIf="city?.hasError('minlength')">City must be at least 2 characters</mat-error>
+      </mat-form-field>
+    </div>
+
+    <div class="form-row">
+      <mat-form-field appearance="outline" class="half-width">
+        <mat-label>Postal Code</mat-label>
+        <input matInput formControlName="postalCode" placeholder="Enter postal code" />
+        <mat-error *ngIf="postalCode?.hasError('required')">Postal code is required</mat-error>
+        <mat-error *ngIf="postalCode?.hasError('minlength')">Postal code must be at least 3 characters</mat-error>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="half-width">
+        <mat-label>Country</mat-label>
+        <input matInput formControlName="country" placeholder="Enter country" />
+        <mat-error *ngIf="country?.hasError('required')">Country is required</mat-error>
+        <mat-error *ngIf="country?.hasError('minlength')">Country must be at least 2 characters</mat-error>
+      </mat-form-field>
+    </div>
+
+    <div class="dialog-actions">
+      <button mat-raised-button color="warn" type="button" (click)="onCancel()">Cancel</button>
+      <button mat-raised-button color="accent" type="button" (click)="onConfirm()" [disabled]="addressForm.invalid" [ngClass]="{'save-button-valid': addressForm.valid}">
+        {{ isEditMode ? 'Save Changes' : 'Add Address' }}
+      </button>
+    </div>
+  </form>
+</div>

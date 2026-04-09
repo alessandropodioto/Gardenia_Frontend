@@ -1,0 +1,56 @@
+.dialog-container {
+  padding: 24px;
+  max-width: 500px;
+  min-width: 400px;
+}
+
+.dialog-title {
+  text-align: center;
+  font-size: 24px;
+  font-weight: 600;
+  color: #333;
+  margin: 0 0 24px 0;
+  padding: 0;
+}
+
+.dialog-form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.full-width {
+  width: 100%;
+}
+
+.form-row {
+  display: flex;
+  gap: 16px;
+}
+
+.half-width {
+  flex: 1;
+}
+
+.dialog-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  margin-top: 24px;
+  padding-top: 16px;
+  border-top: 1px solid #e0e0e0;
+}
+
+.dialog-actions button {
+  min-width: 100px;
+}
+
+.save-button-valid {
+  background-color: #4caf50 !important;
+  color: white !important;
+}
+
+.dialog-actions button[color="warn"] {
+  background-color: #f44336 !important;
+  color: white !important;
+}

@@ -2,7 +2,7 @@
   <h1 class="page-title">Address Book</h1>
   <p class="page-subtitle">This is your Address Book page, where you can view or modify your addresses.</p>
 
-  <button class="add-address-btn">
+  <button class="add-address-btn" (click)="openAddDialog()">
     <span class="plus-icon">+</span> Add address
   </button>
 
@@ -10,7 +10,7 @@
     <div class="address-card" *ngFor="let address of addresses">
       <div class="card-header">
         <div class="user-info">
-          <h3 class="user-name">Address</h3>
+          <h3 class="user-name">{{userFirstName}} {{userLastName}}</h3>
           <p class="address-details">
             {{address.street}} {{address.number}}<br>
             {{address.city}}<br>
@@ -21,14 +21,14 @@
       </div>
 
       <div class="card-actions">
-        <a href="#" class="action-link">Edit</a>
-        <a href="#" class="action-link">Remove</a>
+        <a href="#" class="action-link" (click)="openEditDialog(address); $event.preventDefault()">Edit</a>
+        <a href="#" class="action-link" (click)="openDeleteDialog(address); $event.preventDefault()">Remove</a>
         <a href="#" class="action-link secondary">Set as billing address</a>
       </div>
     </div>
   </div>
 
   <ng-template #noAddresses>
-    <p class="no-addresses-message">You don't have any saved addresses yet. <a href="#" class="add-link">Add your first address</a></p>
+    <p class="no-addresses-message">You don't have any saved addresses yet. <a href="#" class="add-link" (click)="openAddDialog(); $event.preventDefault()">Add your first address</a></p>
   </ng-template>
 </div>
