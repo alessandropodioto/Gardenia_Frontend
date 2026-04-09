@@ -36,7 +36,7 @@ import { ProductDialog } from './dialogs/product-dialog/product-dialog';
 import { PagamentoComponent } from './components/pagamento/pagamento';
 import { User } from './components/user/user';
 import { Sidebar } from './components/sidebar/sidebar';
-import { Address } from './components/address/address';
+import { AddressComponent } from './components/address/address';
 import { Overview } from './components/overview/overview';
 import { Orders } from './components/orders/orders';
 import { OrderDetail } from './components/order-detail/order-detail';
@@ -56,12 +56,12 @@ import { AboutUs } from './components/about-us/about-us';
     ProductDialog,
     PagamentoComponent,
     User,
-    Address,
+    AddressComponent,
     Overview,
     Orders,
     OrderDetail,
     CarrelloComponent,
-    AboutUs 
+    AboutUs
   ],
   imports: [
     BrowserModule,
