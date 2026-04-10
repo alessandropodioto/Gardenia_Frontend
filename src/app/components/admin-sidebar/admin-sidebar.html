@@ -1,0 +1,19 @@
+<aside class="admin-sidebar">
+  <h2 class="admin-title">Admin Panel</h2>
+  <nav class="admin-nav">
+    <button 
+      class="nav-btn" 
+      [class.active]="activeView === 'users'"
+      (click)="switchView('users')"
+    >
+      Users
+    </button>
+    <button 
+      class="nav-btn" 
+      [class.active]="activeView === 'products'"
+      (click)="switchView('products')"
+    >
+      Products
+    </button>
+  </nav>
+</aside>

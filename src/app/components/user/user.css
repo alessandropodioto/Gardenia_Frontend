@@ -1,0 +1,18 @@
+/* La "cornice" esterna */
+.user-dashboard-container {
+  max-width: 1200px;
+  margin: 40px auto;
+  padding: 0 20px;
+}
+
+/* La griglia che affianca Sidebar e Content */
+.dashboard-grid {
+  display: flex;
+  gap: 30px;
+  align-items: flex-start;
+}
+
+/* Lo spazio che ospiterà le sottopagine */
+.content-box {
+  flex: 1;
+}

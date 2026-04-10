@@ -1,0 +1,48 @@
+<div class="orders-container">
+  <h1 class="page-title">My Orders</h1>
+  <p class="page-subtitle">
+    Here you can view your order history and monitor the status of your current orders.
+  </p>
+
+  @if (loading()) {
+    <div class="loading-message">Loading your orders...</div>
+  } @else {
+    @for (order of orders(); track order.id) {
+      <div class="address-card">
+        <div class="card-header">
+          <div class="user-info">
+            <h3 class="user-name">Order #{{ order.id }}</h3>
+            <p class="address-details">
+              <strong>Date:</strong> {{ order.date | date: 'dd/MM/yyyy' }}<br />
+              
+              <strong>Total:</strong> {{ (order.totalPrice || 0) | currency: 'EUR' }}<br />
+              
+              <strong>Status:</strong>
+              <span class="status-text" [attr.data-status]="order.statusDescription">
+                {{ order.statusDescription }}
+              </span>
+            </p>
+          </div>
+
+          @if (order.estimatedDelivery) {
+            <div class="badge-shipping">
+              Estimated delivery: {{ order.estimatedDelivery | date: 'MMMM d' }}
+            </div>
+          }
+        </div>
+
+        <div class="card-actions">
+          <a [routerLink]="['/user/orders', order.id]" class="action-link"> 
+             View order details 
+          </a>
+        </div>
+      </div>
+    } @empty {
+      <div class="info-card" style="margin-top: 30px">
+        <h3 class="info-card-title">Order Status</h3>
+        <p class="empty-state">You haven't placed any orders yet.</p>
+        <a routerLink="/home" class="edit-btn-text">Start exploring products →</a>
+      </div>
+    }
+  }
+</div>

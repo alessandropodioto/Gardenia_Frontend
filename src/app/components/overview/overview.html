@@ -1,0 +1,32 @@
+<h1 class="page-header">My Account</h1>
+<p class="page-desc">This is your account overview. Here you can update your user details, take a look at your latest orders, your wishlist, and recently viewed items.</p>
+
+<section class="info-card">
+  <h3 class="info-card-title">Basics</h3>
+  @if (userProfile) {
+    <div class="info-content">
+      <p><strong>Name</strong><br>{{ userProfile.firstName }} {{ userProfile.lastName }}</p>
+      <p><strong>E-mail</strong><br>{{ userProfile.email }}</p>
+      <p><strong>Username</strong><br>{{ userProfile.userName }}</p>
+      <p><strong>Phone</strong><br>{{ userProfile.phone }}</p>
+    </div>
+    <a (click)="openEditDialog()" class="edit-btn-text" style="cursor:pointer;">Edit personal details →</a>
+  } @else {
+    <p class="empty-state">{{ isLoading ? 'Loading...' : 'Could not load profile data.' }}</p>
+  }
+</section>
+
+<section class="info-card">
+  <h3 class="info-card-title">My latest order</h3>
+  @if (latestOrder) {
+    <div class="info-content">
+      <p><strong>Order #{{ latestOrder.id }}</strong></p>
+      <p><strong>Date</strong><br>{{ latestOrder.date }}</p>
+      <p><strong>Status</strong><br>{{ latestOrder.statusDescription }}</p>
+      <p><strong>Paid</strong><br>{{ latestOrder.isPaid ? 'Yes' : 'No' }}</p>
+    </div>
+    <a routerLink="/user/orders" class="edit-btn-text">View all orders →</a>
+  } @else {
+    <p class="empty-state">{{ isLoading ? 'Loading...' : 'You haven\'t placed any orders yet' }}</p>
+  }
+</section>

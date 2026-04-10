@@ -1,0 +1,236 @@
+:host {
+  display: block;
+  width: 100%;
+}
+
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 15px;
+}
+
+/* TOP BANNER E CAROSELLO */
+.top-banner {
+  background-color: rgb(1, 86, 1);
+  padding: 8px 0;
+  border-bottom: 1px solid #eee;
+}
+
+.carousel-wrapper {
+  height: 20px;
+  overflow: hidden;
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.fade-text {
+  margin: 0;
+  font-size: 13px;
+  font-weight: 500;
+  display: block;
+  color: white;
+  animation: fadeInAndSlide 0.5s ease-out;
+}
+
+@keyframes fadeInAndSlide {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* NAVBAR MAIN */
+.navbar-main {
+  background-color: white;
+  padding: 15px 0;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+}
+
+.navbar-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.logo-small {
+  height: auto;
+  width: 100px;
+  display: block;
+}
+
+/* NAV MENU */
+.nav-menu ul {
+  list-style: none;
+  display: flex;
+  gap: 25px;
+  margin: 0;
+  padding: 0;
+}
+
+.nav-menu li {
+  position: relative;
+  display: inline-block;
+  margin-right: 15px;
+}
+
+.nav-menu a {
+  text-decoration: none;
+  color: #2c3e50;
+  font-weight: 600;
+  font-size: 18px;
+  text-transform: uppercase;
+  transition: color 0.3s ease;
+  padding-bottom: 5px;
+  position: relative;
+  letter-spacing: 1px;
+  white-space: nowrap;
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+}
+
+.nav-menu a::after {
+  content: '';
+  position: absolute;
+  width: 0;
+  height: 2px;
+  bottom: 0;
+  left: 0;
+  background-color: #035826;
+  transition: width 0.3s ease-out;
+}
+
+.nav-menu a:hover,
+.nav-menu a.active {
+  color: #035a27;
+}
+
+.nav-menu a:hover::after,
+.nav-menu a.active::after {
+  width: 100%;
+}
+
+.submenu {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  background-color: white;
+  min-width: 220px;
+  box-shadow: 0 8px 16px rgba(0,0,0,0.1);
+  padding: 8px 0;
+  list-style: none;
+  display: block !important;
+  margin: 0;
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(10px);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  z-index: 1000;
+  margin-top: 10px;
+  border-top: 3px solid #035826;
+  text-align: left;
+}
+
+.has-dropdown.open .submenu {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0);
+}
+
+.submenu li {
+  width: 100%;
+  display: block !important;
+  margin: 0;
+}
+
+.submenu li a {
+  padding: 12px 20px;
+  font-size: 15px;
+  text-transform: capitalize; /* Stile PLNTS */
+  color: #333;
+  display: block;
+  width: 100%;
+  letter-spacing: 0;
+  font-weight: 500;
+  box-sizing: border-box;
+  transition: background 0.2s;
+}
+
+.submenu li a::after { display: none !important; }
+
+.submenu li a:hover {
+  background-color: #f9f9f9;
+  color: #035826;
+}
+
+/* FRECCIA E ROTAZIONE */
+.arrow {
+  font-size: 9px;
+  margin-left: 8px;
+  opacity: 0.6;
+  transition: transform 0.3s ease;
+  display: inline-block;
+}
+
+.has-dropdown.open .arrow {
+  transform: rotate(180deg);
+  opacity: 1;
+  color: #035826;
+}
+
+/* AZIONI UTENTE (CARRELLO E ADMIN) */
+.user-actions {
+  display: flex;
+  gap: 15px;
+  align-items: center;
+}
+
+.action-link {
+  text-decoration: none;
+  color: #333;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  font-size: 14px;
+  font-weight: 500;
+  padding: 8px 12px;
+  border-radius: 8px;
+  border: 2px solid transparent;
+  transition: all 0.3s ease;
+  background: none;
+}
+
+.action-link:hover,
+.action-link.active {
+  border-color: #035826;
+  color: #035826;
+  background-color: rgba(3, 88, 38, 0.05);
+}
+
+.action-link mat-icon {
+  font-size: 26px;
+  width: 26px;
+  height: 26px;
+  margin-bottom: 2px;
+}
+
+.cart-link {
+  position: relative;
+}
+
+.cart-count {
+  position: absolute;
+  top: 4px;
+  right: 4px;
+  background: #27ae60;
+  color: white;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  font-size: 10px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-weight: bold;
+  border: 2px solid white;
+}

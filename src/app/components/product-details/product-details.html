@@ -1,0 +1,145 @@
+<div class="product-wrap">
+  @if (loading()) {
+    <div class="loading-container">
+      <p>Loading product details...</p>
+    </div>
+  }
+
+  @if (error()) {
+    <div class="error-container">
+      <p>{{ error() }}</p>
+    </div>
+  }
+
+  @if (!loading() && !error() && product()) {
+    <div class="gallery-col">
+      <div class="thumbs-rail">
+        <button *ngFor="let img of images(); let i = index" 
+                class="thumb" 
+                [class.is-active]="i === activeImageIndex()"
+                (click)="selectImage(i)">
+          <img [src]="img.url" [alt]="img.alt" loading="lazy" />
+        </button>
+      </div>
+
+      <div class="main-img-box">
+        <img class="main-img" 
+             [src]="images()[activeImageIndex()].url" 
+             [alt]="images()[activeImageIndex()].alt" />
+
+        <div class="dots">
+          <button *ngFor="let img of images(); let i = index" 
+                  class="dot" 
+                  [class.is-active]="i === activeImageIndex()"
+                  (click)="selectImage(i)"></button>
+        </div>
+      </div>
+    </div>
+
+    <div class="info-col">
+      <h1 class="product-title">{{ product()!.name }}</h1>
+
+      <div class="price-block">
+        <span class="price-original">€ {{ product()!.price.toFixed(2) }}</span>
+      </div>
+
+      <hr class="divider" />
+
+      <p class="short-desc">
+        {{ product()!.description }}
+      </p>
+
+      <hr class="divider" />
+
+      <div class="buy-row">
+        <div class="qty-box">
+          <button class="qty-btn" (click)="decreaseQty()" [disabled]="quantity() <= 1">−</button>
+          <input class="qty-input" type="number" [value]="quantity()" (change)="setQty($event)" />
+          <button class="qty-btn" 
+        (click)="increaseQty()" 
+        [disabled]="quantity() >= 10 || quantity() >= (product()?.stock || 0)">+</button>
+        </div>
+
+        <button class="cart-btn" (click)="addToCart()" [class.is-added]="addedToCart()" [disabled]="product()?.stock! <= 0">
+          <ng-container *ngIf="!addedToCart()">
+            <svg class="cart-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="9" cy="21" r="1" /><circle cx="20" cy="21" r="1" />
+              <path d="M1 1h4l2.68 13.39A2 2 0 0 0 9.64 16h9.72a2 2 0 0 0 1.97-1.67L23 6H6" />
+            </svg>
+            <span>Add to cart</span>
+          </ng-container>
+
+          <ng-container *ngIf="addedToCart()">
+            <svg class="cart-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+              <polyline points="20 6 9 17 4 12" />
+            </svg>
+            <span>Added!</span>
+          </ng-container>
+        </button>
+      </div>
+
+      <p class="stock-status" [style.color]="product()!.stock > 0 ? '#2ecc71' : '#e74c3c'">
+        {{ product()!.stock > 0 ? 'Available: ' + product()!.stock : 'Out of stock' }}
+      </p>
+
+      <div class="checklist">
+        <ul class="feature-list">
+          <li><span>✓</span> Delivery throughout Italy within 24 hours</li>
+          <li><span>✓</span> Plants in excellent health</li>
+          <li><span>✓</span> Biodegradable packaging materials</li>
+        </ul>
+      </div>
+    </div>
+  }
+</div>
+
+@if (suggestedProducts().length > 0) {
+<section class="suggestions-section">
+  <h2 class="suggestions-title">We also suggest...</h2>
+  <div class="suggestions-grid">
+    @for (p of suggestedProducts(); track p.id) {
+    <a class="suggestion-card" [routerLink]="['/product', p.id]">
+      <div class="suggestion-img-wrap">
+        <img [src]="(p.images && p.images.length > 0) ? 
+           (p.images[0].link.startsWith('http') ? p.images[0].link : 'http://localhost:8080/uploads/' + p.images[0].link) 
+           : '/no_image.png'" 
+     [alt]="p.name" 
+     loading="lazy" />    
+      </div>
+      <div class="suggestion-info">
+        <p class="suggestion-name">{{ p.name }}</p>
+        <p class="suggestion-price">€ {{ p.price.toFixed(2) }}</p>
+      </div>
+    </a>
+    }
+  </div>
+</section>
+}
+
+<dialog #authDialog class="auth-modal">
+  <div class="modal-content">
+    <h2>Login or Register</h2>
+    <p>To add products to your cart and complete your purchase, please log in. If you don't have an account, you can register for free.</p>
+    
+    <div class="modal-actions">
+      <button class="btn-login" (click)="goTo('/login')">Login</button>
+      <button class="btn-register" (click)="goTo('/register')">Register</button>
+    </div>
+    
+    <button class="btn-close" (click)="closeDialog()">Maybe later</button>
+  </div>
+</dialog>
+
+<div class="custom-alert" [class.active]="showToast()">
+  <div class="alert-body">
+    <div class="alert-icon">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>
+      </svg>
+    </div>
+    <div class="alert-text">
+      <p>{{ toastMessage() }}</p>
+    </div>
+    <button class="alert-close" (click)="showToast.set(false)">✕</button>
+  </div>
+</div>

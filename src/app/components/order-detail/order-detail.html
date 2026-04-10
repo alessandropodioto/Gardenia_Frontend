@@ -1,0 +1,57 @@
+<div class="order-detail-container">
+  <a routerLink="/user/orders" class="back-link">← Back to My Orders</a>
+
+  @if (loading()) {
+    <div class="loading-message">Loading order details...</div>
+  } @else if (order()) {
+    <div class="order-header">
+      <h1 class="page-title">Order #{{ order().id }}</h1>
+      <p class="page-subtitle">Placed on {{ order().date | date:'MMMM d, yyyy' }}</p>
+    </div>
+
+    <div class="order-main-content">
+      
+      <div class="products-column">
+        <h3 class="section-title">Items in your order</h3>
+        
+        @for (item of order().items; track item.id) {
+          <div class="product-item">
+            <div class="product-info">
+              <div class="product-img">
+                <img [src]="item.immagine || 'assets/images/placeholder.jpg'" [alt]="item.nome">
+              </div>
+              <div class="product-text">
+                <h4 class="product-name">{{ item.nome }}</h4>
+                <p class="product-qty">Quantity: {{ item.amount }}</p>
+              </div>
+            </div>
+            <div class="product-price">{{ (item.price * item.amount).toFixed(2) }} €</div>
+          </div>
+        }
+      </div>
+
+      <aside class="summary-column">
+        <div class="order-summary-card">
+          <h3 class="summary-title">Order Summary</h3>
+          <div class="summary-line">
+            <span>Subtotal</span>
+            <span>{{ (order().totalPrice || 0).toFixed(2) }} €</span>
+          </div>
+          <div class="summary-line">
+            <span>Shipping</span>
+            <span>Free</span>
+          </div>
+          <div class="summary-line total">
+            <span>Total</span>
+            <span>{{ (order().totalPrice || 0).toFixed(2) }} €</span>
+          </div>
+        </div>
+      </aside>
+
+    </div>
+  } @else {
+    <div class="info-card">
+      <p>Order not found.</p>
+    </div>
+  }
+</div>

@@ -1,0 +1,209 @@
+/* Register Component Styles */
+.register-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 80vh;
+  padding: 2rem;
+  background-color: var(--tertiary-color);
+  font-family: var(--primary-font-family);
+}
+
+.register-card {
+  width: 100%;
+  max-width: 600px;
+  border-radius: 16px;
+  box-shadow: 0 10px 30px rgba(80, 102, 20, 0.15);
+  border: 1px solid rgba(80, 102, 20, 0.1);
+  overflow: hidden;
+  background: white;
+}
+
+/* Card Header Styling */
+.register-card mat-card-header {
+  background-color: var(--primary-color);
+  color: white;
+  padding: 1.5rem;
+  text-align: center;
+}
+
+.register-card mat-card-title {
+  font-family: var(--secondary-font-family);
+  font-size: 1.5rem;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  margin: 0;
+  text-transform: uppercase;
+}
+
+/* Form Content Styling */
+.register-card mat-card-content {
+  padding: 2rem;
+}
+
+.register-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+/* Form Row Styling for side-by-side fields */
+.form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+}
+
+/* Form Field Styling */
+.form-field {
+  width: 100%;
+}
+
+.form-field mat-form-field {
+  width: 100%;
+}
+
+.form-field.full-width {
+  grid-column: 1 / -1;
+}
+
+.form-field mat-label {
+  font-family: var(--primary-font-family);
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #333;
+}
+
+.form-field input {
+  font-family: var(--primary-font-family);
+  font-size: 1rem;
+}
+
+/* Custom styling for Material form field outline */
+.form-field .mat-form-field-appearance-outline .mat-form-field-outline {
+  color: var(--primary-color);
+}
+
+.form-field .mat-form-field-appearance-outline .mat-form-field-outline-thick {
+  color: var(--primary-color);
+}
+
+.form-field.mat-focused .mat-form-field-appearance-outline .mat-form-field-outline-color-primary {
+  color: var(--primary-color);
+}
+
+/* Success and Error Message Styling */
+.success-message {
+  background-color: #f0fdf4;
+  border: 1px solid #bbf7d0;
+  color: #166534;
+  padding: 0.75rem;
+  border-radius: 8px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  text-align: center;
+  margin-bottom: 1rem;
+  border-left: 4px solid #166534;
+  animation: fadeIn 0.3s ease-in;
+}
+
+.error-message {
+  background-color: #fff5f5;
+  border: 1px solid #fecaca;
+  color: #dc2626;
+  padding: 0.75rem;
+  border-radius: 8px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  text-align: center;
+  margin-bottom: 1rem;
+  border-left: 4px solid #dc2626;
+  animation: fadeIn 0.3s ease-in;
+}
+
+/* Register Button Styling */
+.register-button {
+  background-color: var(--primary-color);
+  color: white;
+  font-family: var(--primary-font-family);
+  font-size: 1rem;
+  font-weight: 700;
+  padding: 0.75rem 2rem;
+  border-radius: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 15px rgba(80, 102, 20, 0.3);
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  min-height: 48px;
+  align-self: center;
+  width: 200px;
+}
+
+.register-button:hover:not(:disabled) {
+  background-color: var(--secondary-color);
+  color: #333;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(80, 102, 20, 0.4);
+}
+
+.register-button:active:not(:disabled) {
+  transform: translateY(0);
+  box-shadow: 0 2px 10px rgba(80, 102, 20, 0.3);
+}
+
+.register-button:disabled {
+  background-color: #ccc;
+  color: #666;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+/* Spinner Styling */
+.spinner {
+  width: 20px !important;
+  height: 20px !important;
+}
+
+/* Card Actions Styling */
+.card-actions {
+  padding: 1.5rem 2rem;
+  background-color: #f8fafc;
+  border-top: 1px solid #e5e7eb;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 1rem;
+}
+
+.card-actions span {
+  font-family: var(--primary-font-family);
+  font-size: 0.9rem;
+  color: #666;
+  font-weight: 500;
+}
+
+.card-actions a {
+  font-family: var(--primary-font-family);
+  font-size: 0.9rem;
+  color: var(--primary-color);
+  text-decoration: none;
+  font-weight: 700;
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
+  transition: all 0.3s ease;
+  background-color: transparent;
+  border: 1px solid transparent;
+}
+
+.card-actions a:hover {
+  background-color: var(--tertiary-color);
+  border-color: var(--primary-color);
+  color: var(--primary-color);
+}

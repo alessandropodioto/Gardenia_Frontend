@@ -1,0 +1,93 @@
+<div class="home-container">
+  @if (isHome()) {
+    <div class="banner-wrapper">
+      <div class="banner-container">
+        <div class="banner-content">
+          <span class="banner-text">Welcome to</span>
+          <img src="img/image3.png" alt="Gardenia Logo" class="banner-logo" />
+        </div>
+      </div>
+    </div>
+  }
+
+  <section class="products-section">
+    <div class="products-container">
+      @if (loading()) {
+        <div class="loading-message"><p>Loading products...</p></div>
+      } @else if (error()) {
+        <div class="error-message">
+          <p>{{ error() }}</p>
+        </div>
+      } @else if (products().length === 0) {
+        <div class="empty-message"><p>No products found</p></div>
+      } @else {
+        <div class="products-grid">
+          @for (
+            product of products().slice(pageIndex * pageSize, (pageIndex + 1) * pageSize);
+            track product.id
+          ) {
+            <div class="product-card">
+              <div class="product-image" (click)="navigateToProductDetails(product.id)">
+                <img [src]="getImageUrl(product)" [alt]="product.name" class="card-image" />
+              </div>
+              <div class="product-info">
+                <h3 class="product-name" (click)="navigateToProductDetails(product.id)">
+                  {{ product.name }}
+                </h3>
+                <p class="product-price">€{{ product.price.toFixed(2) }}</p>
+                <p class="product-stock" [class.low-stock]="product.stock < 5">
+                  Stock: {{ product.stock }}
+                </p>
+              </div>
+            </div>
+          }
+        </div>
+
+        @if (products().length > pageSize) {
+          <div class="pagination-wrapper">
+            <div class="pagination-row">
+              
+              <button class="nav-arrow" [disabled]="pageIndex === 0" (click)="onPageChange({ pageIndex: 0 })">
+                <span class="material-icons">first_page</span>
+              </button>
+
+              <button class="nav-arrow" [disabled]="pageIndex === 0" (click)="onPageChange({ pageIndex: pageIndex - 1 })">
+                <span class="material-icons">chevron_left</span>
+              </button>
+
+              <div class="page-numbers-row">
+                @if (visiblePages[0] > 0) { <span class="dots">...</span> }
+
+                @for (n of visiblePages; track n) {
+                  <button
+                    class="page-num-btn"
+                    [class.active]="n === pageIndex"
+                    (click)="onPageChange({ pageIndex: n })"
+                  >
+                    {{ n + 1 }}
+                  </button>
+                }
+
+                @if (visiblePages[visiblePages.length - 1] < totalPagesCount - 1) { <span class="dots">...</span> }
+              </div>
+
+              <button class="nav-arrow" [disabled]="pageIndex >= totalPagesCount - 1" (click)="onPageChange({ pageIndex: pageIndex + 1 })">
+                <span class="material-icons">chevron_right</span>
+              </button>
+
+              <button class="nav-arrow" [disabled]="pageIndex >= totalPagesCount - 1" (click)="onPageChange({ pageIndex: totalPagesCount - 1 })">
+                <span class="material-icons">last_page</span>
+              </button>
+            </div>
+
+            <div class="pagination-info">
+              {{ pageIndex * pageSize + 1 }} –
+              {{ Math.min((pageIndex + 1) * pageSize, products().length) }}
+              <span class="total-count">of {{ products().length }}</span>
+            </div>
+          </div>
+        }
+      }
+    </div>
+  </section>
+</div>

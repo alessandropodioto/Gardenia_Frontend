@@ -1,0 +1,165 @@
+.checkout-container {
+  max-width: 1000px;
+  margin: 40px auto;
+  padding: 0 20px;
+  font-family: Arial, sans-serif;
+}
+
+.checkout-header {
+  text-align: center;
+  margin-bottom: 40px;
+}
+
+.checkout-header h2 {
+  font-size: 32px;
+  margin-bottom: 10px;
+  color: #2E7D32; /* Verde scuro */
+}
+
+.checkout-content {
+  display: flex;
+  gap: 30px;
+  align-items: flex-start;
+}
+
+/* Colonna Form */
+.form-section {
+  flex: 2;
+  background: white;
+  padding: 30px;
+  border-radius: 8px;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+}
+
+.form-section h3 {
+  margin-top: 0;
+  margin-bottom: 20px;
+  font-size: 20px;
+  border-bottom: 2px solid #f0f0f0;
+  padding-bottom: 10px;
+}
+
+.mt-30 { margin-top: 30px !important; }
+.form-group { margin-bottom: 15px; }
+.row { display: flex; gap: 15px; }
+
+.input-field {
+  width: 100%;
+  padding: 14px;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  font-size: 15px;
+  box-sizing: border-box;
+}
+
+.input-field:focus {
+  outline: none;
+  border-color: #4CAF50;
+}
+
+.half { flex: 1; }
+
+/* Pulsanti Pagamento */
+.payment-methods {
+  display: flex;
+  gap: 15px;
+  margin-bottom: 25px;
+}
+
+.payment-btn {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 15px;
+  background: white;
+  border: 2px solid #ddd;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 16px;
+  font-weight: bold;
+  transition: all 0.2s;
+}
+
+.payment-btn.active {
+  border-color: #4CAF50;
+  background: #E8F5E9;
+  color: #2E7D32;
+}
+.card-details, .paypal-details {
+  background: #f9f9f9;
+  padding: 20px;
+  border-radius: 6px;
+}
+
+.summary-section {
+  flex: 1;
+  background: #f9f9f9;
+  padding: 30px;
+  border-radius: 8px;
+  border: 1px solid #eee;
+  
+  /* REGOLE PER L'EFFETTO STICKY */
+  position: -webkit-sticky; 
+  position: sticky;
+  top: 20px; 
+  align-self: flex-start; 
+}
+.checkout-content {
+  display: flex;
+  gap: 30px;
+  align-items: flex-start; 
+}
+.summary-item {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 15px;
+  font-size: 16px;
+}
+
+.summary-item .free {
+  color: #4CAF50;
+  font-weight: bold;
+}
+
+.divider {
+  height: 1px;
+  background: #ddd;
+  margin: 20px 0;
+}
+
+.total {
+  font-size: 22px;
+  font-weight: bold;
+}
+
+/* Bottone Paga */
+.pay-btn {
+  width: 100%;
+  padding: 24px 0 !important;
+  font-size: 18px !important;
+  background-color: #4CAF50 !important;
+  color: white !important;
+  border-radius: 8px;
+  margin-top: 20px;
+  cursor: pointer;
+}
+
+.pay-btn:hover { background-color: #388E3C !important; }
+
+.secure-badge {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  margin-top: 20px;
+  font-size: 13px;
+  color: #666;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .checkout-content { flex-direction: column; }
+  .form-section, .summary-section { width: 100%; }
+}

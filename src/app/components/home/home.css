@@ -1,0 +1,412 @@
+:host {
+  display: block;
+  width: 100%;
+}
+
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 15px;
+}
+
+.grid-wrapper {
+  display: flex;
+  gap: 20px; /* Spazio tra le immagini */
+  flex-wrap: wrap; /* Importante per il mobile */
+  padding: 0 20px; /* Margine laterale per non toccare i bordi dello schermo */
+}
+
+.grid-item {
+  flex: 1; /* Ognuna occupa 1/3 dello spazio disponibile */
+  min-width: 220px; /* Ridotto per far stare 5 card in fila */
+  position: relative; /* Necessario per l'overlay del testo */
+  overflow: hidden; /* Taglia l'immagine se esce dal bordo */
+  border-radius: 8px; /* Angoli arrotondati */
+  height: 350px; /* Altezza fissa delle immagini */
+}
+
+.grid-item img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover; /* L'immagine riempie il blocco senza deformarsi */
+  transition: transform 0.5s; /* Effetto zoom al passaggio */
+}
+
+.grid-item:hover img {
+  transform: scale(1.05); /* Zoom leggero al passaggio del mouse */
+}
+
+/* Testo sopra l'immagine */
+.item-overlay {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  padding: 20px;
+  background: linear-gradient(to top, rgba(0,0,0,0.7), transparent); /* Sfumatura scura per leggere il testo */
+  color: white;
+}
+
+.item-overlay h3 {
+  font-size: 22px;
+  margin: 0 0 10px 0;
+}
+
+.item-overlay a {
+  color: white;
+  text-decoration: none;
+  font-weight: bold;
+}
+
+/* ═══════════════════════════════════════════════════════════════ */
+/* WELCOME BANNER */
+/* ═══════════════════════════════════════════════════════════════ */
+
+.banner-wrapper {
+  background: linear-gradient(135deg, #1a4a1a 0%, #2d6e2d 40%, #3d8b3d 70%, #1e5c1e 100%);
+  padding: 20px;
+  position: relative;
+  overflow: hidden;
+}
+
+.banner-wrapper::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image:
+    radial-gradient(ellipse 60px 80px at 5% 30%, rgba(255,255,255,0.04) 0%, transparent 70%),
+    radial-gradient(ellipse 50px 70px at 95% 70%, rgba(255,255,255,0.04) 0%, transparent 70%),
+    radial-gradient(ellipse 40px 60px at 20% 80%, rgba(255,255,255,0.03) 0%, transparent 70%),
+    radial-gradient(ellipse 45px 65px at 80% 20%, rgba(255,255,255,0.03) 0%, transparent 70%);
+  pointer-events: none;
+}
+
+.banner-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 20px;
+}
+
+.banner-content {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 24px;
+  padding: 32px 0;
+}
+
+.banner-text {
+  font-size: 48px;
+  font-weight: 300;
+  color: #f5f0e8;
+  letter-spacing: 2px;
+  font-family: Georgia, 'Times New Roman', serif;
+  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+  white-space: nowrap;
+}
+
+.banner-logo {
+  height: 90px;
+  width: auto;
+  filter: brightness(0) invert(1);
+  drop-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+}
+
+/* ═══════════════════════════════════════════════════════════════ */
+/* PRODUCTS SECTION STYLES */
+/* ═══════════════════════════════════════════════════════════════ */
+
+.products-section {
+  padding: 60px 20px;
+  background: #f9f9f9;
+}
+
+.products-container {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.products-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 20px;
+  padding: 20px 0;
+}
+
+.product-card {
+  background: white;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  position: relative;
+}
+
+.product-image {
+  position: relative;
+  width: 100%;
+  height: 250px;
+  overflow: hidden;
+  background: #f0f0f0;
+  cursor: pointer;
+}
+
+.card-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.product-info {
+  padding: 15px;
+}
+
+.product-name {
+  font-size: 18px;
+  font-weight: 700;
+  margin: 0 0 10px 0;
+  color: #333;
+  line-height: 1.3;
+  cursor: pointer;
+  transition: color 0.3s ease;
+}
+
+.product-name:hover {
+  color: var(--secondary-color);
+}
+
+.product-price {
+  font-size: 20px;
+  font-weight: 700;
+  color: #2d5016;
+  margin: 0 0 8px 0;
+}
+
+.product-stock {
+  font-size: 12px;
+  color: #666;
+  margin: 0;
+}
+
+.product-stock.low-stock {
+  color: #d9534f;
+  font-weight: 600;
+}
+
+
+.loading-message,
+.error-message,
+.empty-message {
+  text-align: center;
+  padding: 40px 20px;
+  font-size: 18px;
+  color: #666;
+}
+
+.error-message {
+  color: #d9534f;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .banner-text {
+    font-size: 32px;
+  }
+
+  .banner-logo {
+    height: 65px;
+  }
+
+  .banner-content {
+    gap: 16px;
+    padding: 24px 0;
+  }
+
+  .products-grid {
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 15px;
+  }
+
+  .grid-wrapper {
+    padding: 0 10px;
+    gap: 15px;
+  }
+
+  .grid-item {
+    min-width: 150px;
+    height: 220px;
+  }
+}
+
+@media (max-width: 480px) {
+  .banner-text {
+    font-size: 22px;
+    letter-spacing: 1px;
+  }
+
+  .banner-logo {
+    height: 48px;
+  }
+
+  .banner-content {
+    gap: 12px;
+    padding: 20px 0;
+  }
+
+  .products-grid {
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    gap: 10px;
+  }
+
+  .grid-wrapper {
+    padding: 0 10px;
+    gap: 10px;
+  }
+
+  .grid-item {
+    min-width: 100px;
+    height: 150px;
+  }
+
+  .product-card {
+    border-radius: 6px;
+  }
+
+  .product-name {
+    font-size: 14px;
+  }
+
+  .product-price {
+    font-size: 16px;
+  }
+}
+
+/* =================================================================
+   PAGINAZIONE GLASSMORPHISM (STILE GARDENIA)
+   ================================================================= */
+/* CONTAINER ESTERNO */
+.pagination-wrapper {
+  margin: 50px auto;
+  width: fit-content;
+  background: rgba(255, 255, 255, 0.6) !important;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.4);
+  border-radius: 50px;
+  padding: 12px 25px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.05);
+}
+
+/* FILA UNICA ORIZZONTALE */
+.pagination-row {
+  display: flex;
+  align-items: center;
+  gap: 8px; /* Spazio tra frecce e numeri */
+}
+
+/* STILE FRECCE (Material Icons) */
+.nav-arrow {
+  background: transparent;
+  border: none;
+  color: #035826;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 4px;
+  border-radius: 50%;
+  transition: all 0.2s ease;
+}
+
+.nav-arrow:disabled {
+  color: #bdc3c7;
+  cursor: not-allowed;
+  transform: scale(1) !important;
+}
+
+.nav-arrow:hover:not(:disabled) {
+  background-color: rgba(3, 88, 38, 0.05);
+  transform: scale(1.1);
+}
+
+.nav-arrow .material-icons {
+  font-size: 22px;
+}
+
+/* BLOCCO NUMERI */
+.page-numbers-row {
+  display: flex;
+  gap: 6px;
+  margin: 0 5px;
+}
+
+.page-num-btn {
+  background: white;
+  border: 1px solid #f0f0f0;
+  color: #576574;
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.page-num-btn:hover {
+  border-color: #035826;
+  color: #035826;
+}
+
+.page-num-btn.active {
+  background: #035826;
+  color: white;
+  border-color: #035826;
+  box-shadow: 0 4px 10px rgba(3, 88, 38, 0.2);
+}
+
+/* INFO TESTUALE INFERIORE */
+.pagination-info {
+  font-size: 10px;
+  color: #95a5a6;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1.2px;
+  opacity: 0.8;
+}
+
+.total-count {
+  font-weight: 400;
+  color: #bdc3c7;
+}
+
+.dots {
+  color: #bdc3c7;
+  padding: 0 5px;
+  font-weight: bold;
+  align-self: center;
+}
+
+/* Assicurati che la riga dei numeri non vada a capo su schermi piccoli */
+.page-numbers-row {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+}
+
+@media (max-width: 480px) {
+  .page-num-btn {
+    width: 30px; /* Più piccoli su mobile */
+    height: 30px;
+    font-size: 12px;
+  }
+  .pagination-row {
+    gap: 4px;
+  }
+}

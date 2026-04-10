@@ -1,0 +1,32 @@
+<div class="delete-address-dialog">
+  <h2 mat-dialog-title>Confirm Address Deletion</h2>
+  <mat-dialog-content class="dialog-content">
+    <p>Are you sure you want to delete the following address?</p>
+
+    <div class="address-info">
+      <div class="address-detail">
+        <strong>Street:</strong> {{ data.address.street }} {{ data.address.number }}
+      </div>
+      <div class="address-detail">
+        <strong>City:</strong> {{ data.address.city }}
+      </div>
+      <div class="address-detail">
+        <strong>Postal Code:</strong> {{ data.address.postalCode }}
+      </div>
+      <div class="address-detail">
+        <strong>Country:</strong> {{ data.address.country }}
+      </div>
+    </div>
+
+    <p class="warning-text">Warning: This action is irreversible.</p>
+  </mat-dialog-content>
+
+  <mat-dialog-actions class="dialog-actions">
+    <button mat-button (click)="onCancel()" class="cancel-btn">
+      Cancel
+    </button>
+    <button mat-raised-button color="warn" (click)="onConfirm()" class="confirm-btn">
+      Delete
+    </button>
+  </mat-dialog-actions>
+</div>

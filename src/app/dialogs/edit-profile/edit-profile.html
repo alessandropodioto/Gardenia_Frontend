@@ -1,0 +1,76 @@
+<div class="edit-profile-dialog">
+  <div class="dialog-header">
+    <h2 mat-dialog-title>Edit Personal Details</h2>
+  </div>
+  <mat-dialog-content class="dialog-content">
+    <form [formGroup]="form" (ngSubmit)="onSubmit()" id="editProfileForm">
+
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Email</mat-label>
+        <input matInput type="email" formControlName="email">
+        <mat-error *ngIf="email?.hasError('required')">Email is required</mat-error>
+        <mat-error *ngIf="email?.hasError('email')">Enter a valid email</mat-error>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Phone</mat-label>
+        <input matInput formControlName="phone">
+        <mat-error *ngIf="phone?.hasError('required')">Phone is required</mat-error>
+      </mat-form-field>
+
+      <div class="section-label">Change Password <span class="optional">(optional)</span></div>
+
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Current Password</mat-label>
+        <input matInput [type]="showCurrentPassword ? 'text' : 'password'" formControlName="currentPassword">
+        <mat-error *ngIf="currentPassword?.hasError('required')">Required to change password</mat-error>
+        <mat-error *ngIf="currentPassword?.hasError('wrong')">Current password is incorrect</mat-error>
+        <button mat-icon-button matSuffix type="button" (click)="toggleVisibility('current')">
+          <mat-icon>{{ showCurrentPassword ? 'visibility_off' : 'visibility' }}</mat-icon>
+        </button>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>New Password</mat-label>
+        <input matInput [type]="showPassword ? 'text' : 'password'" formControlName="password" placeholder="Leave blank to keep current">
+        <button mat-icon-button matSuffix type="button" (click)="toggleVisibility('new')">
+          <mat-icon>{{ showPassword ? 'visibility_off' : 'visibility' }}</mat-icon>
+        </button>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Confirm New Password</mat-label>
+        <input matInput [type]="showConfirmPassword ? 'text' : 'password'" formControlName="confirmPassword">
+        <mat-error *ngIf="confirmPassword?.hasError('passwordMismatch')">Passwords do not match</mat-error>
+        <button mat-icon-button matSuffix type="button" (click)="toggleVisibility('confirm')">
+          <mat-icon>{{ showConfirmPassword ? 'visibility_off' : 'visibility' }}</mat-icon>
+        </button>
+      </mat-form-field>
+
+      @if (successMessage) {
+        <div class="success-message">{{ successMessage }}</div>
+      }
+      @if (errorMessage) {
+        <div class="error-message">{{ errorMessage }}</div>
+      }
+
+    </form>
+  </mat-dialog-content>
+
+  <mat-dialog-actions class="dialog-actions">
+    <button mat-button (click)="onCancel()" class="cancel-btn" [disabled]="isLoading">Cancel</button>
+    <button
+      mat-raised-button
+      color="primary"
+      class="save-btn"
+      [disabled]="form.invalid || isLoading"
+      (click)="onSubmit()"
+    >
+      @if (isLoading) {
+        <mat-spinner diameter="18" class="spinner"></mat-spinner>
+      } @else {
+        <span>Save</span>
+      }
+    </button>
+  </mat-dialog-actions>
+</div>

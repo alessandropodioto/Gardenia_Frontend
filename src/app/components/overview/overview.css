@@ -1,0 +1,55 @@
+/* Titoli e descrizioni della pagina */
+.page-header {
+  font-size: 32px;
+  color: #506614;
+  margin-bottom: 10px;
+}
+
+.page-desc {
+  font-size: 14px;
+  color: #666;
+  margin-bottom: 30px;
+  line-height: 1.6;
+}
+
+/* Le card bianche con i dati */
+.info-card {
+  border: 1px solid #eee;
+  border-radius: 4px;
+  padding: 25px;
+  margin-bottom: 25px;
+  background-color: #fff;
+}
+
+.info-card-title {
+  font-size: 20px;
+  color: #506614;
+  border-bottom: 1px solid #f0f0f0;
+  padding-bottom: 15px;
+  margin-bottom: 20px;
+}
+
+.info-content strong {
+  display: block;
+  font-size: 13px;
+  color: #888;
+  margin-bottom: 3px;
+}
+
+.info-content p {
+  margin-bottom: 15px;
+  font-size: 14px;
+  color: #333;
+}
+
+.edit-btn-text {
+  color: #506614;
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 14px;
+}
+
+.empty-state {
+  font-size: 14px;
+  color: #999;
+}
