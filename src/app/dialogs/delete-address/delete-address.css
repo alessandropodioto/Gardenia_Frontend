@@ -1,0 +1,61 @@
+.delete-address-dialog {
+  min-width: 400px;
+}
+
+Mat-dialog-title {
+  text-align: center;
+  font-size: 20px;
+  font-weight: 600;
+  color: #333;
+}
+
+.dialog-content {
+  padding: 16px 0;
+}
+
+.dialog-content p {
+  margin: 0 0 16px 0;
+  font-size: 14px;
+  color: #666;
+}
+
+.address-info {
+  background: #f5f5f5;
+  border-left: 4px solid #ff9800;
+  padding: 12px;
+  border-radius: 4px;
+  margin-bottom: 16px;
+}
+
+.address-detail {
+  margin: 8px 0;
+  font-size: 14px;
+  color: #555;
+}
+
+.address-detail strong {
+  color: #333;
+  display: inline-block;
+  min-width: 100px;
+}
+
+.warning-text {
+  color: #d32f2f;
+  font-weight: 500;
+  font-size: 13px;
+  margin-top: 12px;
+  margin-bottom: 0;
+}
+
+.dialog-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  padding-top: 16px;
+  border-top: 1px solid #e0e0e0;
+}
+
+.cancel-btn,
+.confirm-btn {
+  min-width: 100px;
+}

@@ -10,10 +10,14 @@ import { AuthService } from '../../services/auth.service';
   styleUrls: ['./sidebar.css']
 })
 export class Sidebar {
+  userName: string = '';
   constructor(
     private authService: AuthService,
     private router: Router
-  ) {}
+  ) {
+    const userData = this.authService.getUserData();
+    this.userName = userData?.id ?? 'User';
+  }
 
   logout(): void {
     this.authService.logout();

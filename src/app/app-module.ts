@@ -33,11 +33,14 @@ import { CarrelloComponent } from './components/carrello/carrello';
 import { Admin } from './components/admin/admin';
 import { AdminSidebar } from './components/admin-sidebar/admin-sidebar';
 import { DeleteUser } from './dialogs/delete-user/delete-user';
+import { EditProfile } from './dialogs/edit-profile/edit-profile';
 import { ProductDialog } from './dialogs/product-dialog/product-dialog';
+import { AddressDialog } from './dialogs/address-dialog/address-dialog';
+import { DeleteAddress } from './dialogs/delete-address/delete-address';
 import { PagamentoComponent } from './components/pagamento/pagamento';
 import { User } from './components/user/user';
 import { Sidebar } from './components/sidebar/sidebar';
-import { Address } from './components/address/address';
+import { AddressComponent } from './components/address/address';
 import { Overview } from './components/overview/overview';
 import { OrdersComponent } from './components/orders/orders';
 import { OrderDetail } from './components/order-detail/order-detail';
@@ -54,15 +57,18 @@ import { AboutUs } from './components/about-us/about-us';
     HomeComponent,
     Admin,
     DeleteUser,
+    EditProfile,
     ProductDialog,
+    AddressDialog,
+    DeleteAddress,
     PagamentoComponent,
     User,
-    Address,
+    AddressComponent,
     Overview,
     OrdersComponent,
     OrderDetail,
     CarrelloComponent,
-    AboutUs 
+    AboutUs
   ],
   imports: [
     BrowserModule,

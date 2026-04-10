@@ -75,6 +75,27 @@ export class AuthService {
     );
   }
 
+  /**
+   * Aggiorna i dati dell'utente (email, phone, password)
+   */
+  updateUser(data: { userName: string; email?: string; phone?: string; password?: string }): Observable<any> {
+    return this.http.put<any>(`${this.apiUrl}/update`, data).pipe(
+      catchError(this.handleError)
+    );
+  }
+
+  /**
+   * Recupera i dati completi dell'utente dal backend
+   */
+  getUserByUserName(userName: string): Observable<any> {
+    return this.http.get<any>(`${this.apiUrl}/findByUserName`, { params: { id: userName } }).pipe(
+      catchError(this.handleError)
+    );
+  }
+
+  /**
+   * Logout: cancella i dati e notifica lo stato null
+   */
   logout(): void {
     if (isPlatformBrowser(this.platformId)) {
       localStorage.removeItem('user_data');

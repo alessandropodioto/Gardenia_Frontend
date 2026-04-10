@@ -34,12 +34,12 @@
   background: #f9f9f9;
 }
 
-/* Card Indirizzo */
 .address-card {
-  background-color: #fcf9f1; /* Quel giallino/beige chiaro dello screen */
+  background-color: #fcf9f1;
   border-radius: 8px;
   padding: 25px;
   border: 1px solid #f2ede0;
+  margin-bottom: 10px;
 }
 
 .card-header {
