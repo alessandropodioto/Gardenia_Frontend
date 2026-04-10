@@ -31,10 +31,8 @@ const routes: Routes = [
     component: User,
     children: [
       { path: 'overview', component: Overview },
-      { path: 'address', component: Address },
-      { path: 'orders', component: OrdersComponent },
-      { path: 'address', component: AddressComponent },
-      { path: 'orders', component: Orders },
+      { path: 'address', component: AddressComponent }, // Corretto: usa il nome dell'import a riga 12
+      { path: 'orders', component: OrdersComponent },   // Corretto: usa il nome dell'import a riga 14
       { path: 'orders/:id', component: OrderDetail },
       { path: '', redirectTo: 'overview', pathMatch: 'full' },
     ],
