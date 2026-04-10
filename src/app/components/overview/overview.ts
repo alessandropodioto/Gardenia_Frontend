@@ -56,7 +56,7 @@ export class Overview implements OnInit {
         if (orders?.length > 0) {
           this.latestOrder = orders.sort((a, b) =>
             new Date(b.date).getTime() - new Date(a.date).getTime()
-          )[0];
+          )[orders.length-1];
         }
         this.cdr.detectChanges();
       },
