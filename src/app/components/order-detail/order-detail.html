@@ -1,62 +1,57 @@
 <div class="order-detail-container">
   <a routerLink="/user/orders" class="back-link">← Back to My Orders</a>
 
-  <div class="order-header">
-    <h1 class="page-title">Order #982347</h1>
-    <p class="page-subtitle">Placed on March 26, 2026</p>
-  </div>
-
-  <div class="order-main-content">
-    
-    <div class="products-column">
-      <h3 class="section-title">Items in your order</h3>
-      
-      <div class="product-item">
-        <div class="product-info">
-          <div class="product-img">
-            <img src="assets/images/monstera.jpg" alt="Monstera">
-          </div>
-          <div class="product-text">
-            <h4 class="product-name">Monstera Deliciosa</h4>
-            <p class="product-size">Size: Medium</p>
-            <p class="product-qty">Quantity: 1</p>
-          </div>
-        </div>
-        <div class="product-price">24,95 €</div>
-      </div>
-
-      <div class="product-item">
-        <div class="product-info">
-          <div class="product-img">
-            <img src="assets/images/pot.jpg" alt="Pot">
-          </div>
-          <div class="product-text">
-            <h4 class="product-name">Terracotta Pot</h4>
-            <p class="product-size">Color: Earth</p>
-            <p class="product-qty">Quantity: 2</p>
-          </div>
-        </div>
-        <div class="product-price">20,95 €</div>
-      </div>
+  @if (loading()) {
+    <div class="loading-message">Loading order details...</div>
+  } @else if (order()) {
+    <div class="order-header">
+      <h1 class="page-title">Order #{{ order().id }}</h1>
+      <p class="page-subtitle">Placed on {{ order().date | date:'MMMM d, yyyy' }}</p>
     </div>
 
-    <aside class="summary-column">
-      <div class="order-summary-card">
-        <h3 class="summary-title">Order Summary</h3>
-        <div class="summary-line">
-          <span>Subtotal</span>
-          <span>45,90 €</span>
-        </div>
-        <div class="summary-line">
-          <span>Shipping</span>
-          <span>Free</span>
-        </div>
-        <div class="summary-line total">
-          <span>Total</span>
-          <span>45,90 €</span>
-        </div>
+    <div class="order-main-content">
+      
+      <div class="products-column">
+        <h3 class="section-title">Items in your order</h3>
+        
+        @for (item of order().items; track item.id) {
+          <div class="product-item">
+            <div class="product-info">
+              <div class="product-img">
+                <img [src]="item.immagine || 'assets/images/placeholder.jpg'" [alt]="item.nome">
+              </div>
+              <div class="product-text">
+                <h4 class="product-name">{{ item.nome }}</h4>
+                <p class="product-qty">Quantity: {{ item.amount }}</p>
+              </div>
+            </div>
+            <div class="product-price">{{ (item.price * item.amount).toFixed(2) }} €</div>
+          </div>
+        }
       </div>
-    </aside>
 
-  </div>
+      <aside class="summary-column">
+        <div class="order-summary-card">
+          <h3 class="summary-title">Order Summary</h3>
+          <div class="summary-line">
+            <span>Subtotal</span>
+            <span>{{ (order().totalPrice || 0).toFixed(2) }} €</span>
+          </div>
+          <div class="summary-line">
+            <span>Shipping</span>
+            <span>Free</span>
+          </div>
+          <div class="summary-line total">
+            <span>Total</span>
+            <span>{{ (order().totalPrice || 0).toFixed(2) }} €</span>
+          </div>
+        </div>
+      </aside>
+
+    </div>
+  } @else {
+    <div class="info-card">
+      <p>Order not found.</p>
+    </div>
+  }
 </div>

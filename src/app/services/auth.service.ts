@@ -1,7 +1,8 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject, PLATFORM_ID } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
+import { isPlatformBrowser } from '@angular/common';
 import { Observable, throwError, BehaviorSubject } from 'rxjs';
-import { catchError } from 'rxjs/operators';
+import { catchError, tap } from 'rxjs/operators';
 
 export interface RegisterData {
   userName: string;
@@ -21,9 +22,11 @@ export interface AuthResponse {
   msg: string;
 }
 
+// AGGIORNATA: Aggiunto userName perché serve al carrello
 export interface LoginResponse {
   id: string;
   role: string;
+  userName?: string; 
 }
 
 @Injectable({
@@ -31,29 +34,20 @@ export interface LoginResponse {
 })
 export class AuthService {
   private apiUrl = 'http://localhost:8080/rest/user';
+  private platformId = inject(PLATFORM_ID);
   
-  // Inizializziamo authState con i dati presenti nel localStorage (se esistono)
   private authState = new BehaviorSubject<any>(this.getUserData());
 
   constructor(private http: HttpClient) {}
 
-  /**
-   * Controlla se l'utente è loggato (usato nel template HTML e TS)
-   */
   isLoggedIn(): boolean {
     return !!this.getUserData();
   }
 
-  /**
-   * Ritorna lo stato di autenticazione come Observable
-   */
   getAuthState(): Observable<any> {
     return this.authState.asObservable();
   }
 
-  /**
-   * Emette un cambiamento nello stato di autenticazione
-   */
   emitAuthState(userData: any): void {
     this.authState.next(userData);
   }
@@ -64,13 +58,16 @@ export class AuthService {
   login(loginData: LoginData): Observable<LoginResponse> {
     const endpoint = `${this.apiUrl}/login`;
     return this.http.post<LoginResponse>(endpoint, loginData).pipe(
+      tap((response) => {
+        // Se il server non rimanda lo userName, usiamo quello usato per il login
+        if (!response.userName) {
+          response.userName = loginData.userName;
+        }
+      }),
       catchError(this.handleError)
     );
   }
 
-  /**
-   * Registrazione nuovo utente
-   */
   register(registerData: RegisterData): Observable<AuthResponse> {
     const endpoint = `${this.apiUrl}/register`;
     return this.http.post<AuthResponse>(endpoint, registerData).pipe(
@@ -100,38 +97,46 @@ export class AuthService {
    * Logout: cancella i dati e notifica lo stato null
    */
   logout(): void {
-    localStorage.removeItem('user_data');
+    if (isPlatformBrowser(this.platformId)) {
+      localStorage.removeItem('user_data');
+      localStorage.removeItem('username'); // Puliamo tutto
+    }
     this.emitAuthState(null);
   }
 
   /**
-   * Salva i dati utente nel localStorage e aggiorna lo stato
+   * SALVATAGGIO DATI: Qui risolviamo il problema del null
    */
   setUserData(userData: any): void {
-    localStorage.setItem('user_data', JSON.stringify(userData));
+    if (isPlatformBrowser(this.platformId)) {
+      // 1. Salviamo l'oggetto completo
+      localStorage.setItem('user_data', JSON.stringify(userData));
+
+      // 2. Salviamo la stringa semplice che il CartService cerca disperatamente
+      const name = userData.userName || userData.username || userData.user;
+      if (name) {
+        localStorage.setItem('username', name);
+      }
+    }
     this.emitAuthState(userData);
   }
 
-  /**
-   * Recupera i dati dal localStorage
-   */
   getUserData(): any {
-    if (typeof window !== 'undefined') {
+    if (isPlatformBrowser(this.platformId)) {
       const userData = localStorage.getItem('user_data');
       return userData ? JSON.parse(userData) : null;
     }
     return null;
   }
 
-  /**
-   * Gestione errori HTTP
-   */
   private handleError(error: any): Observable<never> {
     let errorMessage = 'An error occurred';
     if (error.error instanceof ErrorEvent) {
       errorMessage = `Error: ${error.error.message}`;
     } else {
-      errorMessage = `Error Code: ${error.status}\nMessage: ${error.message}`;
+      // Prova a leggere il messaggio d'errore dal backend se esiste
+      const serverMsg = error.error?.msg || error.message;
+      errorMessage = `Error Code: ${error.status}\nMessage: ${serverMsg}`;
     }
     console.error(errorMessage);
     return throwError(() => new Error(errorMessage));

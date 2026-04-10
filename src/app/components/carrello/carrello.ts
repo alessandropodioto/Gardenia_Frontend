@@ -1,5 +1,8 @@
 import { Component, ViewChild, TemplateRef, signal } from '@angular/core';
 import { CartService } from '../../services/cart.service';
+import { ProductService } from '../../services/product.service';
+import { UserorderService } from '../../services/userorder.service'; // <--- AGGIUNTO
+import { Router } from '@angular/router';
 import { MatDialog } from '@angular/material/dialog';
 
 @Component({
@@ -11,15 +14,21 @@ import { MatDialog } from '@angular/material/dialog';
 export class CarrelloComponent {
   @ViewChild('confirmDialog') confirmDialog!: TemplateRef<any>;
 
-  // Segnali per la notifica (stessa logica del product-details)
+  // Stati Reattivi (Signals)
   showToast = signal(false);
   toastMessage = signal('');
+  loading = signal(false);
+  error = signal<string | null>(null);
 
   constructor(
-    public cartService: CartService, // public per usarlo direttamente nel template
+    public cartService: CartService,
+    private productService: ProductService,
+    private userOrderService: UserorderService, // <--- INIETTATO
     private dialog: MatDialog,
+    private router: Router,
   ) {}
 
+  // Getter per semplificare il template
   get items() {
     return this.cartService.cartItems();
   }
@@ -28,16 +37,62 @@ export class CarrelloComponent {
     return this.items.reduce((acc, item) => acc + item.price * item.amount, 0);
   }
 
+  confermaOrdine() {
+    if (this.items.length === 0) return;
+    //Parte che non serve, forse basta solo passare userName a ordineDaInviare
+    this.loading.set(true);
+    let userIdentifier: string | null = null;
+
+    if (typeof window !== 'undefined' && window.localStorage) {
+      const userData = localStorage.getItem('user_data');
+      if (userData) {
+        const parsed = JSON.parse(userData);
+        userIdentifier = parsed.userName || parsed.username;
+      }
+      if (!userIdentifier) {
+        userIdentifier = localStorage.getItem('username');
+      }
+    }
+
+    if (!userIdentifier) {
+      this.notify('Effettua il login per continuare.');
+      this.loading.set(false);
+      return;
+    }
+
+    // COSTRUZIONE OGGETTO PER IL BACKEND
+    const ordineDaInviare = {
+      userId: userIdentifier,
+      wharehouse: 'Main',
+      isPaid: false,
+      status: 'PENDING',
+      date: new Date().toISOString().split('T')[0],
+      totalPrice: this.subtotal,
+    };
+
+    this.userOrderService.create(ordineDaInviare).subscribe({
+      next: () => {
+        this.cartService.loadCart();
+        this.cartService.resetCartSignal();
+        this.loading.set(false);
+        this.notify('Ordine creato!');
+        this.router.navigate(['/user/orders']);
+      },
+      error: (err) => {
+        this.loading.set(false);
+        this.notify('Errore creazione ordine.');
+        console.error(err);
+      },
+    });
+  }
+
   /**
-   * Metodo unificato per gestire il cambio quantità
+   * Cambia quantità con controlli di sicurezza e stock
    */
   cambiaQuantita(item: any, delta: number) {
-    console.log('Dati elemento:', item); // <--- Guarda la console del browser (F12)
-    console.log('Stock disponibile:', item.productStock);
     const nuovaQty = item.amount + delta;
-    const maxAvailable = item.productStock; // Assicurati che il backend lo invii
+    const maxAvailable = item.productStock;
 
-    // Gestione Diminuzione / Rimozione
     if (nuovaQty < 1) {
       this.dialog
         .open(this.confirmDialog)
@@ -50,22 +105,33 @@ export class CarrelloComponent {
       return;
     }
 
-    // Gestione Aumento: Controllo Stock
     if (delta > 0 && nuovaQty > maxAvailable) {
-      this.notify(`Sorry, only ${maxAvailable} items available in stock.`);
+      this.notify(`Solo ${maxAvailable} pezzi disponibili.`);
       return;
     }
 
-    // Gestione Aumento: Controllo Limite 10
     if (delta > 0 && nuovaQty > 10) {
-      this.notify('Maximum limit is 10 units per product.');
+      this.notify('Massimo 10 unità per prodotto.');
       return;
     }
 
-    // Se tutto ok, procedi
     this.cartService.updateQuantity(item.id, nuovaQty, item.price).subscribe({
-      error: () => this.notify('Could not update quantity.'),
+      error: () => this.notify('Aggiornamento fallito.'),
     });
+  }
+
+  rimuoviTutto(item: any) {
+    this.dialog
+      .open(this.confirmDialog)
+      .afterClosed()
+      .subscribe((result) => {
+        if (result === true) {
+          this.cartService.removeItem(item.id).subscribe({
+            next: () => this.notify('Articolo rimosso'),
+            error: () => this.notify('Errore durante la rimozione'),
+          });
+        }
+      });
   }
 
   private notify(msg: string) {
@@ -76,19 +142,5 @@ export class CarrelloComponent {
 
   trackById(index: number, item: any): number {
     return item.id;
-  }
-
-  rimuoviTutto(item: any) {
-    this.dialog
-      .open(this.confirmDialog)
-      .afterClosed()
-      .subscribe((result) => {
-        if (result === true) {
-          this.cartService.removeItem(item.id).subscribe({
-            next: () => this.notify('Item removed'),
-            error: () => this.notify('Error removing item'),
-          });
-        }
-      });
   }
 }

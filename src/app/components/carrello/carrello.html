@@ -3,10 +3,11 @@
     <h2>Your Shopping Cart</h2>
   </div>
 
-  <div class="cart-items">
+  <div class="cart-items" *ngIf="items.length > 0">
     <div class="cart-item" *ngFor="let item of items; trackBy: trackById">
+      
       <a [routerLink]="['/product', item.idProduct]" class="img-link">
-        <img [src]="item.immagine" [alt]="item.nome" class="product-img" />
+        <img [src]="item.immagine || 'assets/placeholder.png'" [alt]="item.nome" class="product-img" />
       </a>
 
       <div class="item-details">
@@ -16,7 +17,7 @@
 
         <div class="controls-wrapper">
           <div class="quantity-controls">
-            <button mat-icon-button (click)="cambiaQuantita(item, -1)">
+            <button mat-icon-button (click)="cambiaQuantita(item, -1)" [disabled]="loading()">
               <mat-icon>{{ item.amount > 1 ? 'remove' : 'delete_outline' }}</mat-icon>
             </button>
 
@@ -25,14 +26,14 @@
             <button
               mat-icon-button
               (click)="cambiaQuantita(item, 1)"
-              [disabled]="item.amount >= item.productStock || item.amount >= 10"
+              [disabled]="item.amount >= item.productStock || item.amount >= 10 || loading()"
             >
               <mat-icon>add</mat-icon>
             </button>
           </div>
 
           <span class="low-stock-warning" *ngIf="item.amount >= item.productStock">
-            Maximum stock reached
+            Maximum stock reached ({{item.productStock}} available)
           </span>
         </div>
       </div>
@@ -41,7 +42,7 @@
         {{ item.price * item.amount | currency: 'EUR' }}
       </div>
 
-      <button mat-icon-button color="warn" class="remove-all-btn" (click)="rimuoviTutto(item)">
+      <button mat-icon-button color="warn" class="remove-all-btn" (click)="rimuoviTutto(item)" [disabled]="loading()">
         <mat-icon>delete</mat-icon>
       </button>
     </div>
@@ -52,32 +53,42 @@
       <span class="subtotal-label">Order Total</span>
       <span class="subtotal-amount">{{ subtotal | currency: 'EUR' }}</span>
     </div>
-    <button mat-flat-button class="checkout-btn" routerLink="/pagamento">
-      Proceed to Checkout
+
+    <button 
+      mat-flat-button 
+      class="checkout-btn" 
+      (click)="confermaOrdine()"
+      [disabled]="items.length === 0 || loading()">
+      
+      @if (loading()) {
+        <mat-spinner diameter="20" style="margin-right: 8px;"></mat-spinner>
+        Processing...
+      } @else {
+        Place Order
+      }
     </button>
   </div>
 
-<div *ngIf="items.length === 0" class="empty-cart">
-  <img 
-    src="https://cdn-icons-png.flaticon.com/512/11329/11329060.png" 
-    alt="Empty Cart" 
-    class="empty-cart-img"
-  />
-  
-  <h3>Your cart feels a bit light!</h3>
-  <p>Looks like you hasn't added anything to your cart yet.</p>
-  
-  <button mat-flat-button color="primary" class="go-shop-btn" routerLink="/home">
-    Go Shopping
-  </button>
-</div>
+  <div *ngIf="items.length === 0" class="empty-cart">
+    <img 
+      src="https://cdn-icons-png.flaticon.com/512/11329/11329060.png" 
+      alt="Empty Cart" 
+      class="empty-cart-img"
+    />
+    <h3>Your cart feels a bit light!</h3>
+    <p>Looks like you haven't added anything to your cart yet.</p>
+    
+    <button mat-flat-button color="primary" class="go-shop-btn" routerLink="/home">
+      Go Shopping
+    </button>
+  </div>
 </div>
 
 <div class="custom-alert" [class.active]="showToast()">
   <div class="alert-body">
     <div class="alert-icon">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 24px; height: 24px; color: #2ecc71">
-        <circle cx="12" cy="12" r="10" /><line x1="12" y1="8" x2="12" y2="12" /><line x1="12" y1="16" x2="12.01" y2="16" />
+        <circle cx="12" cy="12" r="10" /><path d="M9 11l3 3L22 4" />
       </svg>
     </div>
     <div class="alert-text">
