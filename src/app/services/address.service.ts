@@ -17,9 +17,9 @@ export interface Address {
 })
 export class AddressService {
   private baseUrl = 'http://localhost:8080/rest/address';
-
+  
   constructor(private http: HttpClient, private authService: AuthService) {}
-
+  
   getAllAddressesByUsername() {
     const userData = this.authService.getUserData();
     const userName = userData ? userData.id : null;
@@ -36,7 +36,13 @@ export class AddressService {
   }
 
   addAddress(address: Address) {
-    return this.http.post<Address>(`${this.baseUrl}/add`, address).pipe(
+    const userData = this.authService.getUserData();
+    const userName = userData ? userData.id : null;
+    if (!userName) {
+      throw new Error('User is not logged in');
+    }
+
+    return this.http.post<Address>(`${this.baseUrl}/create`, address, { params: { userName }}).pipe(
       catchError(error => {
         console.error('Error adding address:', error);
         return throwError(() => new Error('Failed to add address'));
