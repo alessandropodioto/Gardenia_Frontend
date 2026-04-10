@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { AuthService, LoginData } from '../../services/auth.service';
+import { CartService } from '../../services/cart.service';
 
 @Component({
   selector: 'app-login',
@@ -17,6 +18,7 @@ export class Login implements OnInit {
   constructor(
     private fb: FormBuilder,
     private authService: AuthService,
+    private cartService: CartService,
     private router: Router
   ) {
     this.loginForm = this.fb.group({
@@ -40,18 +42,21 @@ export class Login implements OnInit {
       this.authService.login(loginData).subscribe({
         next: (response) => {
           this.isLoading = false;
+
           this.authService.setUserData(response);
+          this.cartService.loadCart();
           this.router.navigate(['/home']);
         },
         error: (error) => {
           this.isLoading = false;
-          this.errorMessage = 'Login failed. Please try again.';
+          this.errorMessage = 'Login fallito. Controlla le tue credenziali.';
           console.error('Login error:', error);
         }
       });
     }
   }
 
+  // Helper per il template (validazione)
   get userName() {
     return this.loginForm.get('userName');
   }

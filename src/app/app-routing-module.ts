@@ -11,7 +11,7 @@ import { PagamentoComponent } from './components/pagamento/pagamento';
 import { User } from './components/user/user';
 import { Address } from './components/address/address';
 import { Overview } from './components/overview/overview';
-import { Orders } from './components/orders/orders';
+import { OrdersComponent } from './components/orders/orders';
 import { OrderDetail } from './components/order-detail/order-detail';
 import { AboutUs } from './components/about-us/about-us';
 
@@ -21,7 +21,7 @@ const routes: Routes = [
   { path: 'category/:categoryName/:subcategoryName', component: HomeComponent },
   { path: 'login', component: Login },
   { path: 'register', component: Register },
-  { path: 'product/:id' , component: ProductDetails },
+  { path: 'product/:id', component: ProductDetails },
   { path: 'cart', component: CarrelloComponent },
   { path: 'admin', component: Admin, canActivate: [AdminGuard] },
   { path: 'pagamento', component: PagamentoComponent },
@@ -32,15 +32,15 @@ const routes: Routes = [
     children: [
       { path: 'overview', component: Overview },
       { path: 'address', component: Address },
-      { path: 'orders', component: Orders },
+      { path: 'orders', component: OrdersComponent },
       { path: 'orders/:id', component: OrderDetail },
-      { path: '', redirectTo: 'overview', pathMatch: 'full' }
-    ]
-  }
+      { path: '', redirectTo: 'overview', pathMatch: 'full' },
+    ],
+  },
 ];
 
 @NgModule({
   imports: [RouterModule.forRoot(routes)],
-  exports: [RouterModule]
+  exports: [RouterModule],
 })
-export class AppRoutingModule { }
+export class AppRoutingModule {}
