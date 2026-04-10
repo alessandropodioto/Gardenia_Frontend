@@ -9,7 +9,7 @@ import { AdminGuard } from './guards/admin.guard';
 import { CarrelloComponent } from './components/carrello/carrello';
 import { PagamentoComponent } from './components/pagamento/pagamento';
 import { User } from './components/user/user';
-import { Address } from './components/address/address';
+import { AddressComponent } from './components/address/address';
 import { Overview } from './components/overview/overview';
 import { Orders } from './components/orders/orders';
 import { OrderDetail } from './components/order-detail/order-detail';
@@ -31,7 +31,7 @@ const routes: Routes = [
     component: User,
     children: [
       { path: 'overview', component: Overview },
-      { path: 'address', component: Address },
+      { path: 'address', component: AddressComponent },
       { path: 'orders', component: Orders },
       { path: 'orders/:id', component: OrderDetail },
       { path: '', redirectTo: 'overview', pathMatch: 'full' }
