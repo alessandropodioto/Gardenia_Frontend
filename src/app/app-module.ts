@@ -33,6 +33,7 @@ import { CarrelloComponent } from './components/carrello/carrello';
 import { Admin } from './components/admin/admin';
 import { AdminSidebar } from './components/admin-sidebar/admin-sidebar';
 import { DeleteUser } from './dialogs/delete-user/delete-user';
+import { EditProfile } from './dialogs/edit-profile/edit-profile';
 import { ProductDialog } from './dialogs/product-dialog/product-dialog';
 import { AddressDialog } from './dialogs/address-dialog/address-dialog';
 import { DeleteAddress } from './dialogs/delete-address/delete-address';
@@ -56,6 +57,7 @@ import { AboutUs } from './components/about-us/about-us';
     HomeComponent,
     Admin,
     DeleteUser,
+    EditProfile,
     ProductDialog,
     AddressDialog,
     DeleteAddress,

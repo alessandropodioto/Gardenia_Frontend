@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { AuthService, LoginData } from '../../services/auth.service';
@@ -17,7 +17,8 @@ export class Login implements OnInit {
   constructor(
     private fb: FormBuilder,
     private authService: AuthService,
-    private router: Router
+    private router: Router,
+    private cdr: ChangeDetectorRef
   ) {
     this.loginForm = this.fb.group({
       userName: ['', [Validators.required]],
@@ -46,6 +47,7 @@ export class Login implements OnInit {
         error: (error) => {
           this.isLoading = false;
           this.errorMessage = 'Login failed. Please try again.';
+          this.cdr.detectChanges();
           console.error('Login error:', error);
         }
       });
