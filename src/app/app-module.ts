@@ -45,6 +45,9 @@ import { Overview } from './components/overview/overview';
 import { OrdersComponent } from './components/orders/orders';
 import { OrderDetail } from './components/order-detail/order-detail';
 import { AboutUs } from './components/about-us/about-us';
+import { EmailValidationComponent } from './email-validation/email-validation';
+import {  ChangePasswordComponent } from './dialogs/change-password/change-password';
+import {  ResetPasswordComponent } from './components/reset-password/reset-password';
 import { Wishlist } from './components/wishlist/wishlist';
 
 @NgModule({
@@ -70,6 +73,9 @@ import { Wishlist } from './components/wishlist/wishlist';
     OrderDetail,
     CarrelloComponent,
     AboutUs,
+    EmailValidationComponent,
+    ChangePasswordComponent,
+    ResetPasswordComponent,
     Wishlist,
   ],
   imports: [
@@ -99,6 +105,7 @@ import { Wishlist } from './components/wishlist/wishlist';
     provideHttpClient(withFetch()),
     provideBrowserGlobalErrorListeners(),
     provideClientHydration(withEventReplay()),
+
     AuthService,
   ],
   bootstrap: [App],

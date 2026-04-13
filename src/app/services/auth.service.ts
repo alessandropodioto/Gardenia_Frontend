@@ -3,7 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { isPlatformBrowser } from '@angular/common';
 import { Observable, throwError, BehaviorSubject } from 'rxjs';
 import { catchError, tap } from 'rxjs/operators';
-
+import { HttpParams } from '@angular/common/http';
 export interface RegisterData {
   userName: string;
   firstName: string;
@@ -140,5 +140,29 @@ export class AuthService {
     }
     console.error(errorMessage);
     return throwError(() => new Error(errorMessage));
+  }
+  /**
+   * Valida l'email tramite l'ID ricevuto dal backend
+   */
+  validateEmail(id: string): Observable<any> {
+    const params = new HttpParams().set("id", id);
+    // VVV-- QUI DEVE ESSERE this.http.get --VVV
+    return this.http.get<any>(`${this.apiUrl}/emailValidate`, { params }).pipe(
+      catchError(this.handleError)
+    );
+  }
+  /** Richiede l'invio dell'email per il reset della password */
+  requestPasswordReset(userName: string): Observable<any> {
+    const params = new HttpParams().set("userName", userName);
+    return this.http.get<any>(`${this.apiUrl}/requestResetPassword`, { params }).pipe(
+      catchError(this.handleError)
+    );
+  }
+
+  /** Invia la nuova password al database */
+  changePassword(req: any): Observable<any> {
+    return this.http.post<any>(`${this.apiUrl}/changePassword`, req).pipe(
+      catchError(this.handleError)
+    );
   }
 }

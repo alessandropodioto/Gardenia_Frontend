@@ -1,6 +1,7 @@
 import { Component, OnInit, OnDestroy, ChangeDetectionStrategy, ChangeDetectorRef } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
-import { Subject } from 'rxjs';
+// 1. ECCO LA SOLUZIONE ALL'ERRORE: abbiamo aggiunto forkJoin qui!
+import { Subject, forkJoin } from 'rxjs'; 
 import { takeUntil } from 'rxjs/operators';
 import { AuthService } from '../../services/auth.service';
 import { AdminServices, User } from '../../services/admin.service';
@@ -155,28 +156,38 @@ export class Admin implements OnInit, OnDestroy {
       .subscribe(result => {
         if (!result) return;
 
-        // Estraiamo i dati
         const productToSave = result.productData; 
-        const imageFile = result.file; 
+        const urlsText = result.imageUrls; 
 
-        // Creazione prodotto
         this.productService.create(productToSave)
           .pipe(takeUntil(this.destroy$))
           .subscribe({
             next: (response: any) => {
-              // Se l'utente ha messo l'immagine, la carichiamo subito dopo!
-              if (imageFile && response && response.id) {
-                this.productService.uploadProductImage(imageFile, response.id)
-                  .pipe(takeUntil(this.destroy$))
-                  .subscribe({
+              
+              if (urlsText && urlsText.trim() !== '' && response && response.id) {
+                
+                const urlArray = urlsText.split('\n')
+                                         .map((u: string) => u.trim()) 
+                                         .filter((u: string) => u !== ''); 
+
+                if (urlArray.length > 0) {
+                  const uploadRequests = urlArray.map((url: string) => 
+                      this.productService.createImageLink(url, response.id)
+                  );
+
+                  forkJoin(uploadRequests).pipe(takeUntil(this.destroy$)).subscribe({
                     next: () => {
+                      console.log("Tutte le immagini salvate con successo!");
                       this.loadProducts(); 
                     },
                     error: (err) => {
-                      console.error("Errore caricamento immagine", err);
+                      console.error("Errore salvataggio di alcune immagini", err);
                       this.loadProducts(); 
                     }
                   });
+                } else {
+                  this.loadProducts();
+                }
               } else {
                 this.loadProducts();
               }
@@ -205,40 +216,45 @@ export class Admin implements OnInit, OnDestroy {
         if (!result) return;
         
         const productToUpdate = result.productData;
-        const newImageFile = result.file;
-        let imageIdToDelete = result.deletedImageId;
+        const urlsText = result.imageUrls; 
+        const imageIdsToDelete: number[] = result.deletedImageIds || [];
 
-        // TRUCCO MAGICO: Se hai caricato una foto nuova (il fiore), eliminiamo 
-        // quella vecchia in automatico per non creare doppioni nel Database!
-        if (newImageFile && product.images && product.images.length > 0 && !imageIdToDelete) {
-            const imgData: any = product.images[0];
-            imageIdToDelete = imgData.imageId || imgData.id;
-        }
-
-        // Se c'è un'immagine da eliminare, la eliminiamo prima di aggiornare il prodotto
-        if (imageIdToDelete) {
-           this.productService.deleteImage(imageIdToDelete)
-             .pipe(takeUntil(this.destroy$))
-             .subscribe({
-               next: () => this.updateProduct(productToUpdate, newImageFile),
-               error: () => this.updateProduct(productToUpdate, newImageFile) // Aggiorniamo comunque in caso di errore
-             });
+        // Se l'utente ha modificato e inserito nuovi link, eliminiamo TUTTE le immagini vecchie
+        if (urlsText && urlsText.trim() !== '' && imageIdsToDelete.length > 0) {
+           
+           const deleteRequests = imageIdsToDelete.map(id => this.productService.deleteImage(id));
+           
+           forkJoin(deleteRequests).pipe(takeUntil(this.destroy$)).subscribe({
+             next: () => this.updateProduct(productToUpdate, urlsText),
+             error: () => this.updateProduct(productToUpdate, urlsText) 
+           });
         } else {
-           // Se non hai toccato l'immagine, salva solo le modifiche al testo
-           this.updateProduct(productToUpdate, newImageFile);
+           this.updateProduct(productToUpdate, urlsText);
         }
       });
   }
-  updateProduct(product: Product, file: File | null = null): void {
+
+  updateProduct(product: Product, urlsText: string | null = null): void {
     this.productService.update(product)
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: (updatedProduct: any) => {
-          // Se durante la modifica è stata caricata una nuova immagine, la salviamo
-          if (file && product && product.id) {
-             this.productService.uploadProductImage(file, product.id)
-               .pipe(takeUntil(this.destroy$))
-               .subscribe(() => this.loadProducts());
+          
+          if (urlsText && urlsText.trim() !== '' && product && product.id) {
+             
+             const urlArray = urlsText.split('\n')
+                                      .map((u: string) => u.trim())
+                                      .filter((u: string) => u !== '');
+                                      
+             if (urlArray.length > 0) {
+               const uploadRequests = urlArray.map((url: string) => 
+                   this.productService.createImageLink(url, product.id) 
+               );
+               
+               forkJoin(uploadRequests).pipe(takeUntil(this.destroy$)).subscribe(() => this.loadProducts());
+             } else {
+               this.loadProducts();
+             }
           } else {
              this.loadProducts();
           }
