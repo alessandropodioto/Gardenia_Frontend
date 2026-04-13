@@ -65,7 +65,7 @@ export class CarrelloComponent {
       userId: userIdentifier,
       wharehouse: 'Main',
       isPaid: false,
-      status: 'PENDING',
+      statusDescription: 'PENDING',
       date: new Date().toISOString().split('T')[0],
       totalPrice: this.subtotal,
     };

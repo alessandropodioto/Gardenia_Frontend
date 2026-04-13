@@ -341,7 +341,7 @@ export class Admin implements OnInit, OnDestroy {
           // Update the order in the list
           const index = this.orders.findIndex(o => o.id === order.id);
           if (index !== -1) {
-            this.orders[index].status = newStatus;
+            this.orders[index].statusDescription = newStatus;
             // Clear the pending status change
             delete this.pendingStatusChanges[order.id!];
             this.cdr.markForCheck();
