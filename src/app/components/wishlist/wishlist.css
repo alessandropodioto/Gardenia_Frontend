@@ -222,3 +222,40 @@
   cursor: pointer;
   margin-left: auto;
 }
+
+/* 1. Make the "Out of Stock" text RED */
+.stock-status.out {
+  color: #d32f2f !important; 
+  font-weight: bold;
+}
+
+/* 2. Make the "SOLD OUT" button GRAY */
+.wishlist-add-btn:disabled {
+  background-color: #bdc3c7 !important; 
+  color: #ffffff !important;
+  cursor: not-allowed;
+}
+
+/* 3. Optional: Make the image look faded when out of stock */
+.out-of-stock-img {
+  filter: grayscale(1);
+  opacity: 0.5;
+}
+
+/* 4. Alert/Toast Styling */
+.custom-alert {
+  position: fixed;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%) translateY(100px);
+  background: #333;
+  color: white;
+  padding: 12px 24px;
+  border-radius: 8px;
+  transition: transform 0.3s ease;
+  z-index: 9999;
+}
+
+.custom-alert.active {
+  transform: translateX(-50%) translateY(0);
+}

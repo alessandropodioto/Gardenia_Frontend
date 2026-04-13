@@ -8,7 +8,7 @@ export interface UserOrder {
   isPaid: boolean;
   userId?: string;
   addressId?: number;
-  status?: string;
+  statusDescription: string;
   date: string;
   totalPrice?: number;
   items?: any[];
