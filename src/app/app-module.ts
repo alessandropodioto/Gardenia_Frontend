@@ -45,6 +45,7 @@ import { Overview } from './components/overview/overview';
 import { OrdersComponent } from './components/orders/orders';
 import { OrderDetail } from './components/order-detail/order-detail';
 import { AboutUs } from './components/about-us/about-us';
+import { Wishlist } from './components/wishlist/wishlist';
 
 @NgModule({
   declarations: [
@@ -68,7 +69,8 @@ import { AboutUs } from './components/about-us/about-us';
     OrdersComponent,
     OrderDetail,
     CarrelloComponent,
-    AboutUs
+    AboutUs,
+    Wishlist,
   ],
   imports: [
     BrowserModule,
