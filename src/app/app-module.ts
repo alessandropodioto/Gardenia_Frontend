@@ -48,6 +48,7 @@ import { AboutUs } from './components/about-us/about-us';
 import { EmailValidationComponent } from './email-validation/email-validation';
 import {  ChangePasswordComponent } from './dialogs/change-password/change-password';
 import {  ResetPasswordComponent } from './components/reset-password/reset-password';
+import { Wishlist } from './components/wishlist/wishlist';
 
 @NgModule({
   declarations: [
@@ -75,6 +76,7 @@ import {  ResetPasswordComponent } from './components/reset-password/reset-passw
     EmailValidationComponent,
     ChangePasswordComponent,
     ResetPasswordComponent,
+    Wishlist,
   ],
   imports: [
     BrowserModule,

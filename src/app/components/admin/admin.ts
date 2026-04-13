@@ -6,6 +6,7 @@ import { takeUntil } from 'rxjs/operators';
 import { AuthService } from '../../services/auth.service';
 import { AdminServices, User } from '../../services/admin.service';
 import { ProductService, Product } from '../../services/product.service';
+import { UserorderService, UserOrder } from '../../services/userorder.service';
 import { DeleteUser } from '../../dialogs/delete-user/delete-user';
 import { ProductDialog, ProductDialogData } from '../../dialogs/product-dialog/product-dialog';
 
@@ -20,8 +21,10 @@ export class Admin implements OnInit, OnDestroy {
   isAdmin: boolean = false;
   users: User[] = [];
   products: Product[] = [];
+  orders: UserOrder[] = [];
   error: string | null = null;
   activeView: string = 'users';
+  pendingStatusChanges: { [orderId: number]: string } = {};
 
   private destroy$ = new Subject<void>();
 
@@ -29,6 +32,7 @@ export class Admin implements OnInit, OnDestroy {
     private authService: AuthService,
     private adminService: AdminServices,
     private productService: ProductService,
+    private userorderService: UserorderService,
     private dialog: MatDialog,
     private cdr: ChangeDetectorRef
   ) {}
@@ -55,6 +59,8 @@ export class Admin implements OnInit, OnDestroy {
     this.error = null;
     if (viewStr === 'products') {
       this.loadProducts();
+    } else if (viewStr === 'orders') {
+      this.loadOrders();
     }
     this.cdr.markForCheck();
   }
@@ -297,5 +303,60 @@ export class Admin implements OnInit, OnDestroy {
           console.error('Error deleting product:', err);
         }
       });
+  }
+
+  // ==============================
+  // ORDER MANAGEMENT METHODS
+  // ==============================
+  loadOrders(): void {
+    this.error = null;
+
+    this.userorderService.list()
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: (orders) => {
+          this.orders = orders;
+          this.cdr.markForCheck();
+        },
+        error: (err) => {
+          this.error = 'Error loading orders';
+          this.cdr.markForCheck();
+          console.error('Error loading orders:', err);
+        }
+      });
+  }
+
+  updateOrderStatus(order: UserOrder): void {
+    const newStatus = this.pendingStatusChanges[order.id!];
+    if (!newStatus) {
+      return;
+    }
+
+    const updatedOrder = { ...order, status: newStatus };
+    
+    this.userorderService.update(updatedOrder)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: () => {
+          // Update the order in the list
+          const index = this.orders.findIndex(o => o.id === order.id);
+          if (index !== -1) {
+            this.orders[index].status = newStatus;
+            // Clear the pending status change
+            delete this.pendingStatusChanges[order.id!];
+            this.cdr.markForCheck();
+          }
+        },
+        error: (err) => {
+          this.error = 'Error updating order status';
+          this.cdr.markForCheck();
+          console.error('Error updating order status:', err);
+        }
+      });
+  }
+
+  onStatusChange(orderId: number, newStatus: string): void {
+    this.pendingStatusChanges[orderId] = newStatus;
+    this.cdr.markForCheck();
   }
 }
