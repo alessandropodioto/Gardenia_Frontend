@@ -3,12 +3,15 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { AuthService, LoginData } from '../../services/auth.service';
 import { CartService } from '../../services/cart.service';
+import { MatDialog } from '@angular/material/dialog';
+import { ChangePasswordComponent } from '../../dialogs/change-password/change-password';
 
 @Component({
   selector: 'app-login',
   standalone: false,
   templateUrl: './login.html',
   styleUrl: './login.css',
+  
 })
 export class Login implements OnInit {
   loginForm: FormGroup;
@@ -20,7 +23,9 @@ export class Login implements OnInit {
     private authService: AuthService,
     private cartService: CartService,
     private router: Router,
-    private cdr: ChangeDetectorRef
+    private cdr: ChangeDetectorRef,
+    private dialog: MatDialog
+    
   ) {
     this.loginForm = this.fb.group({
       userName: ['', [Validators.required]],
@@ -31,6 +36,7 @@ export class Login implements OnInit {
   ngOnInit(): void {}
 
   onSubmit(): void {
+    
     if (this.loginForm.valid) {
       this.isLoading = true;
       this.errorMessage = '';
@@ -54,9 +60,14 @@ export class Login implements OnInit {
           this.cdr.detectChanges();
           console.error('Login error:', error);
         }
+        
       });
+      
     }
   }
+  openForgotPwd() {
+  this.dialog.open(ChangePasswordComponent, { width: '400px' });
+}
 
   // Helper per il template (validazione)
   get userName() {
@@ -66,4 +77,5 @@ export class Login implements OnInit {
   get password() {
     return this.loginForm.get('password');
   }
+  
 }
