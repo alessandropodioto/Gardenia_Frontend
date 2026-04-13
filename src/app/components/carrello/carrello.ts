@@ -26,7 +26,7 @@ export class CarrelloComponent {
     private userOrderService: UserorderService,
     private dialog: MatDialog,
     private router: Router,
-  ) {}
+  ) { }
 
   // Getters for template simplicity
   get items() {
@@ -39,51 +39,7 @@ export class CarrelloComponent {
 
   confermaOrdine() {
     if (this.items.length === 0) return;
-    
-    this.loading.set(true);
-    let userIdentifier: string | null = null;
-
-    if (typeof window !== 'undefined' && window.localStorage) {
-      const userData = localStorage.getItem('user_data');
-      if (userData) {
-        const parsed = JSON.parse(userData);
-        userIdentifier = parsed.userName || parsed.username;
-      }
-      if (!userIdentifier) {
-        userIdentifier = localStorage.getItem('username');
-      }
-    }
-
-    if (!userIdentifier) {
-      this.notify('Please log in to continue.');
-      this.loading.set(false);
-      return;
-    }
-
-    // BACKEND OBJECT CONSTRUCTION
-    const ordineDaInviare = {
-      userId: userIdentifier,
-      wharehouse: 'Main',
-      isPaid: false,
-      statusDescription: 'PENDING',
-      date: new Date().toISOString().split('T')[0],
-      totalPrice: this.subtotal,
-    };
-
-    this.userOrderService.create(ordineDaInviare).subscribe({
-      next: () => {
-        this.cartService.loadCart();
-        this.cartService.resetCartSignal();
-        this.loading.set(false);
-        this.notify('Order created successfully!');
-        this.router.navigate(['/user/orders']);
-      },
-      error: (err) => {
-        this.loading.set(false);
-        this.notify('Error creating the order.');
-        console.error('Order creation failed:', err);
-      },
-    });
+    this.router.navigate(['/pagamento']);
   }
 
   /**

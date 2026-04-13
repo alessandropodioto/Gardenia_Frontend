@@ -5,7 +5,7 @@
 
   <div class="cart-items" *ngIf="items.length > 0">
     <div class="cart-item" *ngFor="let item of items; trackBy: trackById">
-      
+
       <a [routerLink]="['/product', item.idProduct]" class="img-link">
         <img [src]="item.immagine || 'assets/placeholder.png'" [alt]="item.nome" class="product-img" />
       </a>
@@ -23,11 +23,8 @@
 
             <span class="amount-badge">{{ item.amount }}</span>
 
-            <button
-              mat-icon-button
-              (click)="cambiaQuantita(item, 1)"
-              [disabled]="item.amount >= item.productStock || item.amount >= 10 || loading()"
-            >
+            <button mat-icon-button (click)="cambiaQuantita(item, 1)"
+              [disabled]="item.amount >= item.productStock || item.amount >= 10 || loading()">
               <mat-icon>add</mat-icon>
             </button>
           </div>
@@ -54,30 +51,22 @@
       <span class="subtotal-amount">{{ subtotal | currency: 'EUR' }}</span>
     </div>
 
-    <button 
-      mat-flat-button 
-      class="checkout-btn" 
-      (click)="confermaOrdine()"
-      [disabled]="items.length === 0 || loading()">
-      
+    <button mat-flat-button class="checkout-btn" routerLink="/pagamento" [disabled]="items.length === 0 || loading()">
+
       @if (loading()) {
-        <mat-spinner diameter="20" style="margin-right: 8px;"></mat-spinner>
-        Processing...
+      <mat-spinner diameter="20" style="margin-right: 8px;"></mat-spinner>
+      Processing...
       } @else {
-        Place Order
+      Go to Payment
       }
     </button>
   </div>
 
   <div *ngIf="items.length === 0" class="empty-cart">
-    <img 
-      src="https://cdn-icons-png.flaticon.com/512/11329/11329060.png" 
-      alt="Empty Cart" 
-      class="empty-cart-img"
-    />
+    <img src="https://cdn-icons-png.flaticon.com/512/11329/11329060.png" alt="Empty Cart" class="empty-cart-img" />
     <h3>Your cart feels a bit light!</h3>
     <p>Looks like you haven't added anything to your cart yet.</p>
-    
+
     <button mat-flat-button color="primary" class="go-shop-btn" routerLink="/home">
       Go Shopping
     </button>
@@ -87,8 +76,10 @@
 <div class="custom-alert" [class.active]="showToast()">
   <div class="alert-body">
     <div class="alert-icon">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 24px; height: 24px; color: #2ecc71">
-        <circle cx="12" cy="12" r="10" /><path d="M9 11l3 3L22 4" />
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+        style="width: 24px; height: 24px; color: #2ecc71">
+        <circle cx="12" cy="12" r="10" />
+        <path d="M9 11l3 3L22 4" />
       </svg>
     </div>
     <div class="alert-text">
