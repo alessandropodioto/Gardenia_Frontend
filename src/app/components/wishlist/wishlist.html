@@ -7,7 +7,11 @@
     <div class="cart-item" *ngFor="let item of wishlistService.items()">
       
       <a [routerLink]="['/product', item.productId]" class="img-link">
-        <img [src]="formatImg(item.immagine)" [alt]="item.productName" class="product-img" />
+        <img 
+          [src]="formatImg(item.immagine)" 
+          [alt]="item.productName" 
+          class="product-img"
+          [class.out-of-stock-img]="(item.productStock ?? item.stock ?? 0) <= 0" />
       </a>
 
       <div class="item-details">
@@ -15,7 +19,9 @@
           <h4>{{ item.productName }}</h4>
         </a>
         <div class="status-wrapper">
-          <span class="stock-status">In Stock - Ready to ship</span>
+          <span class="stock-status" [class.out]="(item.productStock ?? item.stock ?? 0) <= 0">
+            {{ (item.productStock ?? item.stock ?? 0) > 0 ? 'In Stock - Ready to ship' : 'Out of Stock' }}
+          </span>
         </div>
       </div>
 
@@ -27,11 +33,12 @@
         <button 
           mat-flat-button 
           class="checkout-btn wishlist-add-btn" 
-          (click)="aggiungiAlCarrello(item)">
-          ADD TO CART
+          (click)="addToCart(item)"
+          [disabled]="(item.productStock ?? item.stock ?? 0) <= 0">
+          {{ (item.productStock ?? item.stock ?? 0) > 0 ? 'ADD TO CART' : 'SOLD OUT' }}
         </button>
-        
-        <button mat-icon-button color="warn" class="remove-btn" (click)="rimuovi(item.id)">
+
+        <button mat-icon-button color="warn" class="remove-btn" (click)="remove(item.id)">
           <mat-icon>delete</mat-icon>
         </button>
       </div>
@@ -40,16 +47,14 @@
   </div>
 
   <div *ngIf="wishlistService.items().length === 0" class="empty-cart">
-    <img 
-      src="https://cdn-icons-png.flaticon.com/512/10238/10238421.png" 
-      alt="Empty Wishlist" 
-      class="empty-cart-img"
-    />
+    <img src="https://cdn-icons-png.flaticon.com/512/10238/10238421.png" alt="Empty" class="empty-cart-img" />
     <h3>Your wishlist is empty!</h3>
-    <p>Find something you love and save it here.</p>
-    
-    <button mat-flat-button class="go-shop-btn" routerLink="/home">
-      Go Shopping
-    </button>
+    <button mat-flat-button class="go-shop-btn" routerLink="/home">Go Shopping</button>
+  </div>
+</div>
+
+<div class="custom-alert" [class.active]="showToast()">
+  <div class="alert-body">
+    <p>{{ toastMessage() }}</p>
   </div>
 </div>
