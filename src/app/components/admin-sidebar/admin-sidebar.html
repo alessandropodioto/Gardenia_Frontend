@@ -15,5 +15,12 @@
     >
       Products
     </button>
+    <button 
+      class="nav-btn" 
+      [class.active]="activeView === 'orders'"
+      (click)="switchView('orders')"
+    >
+      Orders
+    </button>
   </nav>
 </aside>
