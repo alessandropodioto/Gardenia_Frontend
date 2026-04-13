@@ -14,6 +14,7 @@ import { Overview } from './components/overview/overview';
 import { OrdersComponent } from './components/orders/orders';
 import { OrderDetail } from './components/order-detail/order-detail';
 import { AboutUs } from './components/about-us/about-us';
+import { Wishlist } from './components/wishlist/wishlist';
 
 const routes: Routes = [
   { path: '', redirectTo: '/home', pathMatch: 'full' },
@@ -32,8 +33,9 @@ const routes: Routes = [
     children: [
       { path: 'overview', component: Overview },
       { path: 'address', component: AddressComponent }, // Corretto: usa il nome dell'import a riga 12
-      { path: 'orders', component: OrdersComponent },   // Corretto: usa il nome dell'import a riga 14
+      { path: 'orders', component: OrdersComponent }, // Corretto: usa il nome dell'import a riga 14
       { path: 'orders/:id', component: OrderDetail },
+      { path: 'wishlist', component: Wishlist },
       { path: '', redirectTo: 'overview', pathMatch: 'full' },
     ],
   },

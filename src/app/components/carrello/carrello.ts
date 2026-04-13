@@ -1,7 +1,7 @@
 import { Component, ViewChild, TemplateRef, signal } from '@angular/core';
 import { CartService } from '../../services/cart.service';
 import { ProductService } from '../../services/product.service';
-import { UserorderService } from '../../services/userorder.service'; // <--- AGGIUNTO
+import { UserorderService } from '../../services/userorder.service';
 import { Router } from '@angular/router';
 import { MatDialog } from '@angular/material/dialog';
 
@@ -14,7 +14,7 @@ import { MatDialog } from '@angular/material/dialog';
 export class CarrelloComponent {
   @ViewChild('confirmDialog') confirmDialog!: TemplateRef<any>;
 
-  // Stati Reattivi (Signals)
+  // Reactive States (Signals)
   showToast = signal(false);
   toastMessage = signal('');
   loading = signal(false);
@@ -23,12 +23,12 @@ export class CarrelloComponent {
   constructor(
     public cartService: CartService,
     private productService: ProductService,
-    private userOrderService: UserorderService, // <--- INIETTATO
+    private userOrderService: UserorderService,
     private dialog: MatDialog,
     private router: Router,
   ) {}
 
-  // Getter per semplificare il template
+  // Getters for template simplicity
   get items() {
     return this.cartService.cartItems();
   }
@@ -39,7 +39,7 @@ export class CarrelloComponent {
 
   confermaOrdine() {
     if (this.items.length === 0) return;
-    //Parte che non serve, forse basta solo passare userName a ordineDaInviare
+    
     this.loading.set(true);
     let userIdentifier: string | null = null;
 
@@ -55,12 +55,12 @@ export class CarrelloComponent {
     }
 
     if (!userIdentifier) {
-      this.notify('Effettua il login per continuare.');
+      this.notify('Please log in to continue.');
       this.loading.set(false);
       return;
     }
 
-    // COSTRUZIONE OGGETTO PER IL BACKEND
+    // BACKEND OBJECT CONSTRUCTION
     const ordineDaInviare = {
       userId: userIdentifier,
       wharehouse: 'Main',
@@ -75,19 +75,19 @@ export class CarrelloComponent {
         this.cartService.loadCart();
         this.cartService.resetCartSignal();
         this.loading.set(false);
-        this.notify('Ordine creato!');
+        this.notify('Order created successfully!');
         this.router.navigate(['/user/orders']);
       },
       error: (err) => {
         this.loading.set(false);
-        this.notify('Errore creazione ordine.');
-        console.error(err);
+        this.notify('Error creating the order.');
+        console.error('Order creation failed:', err);
       },
     });
   }
 
   /**
-   * Cambia quantità con controlli di sicurezza e stock
+   * Change quantity with safety and stock checks
    */
   cambiaQuantita(item: any, delta: number) {
     const nuovaQty = item.amount + delta;
@@ -106,17 +106,17 @@ export class CarrelloComponent {
     }
 
     if (delta > 0 && nuovaQty > maxAvailable) {
-      this.notify(`Solo ${maxAvailable} pezzi disponibili.`);
+      this.notify(`Only ${maxAvailable} units available.`);
       return;
     }
 
     if (delta > 0 && nuovaQty > 10) {
-      this.notify('Massimo 10 unità per prodotto.');
+      this.notify('Maximum 10 units per product.');
       return;
     }
 
     this.cartService.updateQuantity(item.id, nuovaQty, item.price).subscribe({
-      error: () => this.notify('Aggiornamento fallito.'),
+      error: () => this.notify('Update failed.'),
     });
   }
 
@@ -127,8 +127,8 @@ export class CarrelloComponent {
       .subscribe((result) => {
         if (result === true) {
           this.cartService.removeItem(item.id).subscribe({
-            next: () => this.notify('Articolo rimosso'),
-            error: () => this.notify('Errore durante la rimozione'),
+            next: () => this.notify('Item removed'),
+            error: () => this.notify('Error during removal'),
           });
         }
       });

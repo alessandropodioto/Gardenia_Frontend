@@ -3,11 +3,9 @@
     <div class="container">
       <div class="carousel-wrapper">
         @for (phrase of phrases; track $index) {
-          @if ($index === currentIndex) {
-            <p class="fade-text">
-              {{ phrase }}
-            </p>
-          }
+        @if ($index === currentIndex) {
+        <p class="fade-text">{{ phrase }}</p>
+        }
         }
       </div>
     </div>
@@ -15,71 +13,79 @@
 
   <div class="navbar-main">
     <div class="container navbar-content">
+
       <div class="logo">
         <a routerLink="/">
-          <img src="img/image3.png" alt="Gardenia Logo" class="logo-img logo-small" />
+          <img src="img/image3.png" alt="Logo" class="logo-img logo-small" />
         </a>
       </div>
 
       <nav class="nav-menu">
         @for (category of categories; track $index) {
-          <li class="has-dropdown" [class.open]="activeMenu === category.name">
-            <div class="menu-container" (mouseleave)="activeMenu = null">
-              <a
-                href="javascript:void(0)"
-                (mouseenter)="toggleMenu(category.name, $event)"
-                routerLinkActive="active"
-              >
-                {{ category.name }} <span class="arrow">▼</span>
-              </a>
-              <ul class="submenu" (click)="$event.stopPropagation()">
-                @for (sub of subcategoriesMap[category.id]; track sub.id) {
-                  <li>
-                    <a
-                      routerLink="/category/{{ category.name }}/{{ sub.subcategoryName }}"
-                      [queryParams]="{ subcategoryId: sub.id }"
-                    >
-                      {{ sub.subcategoryName }}
-                    </a>
-                  </li>
-                }
-              </ul>
-            </div>
-          </li>
+        <li class="has-dropdown" [class.open]="activeMenu === category.name">
+          <div class="menu-container" (mouseleave)="activeMenu = null">
+            <a href="javascript:void(0)" (mouseenter)="toggleMenu(category.name, $event)" routerLinkActive="active">
+              {{ category.name }} <span class="arrow">▼</span>
+            </a>
+            <ul class="submenu" (click)="$event.stopPropagation()">
+              @for (sub of subcategoriesMap[category.id]; track sub.id) {
+              <li>
+                <a routerLink="/category/{{ category.name }}/{{ sub.subcategoryName }}"
+                  [queryParams]="{ subcategoryId: sub.id }">
+                  {{ sub.subcategoryName }}
+                </a>
+              </li>
+              }
+            </ul>
+          </div>
+        </li>
         }
 
         <li><a routerLink="/about-us" routerLinkActive="active">About Us</a></li>
       </nav>
 
       <div class="user-actions">
-        <a routerLink="/cart" class="action-link cart-link enhanced-link">
-          <mat-icon>shopping_cart</mat-icon>
-          <span>Cart</span>
-          <span class="cart-count" *ngIf="cartService.cartCount() > 0">
-            {{ cartService.cartCount() }}
-          </span>
+
+        <a *ngIf="isLoggedIn" routerLink="/user/wishlist" class="action-link" routerLinkActive="active">
+          <mat-icon>favorite_border</mat-icon>
+          <span>Wishlist</span>
         </a>
-        <a *ngIf="isAdmin" routerLink="/admin" class="action-link enhanced-link">
+
+        <a routerLink="/cart" class="action-link cart-link" routerLinkActive="active">
+          <div class="icon-container"
+            style="position: relative; display: flex; align-items: center; justify-content: center;">
+            <mat-icon>shopping_cart</mat-icon>
+            <span class="cart-count" *ngIf="cartService.cartCount() > 0">
+              {{ cartService.cartCount() }}
+            </span>
+          </div>
+          <span>Cart</span>
+        </a>
+
+        <a *ngIf="isAdmin" routerLink="/admin" class="action-link" routerLinkActive="active">
           <mat-icon>admin_panel_settings</mat-icon>
           <span>Admin</span>
         </a>
+
         <ng-container *ngIf="isLoggedIn; else loginLink">
-          <a routerLink="/user" class="action-link enhanced-link">
+          <a routerLink="/user/overview" class="action-link" routerLinkActive="active">
             <mat-icon>account_circle</mat-icon>
             <span>Profile</span>
           </a>
-          <button (click)="logout()" class="action-link enhanced-link">
+          <button (click)="logout()" class="action-link"
+            style="background:none; border:none; cursor:pointer; padding: 8px 12px;">
             <mat-icon>logout</mat-icon>
             <span>Logout</span>
           </button>
         </ng-container>
 
         <ng-template #loginLink>
-          <a routerLink="/login" class="action-link enhanced-link">
+          <a routerLink="/login" class="action-link" routerLinkActive="active">
             <mat-icon>person</mat-icon>
             <span>Login</span>
           </a>
         </ng-template>
+
       </div>
     </div>
   </div>
