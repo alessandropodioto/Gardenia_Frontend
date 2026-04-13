@@ -1,10 +1,12 @@
 import { Component, OnInit, OnDestroy, ChangeDetectionStrategy, ChangeDetectorRef } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
-import { Subject } from 'rxjs';
+// 1. ECCO LA SOLUZIONE ALL'ERRORE: abbiamo aggiunto forkJoin qui!
+import { Subject, forkJoin } from 'rxjs'; 
 import { takeUntil } from 'rxjs/operators';
 import { AuthService } from '../../services/auth.service';
 import { AdminServices, User } from '../../services/admin.service';
 import { ProductService, Product } from '../../services/product.service';
+import { UserorderService, UserOrder } from '../../services/userorder.service';
 import { DeleteUser } from '../../dialogs/delete-user/delete-user';
 import { ProductDialog, ProductDialogData } from '../../dialogs/product-dialog/product-dialog';
 
@@ -19,8 +21,10 @@ export class Admin implements OnInit, OnDestroy {
   isAdmin: boolean = false;
   users: User[] = [];
   products: Product[] = [];
+  orders: UserOrder[] = [];
   error: string | null = null;
   activeView: string = 'users';
+  pendingStatusChanges: { [orderId: number]: string } = {};
 
   private destroy$ = new Subject<void>();
 
@@ -28,6 +32,7 @@ export class Admin implements OnInit, OnDestroy {
     private authService: AuthService,
     private adminService: AdminServices,
     private productService: ProductService,
+    private userorderService: UserorderService,
     private dialog: MatDialog,
     private cdr: ChangeDetectorRef
   ) {}
@@ -54,6 +59,8 @@ export class Admin implements OnInit, OnDestroy {
     this.error = null;
     if (viewStr === 'products') {
       this.loadProducts();
+    } else if (viewStr === 'orders') {
+      this.loadOrders();
     }
     this.cdr.markForCheck();
   }
@@ -149,28 +156,38 @@ export class Admin implements OnInit, OnDestroy {
       .subscribe(result => {
         if (!result) return;
 
-        // Estraiamo i dati
         const productToSave = result.productData; 
-        const imageFile = result.file; 
+        const urlsText = result.imageUrls; 
 
-        // Creazione prodotto
         this.productService.create(productToSave)
           .pipe(takeUntil(this.destroy$))
           .subscribe({
             next: (response: any) => {
-              // Se l'utente ha messo l'immagine, la carichiamo subito dopo!
-              if (imageFile && response && response.id) {
-                this.productService.uploadProductImage(imageFile, response.id)
-                  .pipe(takeUntil(this.destroy$))
-                  .subscribe({
+              
+              if (urlsText && urlsText.trim() !== '' && response && response.id) {
+                
+                const urlArray = urlsText.split('\n')
+                                         .map((u: string) => u.trim()) 
+                                         .filter((u: string) => u !== ''); 
+
+                if (urlArray.length > 0) {
+                  const uploadRequests = urlArray.map((url: string) => 
+                      this.productService.createImageLink(url, response.id)
+                  );
+
+                  forkJoin(uploadRequests).pipe(takeUntil(this.destroy$)).subscribe({
                     next: () => {
+                      console.log("Tutte le immagini salvate con successo!");
                       this.loadProducts(); 
                     },
                     error: (err) => {
-                      console.error("Errore caricamento immagine", err);
+                      console.error("Errore salvataggio di alcune immagini", err);
                       this.loadProducts(); 
                     }
                   });
+                } else {
+                  this.loadProducts();
+                }
               } else {
                 this.loadProducts();
               }
@@ -199,40 +216,45 @@ export class Admin implements OnInit, OnDestroy {
         if (!result) return;
         
         const productToUpdate = result.productData;
-        const newImageFile = result.file;
-        let imageIdToDelete = result.deletedImageId;
+        const urlsText = result.imageUrls; 
+        const imageIdsToDelete: number[] = result.deletedImageIds || [];
 
-        // TRUCCO MAGICO: Se hai caricato una foto nuova (il fiore), eliminiamo 
-        // quella vecchia in automatico per non creare doppioni nel Database!
-        if (newImageFile && product.images && product.images.length > 0 && !imageIdToDelete) {
-            const imgData: any = product.images[0];
-            imageIdToDelete = imgData.imageId || imgData.id;
-        }
-
-        // Se c'è un'immagine da eliminare, la eliminiamo prima di aggiornare il prodotto
-        if (imageIdToDelete) {
-           this.productService.deleteImage(imageIdToDelete)
-             .pipe(takeUntil(this.destroy$))
-             .subscribe({
-               next: () => this.updateProduct(productToUpdate, newImageFile),
-               error: () => this.updateProduct(productToUpdate, newImageFile) // Aggiorniamo comunque in caso di errore
-             });
+        // Se l'utente ha modificato e inserito nuovi link, eliminiamo TUTTE le immagini vecchie
+        if (urlsText && urlsText.trim() !== '' && imageIdsToDelete.length > 0) {
+           
+           const deleteRequests = imageIdsToDelete.map(id => this.productService.deleteImage(id));
+           
+           forkJoin(deleteRequests).pipe(takeUntil(this.destroy$)).subscribe({
+             next: () => this.updateProduct(productToUpdate, urlsText),
+             error: () => this.updateProduct(productToUpdate, urlsText) 
+           });
         } else {
-           // Se non hai toccato l'immagine, salva solo le modifiche al testo
-           this.updateProduct(productToUpdate, newImageFile);
+           this.updateProduct(productToUpdate, urlsText);
         }
       });
   }
-  updateProduct(product: Product, file: File | null = null): void {
+
+  updateProduct(product: Product, urlsText: string | null = null): void {
     this.productService.update(product)
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: (updatedProduct: any) => {
-          // Se durante la modifica è stata caricata una nuova immagine, la salviamo
-          if (file && product && product.id) {
-             this.productService.uploadProductImage(file, product.id)
-               .pipe(takeUntil(this.destroy$))
-               .subscribe(() => this.loadProducts());
+          
+          if (urlsText && urlsText.trim() !== '' && product && product.id) {
+             
+             const urlArray = urlsText.split('\n')
+                                      .map((u: string) => u.trim())
+                                      .filter((u: string) => u !== '');
+                                      
+             if (urlArray.length > 0) {
+               const uploadRequests = urlArray.map((url: string) => 
+                   this.productService.createImageLink(url, product.id) 
+               );
+               
+               forkJoin(uploadRequests).pipe(takeUntil(this.destroy$)).subscribe(() => this.loadProducts());
+             } else {
+               this.loadProducts();
+             }
           } else {
              this.loadProducts();
           }
@@ -281,5 +303,60 @@ export class Admin implements OnInit, OnDestroy {
           console.error('Error deleting product:', err);
         }
       });
+  }
+
+  // ==============================
+  // ORDER MANAGEMENT METHODS
+  // ==============================
+  loadOrders(): void {
+    this.error = null;
+
+    this.userorderService.list()
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: (orders) => {
+          this.orders = orders;
+          this.cdr.markForCheck();
+        },
+        error: (err) => {
+          this.error = 'Error loading orders';
+          this.cdr.markForCheck();
+          console.error('Error loading orders:', err);
+        }
+      });
+  }
+
+  updateOrderStatus(order: UserOrder): void {
+    const newStatus = this.pendingStatusChanges[order.id!];
+    if (!newStatus) {
+      return;
+    }
+
+    const updatedOrder = { ...order, status: newStatus };
+    
+    this.userorderService.update(updatedOrder)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: () => {
+          // Update the order in the list
+          const index = this.orders.findIndex(o => o.id === order.id);
+          if (index !== -1) {
+            this.orders[index].status = newStatus;
+            // Clear the pending status change
+            delete this.pendingStatusChanges[order.id!];
+            this.cdr.markForCheck();
+          }
+        },
+        error: (err) => {
+          this.error = 'Error updating order status';
+          this.cdr.markForCheck();
+          console.error('Error updating order status:', err);
+        }
+      });
+  }
+
+  onStatusChange(orderId: number, newStatus: string): void {
+    this.pendingStatusChanges[orderId] = newStatus;
+    this.cdr.markForCheck();
   }
 }

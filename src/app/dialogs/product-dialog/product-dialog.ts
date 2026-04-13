@@ -1,4 +1,4 @@
-import { Component, Inject, OnInit, ChangeDetectorRef } from '@angular/core'; // AGGIUNTO ChangeDetectorRef QUI
+import { Component, Inject, OnInit, ChangeDetectorRef } from '@angular/core';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Product } from '../../services/product.service';
@@ -22,21 +22,21 @@ export class ProductDialog implements OnInit {
 
   subcategories: Subcategory[] = [];
   loadingSubcategories = false;
+  
+  // 1. ECCO DOVE ANDAVA: abbiamo sostituito la vecchia variabile con l'array
+  imageToDeleteIds: number[] = []; 
 
-  selectedFile: File | null = null;
-  fileName: string = '';
-  imagePreview: string | null = null;
-  imageToDeleteId: number | null = null;
   constructor(
     public dialogRef: MatDialogRef<ProductDialog>,
     @Inject(MAT_DIALOG_DATA) public data: ProductDialogData,
     private fb: FormBuilder,
     private subcategoryService: SubcategoryService,
-    private cdr: ChangeDetectorRef // AGGIUNTO QUI NEL COSTRUTTORE
+    private cdr: ChangeDetectorRef
   ) {
     this.mode = data.mode;
     this.isEditMode = data.mode === 'edit';
     
+    // Inizializza il form
     this.productForm = this.fb.group({
       id: [data.product?.id || 0],
       name: [data.product?.name || '', [Validators.required, Validators.minLength(3)]],
@@ -46,6 +46,7 @@ export class ProductDialog implements OnInit {
       subcategoryId: [data.product?.subcategoryId || null, [Validators.required]],
       subcategoryName: [data.product?.subcategoryName || ''],
       isDeleted: [data.product?.isDeleted || false],
+      imageUrls: [''] 
     });
   }
 
@@ -53,21 +54,23 @@ export class ProductDialog implements OnInit {
     this.loadSubcategories();
 
     if (this.isEditMode && this.data.product?.images && this.data.product.images.length > 0) {
-        const savedFileName = this.data.product.images[0].link;
-        this.imagePreview = 'http://localhost:8080/uploads/' + savedFileName; 
+        // Prende tutti i link dal database e li unisce con un "a capo" (\n)
+        const savedLinks = this.data.product.images.map((img: any) => img.link).join('\n');
+        this.productForm.patchValue({ imageUrls: savedLinks });
+        
+        // 2. MODIFICA: Salviamo la lista degli ID da eliminare usando il nuovo array
+        this.imageToDeleteIds = this.data.product.images.map((img: any) => img.imageId || img.id);
     }
   }
 
- // 1. MODIFICA QUESTA FUNZIONE PER RISOLVERE L'ERRORE ROSSO
   loadSubcategories(): void {
-    // Il setTimeout "calma" Angular e gli dà il tempo di aggiornare la grafica
     setTimeout(() => {
       this.loadingSubcategories = true;
       this.subcategoryService.getAllSubcategories().subscribe({
         next: (subcategories) => {
           this.subcategories = subcategories;
           this.loadingSubcategories = false;
-          this.cdr.detectChanges(); // Diciamo ad Angular di aggiornarsi
+          this.cdr.detectChanges();
         },
         error: (err) => {
           console.error('Error loading subcategories:', err);
@@ -78,59 +81,31 @@ export class ProductDialog implements OnInit {
     });
   }
 
-  // 2. AGGIUNGI QUESTA NUOVA FUNZIONE (sotto a onFileSelected)
-  removeImage(): void {
-    this.selectedFile = null;
-    this.fileName = '';
-    this.imagePreview = null;
-    
-    // Salviamo l'ID dell'immagine nel DB (usiamo 'any' per evitare problemi con i nomi del DTO Java)
-    if (this.isEditMode && this.data.product?.images && this.data.product.images.length > 0) {
-      const imgData: any = this.data.product.images[0];
-      this.imageToDeleteId = imgData.imageId || imgData.id; 
-    }
-    
-    this.cdr.detectChanges();
-  }
-
-  onFileSelected(event: Event): void {
-    const input = event.target as HTMLInputElement;
-    if (input.files && input.files.length > 0) {
-      this.selectedFile = input.files[0];
-      this.fileName = this.selectedFile.name;
-
-      const reader = new FileReader();
-      reader.onload = () => {
-        this.imagePreview = reader.result as string;
-        
-        // AGGIUNGI QUESTA RIGA PER RISOLVERE L'ERRORE ROSSO
-        this.cdr.detectChanges(); 
-      };
-      reader.readAsDataURL(this.selectedFile);
-    }
-  }
-
   onConfirm(): void {
     if (this.productForm.valid) {
-      // Includiamo l'ID del prodotto nei dati del form
       const finalProductData = {
          ...this.productForm.value,
          id: this.data.product?.id
       };
+      
+      // 3. MODIFICA: Corretto il console log per leggere 'imageUrls' al plurale
+      console.log("LINK CHE STO PASSANDO ALL'ADMIN:", this.productForm.value.imageUrls);
 
+      // Chiude la modale e passa i dati ad admin.ts
       this.dialogRef.close({
         productData: finalProductData,
-        file: this.selectedFile,
-        deletedImageId: this.imageToDeleteId // <-- Passiamo l'ID da cancellare ad admin.ts!
+        imageUrls: this.productForm.value.imageUrls,
+        // 4. MODIFICA: Passiamo il nuovo array all'admin
+        deletedImageIds: this.imageToDeleteIds
       });
     } else {
       this.productForm.markAllAsTouched();
     }
-}
+  }
+
   onCancel(): void {
     this.dialogRef.close(false);
   }
-
 
   get name() { return this.productForm.get('name'); }
   get description() { return this.productForm.get('description'); }

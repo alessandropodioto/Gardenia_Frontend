@@ -85,13 +85,14 @@ export class ProductService {
     );
   }
 
-  uploadProductImage(file: File, productId: number): Observable<any> {
-    const formData = new FormData();
-    formData.append('file', file);
-    formData.append('productId', productId.toString());
+  createImageLink(linkStr: string, productIdNum: number): Observable<any> {
+    const payload = {
+      link: linkStr,
+      productId: productIdNum
+    };
 
-    return this.http.post<any>(`${this.imageApiUrl}/upload`, formData).pipe(
-      catchError(this.handleError('uploadProductImage'))
+    return this.http.post<any>(`${this.imageApiUrl}/create`, payload).pipe(
+      catchError(this.handleError('createImageLink'))
     );
   }
 

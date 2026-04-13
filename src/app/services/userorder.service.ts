@@ -6,9 +6,9 @@ export interface UserOrder {
   id?: number;
   wharehouse: string;
   isPaid: boolean;
-  userName?: string;
+  userId?: string;
   addressId?: number;
-  statusDescription?: string;
+  status?: string;
   date: string;
   totalPrice?: number;
   items?: any[];
@@ -69,6 +69,15 @@ export class UserorderService {
       catchError((error) => {
         console.error(`Errore recupero ordine ${id}:`, error);
         return throwError(() => new Error('Dettagli ordine non trovati'));
+      }),
+    );
+  }
+
+  list() : Observable<UserOrder[]> {
+    return this.http.get<UserOrder[]>(`${this.apiUrl}/list`).pipe(
+      catchError((error) => {
+        console.error('Error fetching all orders:', error);
+        return throwError(() => new Error('Failed to fetch all orders'));
       }),
     );
   }

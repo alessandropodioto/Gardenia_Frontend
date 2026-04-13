@@ -45,6 +45,10 @@ import { Overview } from './components/overview/overview';
 import { OrdersComponent } from './components/orders/orders';
 import { OrderDetail } from './components/order-detail/order-detail';
 import { AboutUs } from './components/about-us/about-us';
+import { EmailValidationComponent } from './email-validation/email-validation';
+import {  ChangePasswordComponent } from './dialogs/change-password/change-password';
+import {  ResetPasswordComponent } from './components/reset-password/reset-password';
+import { Wishlist } from './components/wishlist/wishlist';
 
 @NgModule({
   declarations: [
@@ -68,7 +72,11 @@ import { AboutUs } from './components/about-us/about-us';
     OrdersComponent,
     OrderDetail,
     CarrelloComponent,
-    AboutUs
+    AboutUs,
+    EmailValidationComponent,
+    ChangePasswordComponent,
+    ResetPasswordComponent,
+    Wishlist,
   ],
   imports: [
     BrowserModule,
@@ -97,6 +105,7 @@ import { AboutUs } from './components/about-us/about-us';
     provideHttpClient(withFetch()),
     provideBrowserGlobalErrorListeners(),
     provideClientHydration(withEventReplay()),
+
     AuthService,
   ],
   bootstrap: [App],

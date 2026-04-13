@@ -224,3 +224,77 @@
     overflow-x: auto;
   }
 }
+
+/* Status Cell Container */
+.status-cell {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+/* Status Select Dropdown */
+.status-select {
+  padding: 6px 8px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 0.9rem;
+  color: #333;
+  background-color: #fff;
+  cursor: pointer;
+  transition: border-color 0.2s, box-shadow 0.2s;
+  flex: 1;
+}
+
+.status-select:hover {
+  border-color: #999;
+}
+
+.status-select:focus {
+  outline: none;
+  border-color: #2d5016;
+  box-shadow: 0 0 0 2px rgba(45, 80, 22, 0.1);
+}
+
+/* Confirm Button */
+.confirm-btn {
+  background-color: #2d5016 !important;
+  color: white !important;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  font-size: 0.75rem;
+  padding: 0 12px !important;
+  min-width: 80px;
+  height: 36px;
+  line-height: 36px;
+}
+
+.confirm-btn:hover:not(:disabled) {
+  background-color: #204010 !important;
+}
+
+.confirm-btn:disabled {
+  background-color: #ccc !important;
+  color: #999 !important;
+  cursor: not-allowed;
+}
+
+/* Paid Badge */
+.paid-badge {
+  display: inline-block;
+  padding: 4px 12px;
+  border-radius: 12px;
+  font-weight: 600;
+  font-size: 0.85rem;
+  text-transform: uppercase;
+}
+
+.paid-badge.paid-yes {
+  background-color: #d4edda;
+  color: #155724;
+}
+
+.paid-badge.paid-no {
+  background-color: #f8d7da;
+  color: #721c24;
+}

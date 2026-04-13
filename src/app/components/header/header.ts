@@ -5,6 +5,7 @@ import { Subscription } from 'rxjs';
 import { CategoryService } from '../../services/category.service';
 import { SubcategoryService, Subcategory } from '../../services/subcategory.service';
 import { CartService } from '../../services/cart.service';
+import { WishlistService } from '../../services/wishlist.service';
 
 @Component({
   selector: 'app-header',
@@ -37,15 +38,18 @@ export class HeaderComponent implements OnInit, OnDestroy {
     private categoryService: CategoryService,
     private subcategoryService: SubcategoryService,
     private router: Router,
-    public cartService: CartService
+    public cartService: CartService,
+    public wishlistService: WishlistService
   ) {}
 
   ngOnInit(): void {
+    // Gestione Banner Rotante
     this.intervalId = setInterval(() => {
       this.currentIndex = (this.currentIndex + 1) % this.phrases.length;
       this.cdr.detectChanges();
     }, 4000);
 
+    // Controllo Auth iniziale (SSR Safe)
     if (typeof window !== 'undefined') {
       const userData = this.authService.getUserData();
       this.isLoggedIn = !!userData;
@@ -53,27 +57,34 @@ export class HeaderComponent implements OnInit, OnDestroy {
       this.authService.emitAuthState(userData);
     }
 
+    // Subscription stato Auth
     this.authSubscription = this.authService.getAuthState().subscribe(userData => {
       this.isLoggedIn = !!userData;
       this.isAdmin = userData && userData.role === 'ADMIN';
       this.cdr.detectChanges();
     });
 
+    // Caricamento Categorie e Sottocategorie
     this.categoryService.getCategories().subscribe({
       next: (categories) => {
-        this.categories = categories;
+        // FIX NG0100: Spostiamo l'aggiornamento dei dati al prossimo ciclo di detection
+        setTimeout(() => {
+          this.categories = categories;
 
-        categories.forEach(category => {
-          this.subcategoryService.getSubcategoriesByCategory(category.id).subscribe({
-            next: (subcategories) => {
-              this.subcategoriesMap[category.id] = subcategories;
-              this.cdr.detectChanges();
-            },
-            error: (error) => {
-              console.error(`Error fetching subcategories for category ${category.id}:`, error);
-            }
+          categories.forEach(category => {
+            this.subcategoryService.getSubcategoriesByCategory(category.id).subscribe({
+              next: (subcategories) => {
+                this.subcategoriesMap[category.id] = subcategories;
+                this.cdr.detectChanges();
+              },
+              error: (error) => {
+                console.error(`Error fetching subcategories for category ${category.id}:`, error);
+              }
+            });
           });
-        });
+          
+          this.cdr.detectChanges();
+        }, 0);
       },
       error: (error) => {
         console.error('Error fetching categories:', error);
