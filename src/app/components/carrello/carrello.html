@@ -90,12 +90,12 @@
 </div>
 
 <ng-template #confirmDialog>
-  <h2 mat-dialog-title>Remove Item</h2>
-  <mat-dialog-content>
-    Are you sure you want to remove this item from your cart?
-  </mat-dialog-content>
-  <mat-dialog-actions align="end">
-    <button mat-button mat-dialog-close>Cancel</button>
-    <button mat-flat-button color="warn" [mat-dialog-close]="true">Remove</button>
-  </mat-dialog-actions>
+  <div class="cart-modal-content">
+    <h2 class="modal-title">Remove Item</h2>
+    <p class="modal-text">Are you sure you want to remove this item from your cart?</p>
+    <div class="modal-actions-vertical">
+      <button class="btn-confirm-delete" [mat-dialog-close]="true">Remove</button>
+      <button class="btn-cancel-flat" mat-dialog-close>Cancel</button>
+    </div>
+  </div>
 </ng-template>

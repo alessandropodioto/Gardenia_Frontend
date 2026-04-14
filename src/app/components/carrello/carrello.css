@@ -173,7 +173,7 @@
 
 .alert-body {
   background: white;
-  border-left: 5px solid #2ecc71;
+  border-left: 5px solid #5a8a3c;
   box-shadow: 0 10px 40px rgba(0,0,0,0.12);
   border-radius: 10px;
   display: flex;
@@ -207,10 +207,10 @@ button[disabled] {
 }
 
 .empty-cart-img {
-  width: 250px; /* Regola la grandezza come preferisci */
+  width: 250px;
   height: auto;
   margin-bottom: 20px;
-  opacity: 0.8; /* Un po' trasparente per un look più pulito */
+  opacity: 0.8;
 }
 
 .empty-cart h3 {
@@ -234,4 +234,85 @@ button[disabled] {
   background-color: #2ecc71 !important;
   color: white !important;
   text-transform: uppercase;
+}
+
+/* Forza il pop-up di conferma ad essere identico alle review */
+::ng-deep .mat-mdc-dialog-container .mdc-dialog__surface {
+  border-radius: 15px !important;
+  box-shadow: 0 15px 40px rgba(0,0,0,0.2) !important;
+  padding: 0 !important;
+  background: white !important;
+}
+
+/* Oscuramento sfondo con l'effetto sfocato (blur) delle review */
+::ng-deep .cdk-overlay-backdrop {
+  background: rgba(0, 0, 0, 0.5) !important;
+  backdrop-filter: blur(3px) !important;
+}
+
+/* Assicura che i bottoni e i testi dentro il pop-up usino le tue classi */
+::ng-deep .cart-modal-content {
+  padding: 30px;
+  text-align: center;
+}
+
+::ng-deep .modal-title {
+  font-size: 22px;
+  font-weight: 800;
+  color: #2c3e50;
+  margin-bottom: 10px;
+}
+
+::ng-deep .modal-text {
+  color: #7f8c8d;
+  font-size: 16px;
+  margin-bottom: 25px;
+}
+
+/* ─────────────────────────────────────────────
+    BOTTONI DIALOG (REMOVE SOPRA, CANCEL SOTTO)
+   ───────────────────────────────────────────── */
+
+/* Contenitore per metterli in colonna */
+.modal-actions-vertical {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  width: 100%;
+}
+
+/* Bottone REMOVE - Rosso e pieno */
+.btn-confirm-delete {
+  background-color: #e74c3c;
+  color: white;
+  border: none;
+  padding: 14px;
+  border-radius: 10px;
+  font-weight: 700;
+  font-size: 16px;
+  cursor: pointer;
+  transition: background 0.2s ease;
+  width: 100%;
+}
+
+.btn-confirm-delete:hover {
+  background-color: #c0392b;
+}
+
+/* Bottone CANCEL - Piatto e senza sfondo */
+.btn-cancel-flat {
+  background: transparent;
+  color: #95a5a6;
+  border: none;
+  padding: 10px;
+  font-weight: 600;
+  font-size: 15px;
+  cursor: pointer;
+  transition: color 0.2s ease;
+  width: 100%;
+  text-align: center;
+}
+
+.btn-cancel-flat:hover {
+  color: #333;
 }
