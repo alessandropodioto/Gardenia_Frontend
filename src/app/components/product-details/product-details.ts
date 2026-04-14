@@ -72,6 +72,7 @@ export class ProductDetails implements OnInit {
     this.activatedRoute.params.subscribe((params) => {
       const productId = params['id'];
       if (productId) {
+        window.scrollTo(0, 0);
         const id = parseInt(productId, 10);
         this.loadProduct(id);
         this.loadReviews(id);
