@@ -7,7 +7,7 @@ import { Observable } from 'rxjs';
 @Injectable({ providedIn: 'root' })
 export class CartService {
   private baseUrl = 'http://localhost:8080/rest/shoppingCart';
-  
+
   private platformId = inject(PLATFORM_ID);
 
   cartItems = signal<any[]>([]);
@@ -42,15 +42,21 @@ export class CartService {
    */
   loadCart(): void {
     const user = this.getUserName();
-    if (!user) return;
 
-    // MODIFICA QUI: Da 'getActiveCartByUser' a 'activeCart' come da tuo Controller BE
+    if (!user) {
+      this.cartItems.set([]);
+      return;
+    }
+
     this.http.get<any[]>(`${this.baseUrl}/activeCart/${user}`).subscribe({
       next: (items) => {
         const sortedItems = items.sort((a, b) => a.id - b.id);
         this.cartItems.set(sortedItems);
       },
-      error: (err) => console.error('Errore nel caricamento del carrello:', err),
+      error: (err) => {
+        console.error('Errore nel caricamento del carrello:', err);
+        this.cartItems.set([]);
+      },
     });
   }
 
@@ -74,9 +80,7 @@ export class CartService {
         userName: user,
       };
 
-      return this.http.post(`${this.baseUrl}/create`, body).pipe(
-        tap(() => this.loadCart())
-      );
+      return this.http.post(`${this.baseUrl}/create`, body).pipe(tap(() => this.loadCart()));
     }
   }
 
@@ -87,15 +91,11 @@ export class CartService {
       price: prezzo,
       userName: this.getUserName(),
     };
-    return this.http.put(`${this.baseUrl}/update`, body).pipe(
-      tap(() => this.loadCart())
-    );
+    return this.http.put(`${this.baseUrl}/update`, body).pipe(tap(() => this.loadCart()));
   }
 
   removeItem(idCart: number): Observable<any> {
-    return this.http.delete(`${this.baseUrl}/delete/${idCart}`).pipe(
-      tap(() => this.loadCart())
-    );
+    return this.http.delete(`${this.baseUrl}/delete/${idCart}`).pipe(tap(() => this.loadCart()));
   }
 
   resetCartSignal(): void {
