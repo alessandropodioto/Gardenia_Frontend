@@ -97,7 +97,10 @@
   </div>
 </div>
 
-<div class="custom-alert" [class.active]="showToast()">
+<div class="custom-alert" 
+     [class.active]="showToast()" 
+     [class.error-theme]="isError()" 
+     [class.success-theme]="!isError()">
   <div class="alert-body">
     <p style="margin: 0;">{{ toastMessage() }}</p>
   </div>
