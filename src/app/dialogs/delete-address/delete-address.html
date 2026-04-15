@@ -1,8 +1,18 @@
+<!--
+  DIALOG "ELIMINA INDIRIZZO" — conferma prima di cancellare un indirizzo.
+  Stesso pattern del dialog DeleteUser: riceve i dati via MAT_DIALOG_DATA
+  e restituisce true (conferma) o false (annulla).
+
+  data.address.*: l'indirizzo da eliminare, passato da AddressComponent all'apertura.
+  Mostrare i dettagli evita di eliminare l'indirizzo sbagliato per errore.
+-->
 <div class="delete-address-dialog">
   <h2 mat-dialog-title>Confirm Address Deletion</h2>
+
   <mat-dialog-content class="dialog-content">
     <p>Are you sure you want to delete the following address?</p>
 
+    <!-- Riepilogo dati indirizzo per conferma visiva -->
     <div class="address-info">
       <div class="address-detail">
         <strong>Street:</strong> {{ data.address.street }} {{ data.address.number }}
@@ -22,11 +32,9 @@
   </mat-dialog-content>
 
   <mat-dialog-actions class="dialog-actions">
-    <button mat-button (click)="onCancel()" class="cancel-btn">
-      Cancel
-    </button>
-    <button mat-raised-button color="warn" (click)="onConfirm()" class="confirm-btn">
-      Delete
-    </button>
+    <!-- onCancel(): chiude restituendo false → AddressComponent non fa nulla -->
+    <button mat-button (click)="onCancel()" class="cancel-btn">Cancel</button>
+    <!-- onConfirm(): chiude restituendo true → AddressComponent chiama deleteAddress() -->
+    <button mat-raised-button color="warn" (click)="onConfirm()" class="confirm-btn">Delete</button>
   </mat-dialog-actions>
 </div>

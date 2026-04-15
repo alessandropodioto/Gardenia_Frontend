@@ -1,32 +1,84 @@
+<!--
+  OVERVIEW TEMPLATE — PANNELLO ACCOUNT UTENTE
+  ──────────────────────────────────────────────────────────────────────────────
+  Template semplice con due "card informative":
+  1. Dati anagrafici dell'utente (Basics)
+  2. Ultimo ordine effettuato
+
+  DATI:
+  userProfile: oggetto UserProfile | null — caricato da AuthService.getUserProfile() in overview.ts
+  latestOrder: oggetto Order | null — il primo ordine della lista (più recente)
+  isLoading: boolean — true durante le chiamate HTTP
+
+  PATTERN @if / @else:
+  Entrambe le sezioni usano @if per gestire due stati:
+  - Dati disponibili → mostra le informazioni
+  - Dati non disponibili → mostra un messaggio contestuale
+    Il messaggio usa un ternary: isLoading ? 'Loading...' : 'No data'
+    per dare feedback corretto sia durante il caricamento sia in caso di errore.
+
+  APERTURA DIALOG:
+  (click)="openEditDialog()": apre l'EditProfile Material Dialog.
+  Il link usa (click) invece di routerLink perché non naviga a una route
+  ma apre un dialog modale sovrapposto alla pagina corrente.
+  After the dialog closes with result === true, overview.ts ricarica il profilo.
+-->
+<!-- Intestazione pagina -->
 <h1 class="page-header">My Account</h1>
 <p class="page-desc">This is your account overview. Here you can update your user details, take a look at your latest orders, your wishlist, and recently viewed items.</p>
 
+<!--
+  CARD: DATI ANAGRAFICI
+  @if (userProfile): mostra i dati solo se il profilo è stato caricato
+  @else: mostra "Loading..." o un messaggio di errore
+-->
 <section class="info-card">
   <h3 class="info-card-title">Basics</h3>
   @if (userProfile) {
     <div class="info-content">
+      <!-- Dati del profilo: nome, email, username, telefono -->
       <p><strong>Name</strong><br>{{ userProfile.firstName }} {{ userProfile.lastName }}</p>
       <p><strong>E-mail</strong><br>{{ userProfile.email }}</p>
       <p><strong>Username</strong><br>{{ userProfile.userName }}</p>
       <p><strong>Phone</strong><br>{{ userProfile.phone }}</p>
     </div>
+    <!--
+      Link per aprire il dialog di modifica profilo.
+      (click)="openEditDialog()": apre MatDialog con EditProfile component.
+      Non è un <a href> o routerLink perché non naviga a una nuova route.
+      style="cursor:pointer": rende il testo cliccabile visivamente.
+    -->
     <a (click)="openEditDialog()" class="edit-btn-text" style="cursor:pointer;">Edit personal details →</a>
   } @else {
+    <!--
+      Ternary per distinguere loading da errore:
+      isLoading ? 'Loading...' : 'Could not load profile data.'
+      Questo pattern evita di mostrare "Could not load" mentre i dati sono ancora in arrivo.
+    -->
     <p class="empty-state">{{ isLoading ? 'Loading...' : 'Could not load profile data.' }}</p>
   }
 </section>
 
+<!--
+  CARD: ULTIMO ORDINE
+  latestOrder: impostato in overview.ts dopo il caricamento degli ordini.
+  È il primo elemento dell'array ordini (più recente per data).
+-->
 <section class="info-card">
   <h3 class="info-card-title">My latest order</h3>
   @if (latestOrder) {
     <div class="info-content">
       <p><strong>Order #{{ latestOrder.id }}</strong></p>
       <p><strong>Date</strong><br>{{ latestOrder.date }}</p>
+      <!-- statusDescription: campo calcolato nel service da order.status -->
       <p><strong>Status</strong><br>{{ latestOrder.statusDescription }}</p>
+      <!-- Ternary per isPaid booleano → testo leggibile -->
       <p><strong>Paid</strong><br>{{ latestOrder.isPaid ? 'Yes' : 'No' }}</p>
     </div>
+    <!-- Link alla pagina ordini completa -->
     <a routerLink="/user/orders" class="edit-btn-text">View all orders →</a>
   } @else {
+    <!-- Stesso pattern ternary: loading vs nessun ordine effettuato -->
     <p class="empty-state">{{ isLoading ? 'Loading...' : 'You haven\'t placed any orders yet' }}</p>
   }
 </section>

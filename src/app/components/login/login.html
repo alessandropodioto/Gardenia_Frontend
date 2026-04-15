@@ -1,19 +1,90 @@
+<!--
+  LOGIN TEMPLATE
+  ──────────────────────────────────────────────────────────────────────────────
+  Form di login con Angular Material Card + Reactive Forms.
+
+  ANGULAR MATERIAL CARD (mat-card):
+  Componente Material che fornisce il contenitore visivo "scheda" con bordi,
+  ombre e padding standardizzati. Si divide in:
+  - mat-card-header → titolo in cima
+  - mat-card-content → contenuto principale (il form)
+  - mat-card-actions → pulsanti/link in fondo alla card
+
+  REACTIVE FORMS:
+  [formGroup]="loginForm": associa questo <form> al FormGroup 'loginForm'
+  definito in login.ts tramite FormBuilder.
+  (ngSubmit)="onSubmit()": al submit del form (Enter o click su type="submit")
+  chiama onSubmit() in login.ts, che fa la chiamata HTTP al backend.
+  NB: l'handler è su ngSubmit, NON su (click) del bottone — ngSubmit gestisce
+  sia il click sia la pressione di Enter nel form.
+
+  MAT-FORM-FIELD + formControlName:
+  <mat-form-field> è il contenitore Material per i campi input.
+  appearance="outline": stile con bordo che appare all'esterno del campo.
+  formControlName="userName": collega questo input al FormControl 'userName'
+  nel FormGroup — Angular gestisce automaticamente valore e validazione.
+  matInput: direttiva che stila l'input nativo come un campo Material.
+  <mat-label>: etichetta che "fluttua" sopra il campo quando è in focus.
+
+  MAT-ERROR:
+  <mat-error> viene mostrato automaticamente da Angular Material
+  SOLO quando il FormControl è invalido E "touched" (l'utente ci ha interagito).
+  *ngIf="userName?.hasError('required')": mostra l'errore solo per l'errore specifico.
+  userName? → getter in login.ts che ritorna this.loginForm.get('userName').
+  hasError('required') → true se il validatore Validators.required è fallito.
+
+  [disabled]="loginForm.invalid":
+  Il bottone submit è disabilitato finché il form ha errori.
+  Property binding su [disabled]: Angular lo gestisce come attributo HTML nativo.
+  loginForm.invalid è true se almeno un FormControl ha un errore di validazione.
+
+  MAT-SPINNER:
+  Spinner di caricamento Material. diameter="20": dimensione in pixel.
+  *ngIf="isLoading": visibile solo durante la chiamata HTTP.
+  *ngIf="!isLoading": nasconde il testo "Login" durante il caricamento.
+  Questo crea il pattern "loading state" del bottone: spinner OR testo, mai entrambi.
+
+  href="javascript:void(0)":
+  Tecnica per creare un link che non naviga da nessuna parte e non fa scroll to top.
+  void(0) restituisce undefined → il browser non segue nessun href.
+  (click)="openForgotPwd()": apre il dialog ChangePasswordComponent (forgot password).
+
+  routerLink="/register":
+  Link Angular (non href) per navigare alla pagina registrazione senza reload della pagina.
+  mat-button: direttiva Angular Material che trasforma un <a> in un bottone Material styled.
+-->
 <div class="login-container">
   <mat-card class="login-card">
+
+    <!-- Intestazione della card con titolo -->
     <mat-card-header>
       <mat-card-title>Login</mat-card-title>
     </mat-card-header>
 
     <mat-card-content>
+      <!--
+        [formGroup]="loginForm": associa il form al FormGroup in login.ts
+        (ngSubmit)="onSubmit()": gestisce la sottomissione del form (Enter o click submit)
+      -->
       <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" class="login-form">
+
+        <!--
+          CAMPO USERNAME
+          mat-form-field: contenitore Material con label fluttuante e gestione errori
+          appearance="outline": stile con bordo rettangolare
+          formControlName="userName": collegato al FormControl 'userName' nel FormGroup
+          mat-error: mostrato solo se il campo è touched + invalid
+        -->
         <mat-form-field appearance="outline" class="form-field">
           <mat-label>Username</mat-label>
           <input matInput formControlName="userName" placeholder="Enter your userName">
+          <!-- hasError('required'): true se Validators.required non è soddisfatto -->
           <mat-error *ngIf="userName?.hasError('required')">
             Username is required
           </mat-error>
         </mat-form-field>
 
+        <!-- CAMPO PASSWORD: type="password" nasconde i caratteri -->
         <mat-form-field appearance="outline" class="form-field">
           <mat-label>Password</mat-label>
           <input matInput type="password" formControlName="password" placeholder="Enter your password">
@@ -22,27 +93,51 @@
           </mat-error>
         </mat-form-field>
 
+        <!--
+          MESSAGGIO DI ERRORE GLOBALE
+          Mostrato quando errorMessage viene impostato in login.ts
+          (es. credenziali errate → backend ritorna 401).
+          Diverso da mat-error: quello è per validazione campo, questo per errori HTTP.
+        -->
         <div class="error-message" *ngIf="errorMessage">
           {{ errorMessage }}
         </div>
 
+        <!--
+          BOTTONE SUBMIT
+          [disabled]="loginForm.invalid": disabilitato se il form ha errori
+          type="submit": triggera ngSubmit sul form, non solo il click
+          Loading state: mostra spinner durante isLoading, testo altrimenti
+        -->
         <button
           color="primary"
           type="submit"
           class="login-button"
           [disabled]="loginForm.invalid"
         >
+          <!-- mat-spinner visibile durante la chiamata HTTP -->
           <mat-spinner *ngIf="isLoading" diameter="20" class="spinner"></mat-spinner>
+          <!-- Testo nascosto durante il caricamento -->
           <span *ngIf="!isLoading">Login</span>
         </button>
       </form>
 
+      <!--
+        LINK "FORGOT PASSWORD"
+        href="javascript:void(0)": link che non naviga (nessun href reale)
+        (click)="openForgotPwd()": apre il dialog ChangePasswordComponent
+      -->
       <p style="margin-top: 15px; text-align: center;">
         <a href="javascript:void(0)" (click)="openForgotPwd()" style="color: blue; text-decoration: underline;">Forgot Password?</a>
       </p>
 
     </mat-card-content>
 
+    <!--
+      FOOTER DELLA CARD: link alla pagina di registrazione
+      mat-button: direttiva Material che stila il <a> come bottone
+      routerLink: navigazione Angular senza reload della pagina
+    -->
     <mat-card-actions class="card-actions">
       <span>Don't have an account?</span>
       <a routerLink="/register" mat-button>Sign up</a>

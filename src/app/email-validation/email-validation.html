@@ -1,8 +1,22 @@
+<!--
+  EMAIL VALIDATION — pagina raggiunta dal link nell'email di conferma registrazione.
+  L'URL contiene il token come parametro (es. ?token=abc123).
+  email-validation.ts lo legge da ActivatedRoute.snapshot.queryParams.
+
+  L'utente deve cliccare il bottone manualmente invece di validare in automatico
+  al caricamento della pagina: questo evita che i client email (che pre-fetchano i link
+  per l'anteprima) attivino la validazione per sbaglio senza che l'utente abbia aperto la pagina.
+
+  validate(): chiama il backend con il token → attiva l'account → aggiorna msg().
+  msg(): signal con il risultato (es. "Email validated!" o messaggio di errore).
+-->
 <div style="text-align: center; margin-top: 50px;">
   <h2>Gardenia Account Validation</h2>
   <p>Please click the button below to confirm your email address.</p>
-   
+
+  <!-- validate(): invia il token al backend per attivare l'account -->
   <button (click)="validate()" style="padding: 10px 20px; cursor: pointer;">Validate Email</button>
-  
+
+  <!-- msg(): signal aggiornato dopo la risposta del backend -->
   <p style="color:rgb(55, 0, 255); font-weight: bold; margin-top: 20px;">{{msg()}}</p>
 </div>

@@ -1,3 +1,42 @@
+<!--
+  ROOT TEMPLATE — SHELL DELL'APPLICAZIONE
+  ──────────────────────────────────────────────────────────────────────────────
+  Questo template è lo "scheletro" dell'intera app Angular.
+  Ogni pagina che l'utente vede è incapsulata qui.
+
+  STRUTTURA:
+  ┌─────────────────────────────────────┐
+  │  <app-header>  (sempre visibile)    │  ← componente Header con nav, cart, login
+  ├─────────────────────────────────────┤
+  │  <router-outlet>  (pagina corrente) │  ← Angular inserisce qui il componente
+  │                                     │    che corrisponde alla route attiva
+  │  es: HomeComponent, LoginComponent  │
+  ├─────────────────────────────────────┤
+  │  <app-footer>  (sempre visibile)    │  ← componente Footer statico
+  └─────────────────────────────────────┘
+
+  <app-header>:
+  Selettore del componente Header. Angular lo sostituisce con il template di Header.
+  Non ha input/output: legge lo stato direttamente dai service (AuthService, CartService, ecc.)
+  tramite iniezione delle dipendenze, non tramite @Input.
+
+  <router-outlet>:
+  Direttiva Angular Router che funge da "segnaposto dinamico".
+  Quando l'utente naviga (es. da /home a /login), Angular:
+  1. Legge l'URL corrente nel browser
+  2. Trova il componente associato nelle route (app-routing-module.ts)
+  3. Distrugge il componente precedente e crea il nuovo
+  4. Inserisce il nuovo componente AL POSTO di <router-outlet>
+  (tecnicamente: lo inserisce come fratello successivo nell'DOM)
+
+  ROUTER OUTLET ANNIDATI:
+  Il componente User (/user) ha un suo <router-outlet> nel suo template.
+  Questo crea una gerarchia di outlet: quello radice qui + quello figlio in user.html.
+  Le route figlie (/user/overview, /user/orders, ecc.) usano l'outlet di User.
+
+  <app-footer>:
+  Selettore del componente Footer. Sempre presente, non interagisce con il router.
+-->
 <app-header></app-header>
   <router-outlet></router-outlet>
 <app-footer></app-footer>

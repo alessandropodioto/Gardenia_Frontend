@@ -1,10 +1,36 @@
+<!--
+  DIALOG "MODIFICA PROFILO"
+  Permette di cambiare email, telefono e opzionalmente la password.
+
+  STRUTTURA MATERIAL DIALOG:
+  mat-dialog-title   → titolo in cima
+  mat-dialog-content → corpo con il form (scrollabile se il contenuto è lungo)
+  mat-dialog-actions → bottoni in fondo (Cancel / Save)
+  Questi elementi sono direttive Material che gestiscono layout e stili del dialog.
+
+  id="editProfileForm" sul <form>: permette al bottone "Save" fuori dal form
+  di inviarlo (il bottone usa (click)="onSubmit()" invece di type="submit").
+
+  VISIBILITÀ PASSWORD (toggle occhio):
+  [type]="showCurrentPassword ? 'text' : 'password'":
+  Cambia il tipo dell'input tra "password" (caratteri nascosti) e "text" (visibili).
+  Il bottone con (click)="toggleVisibility('current')" inverte il booleano in edit-profile.ts.
+  matSuffix: posiziona il bottone all'interno del campo Material, allineato a destra.
+
+  ERRORI CROSS-FIELD:
+  currentPassword?.hasError('wrong'): errore impostato manualmente in edit-profile.ts
+  quando la verifica della password attuale fallisce (risposta HTTP 401 dal backend).
+-->
 <div class="edit-profile-dialog">
   <div class="dialog-header">
     <h2 mat-dialog-title>Edit Personal Details</h2>
   </div>
+
+  <!-- mat-dialog-content: corpo del dialog, scrollabile se necessario -->
   <mat-dialog-content class="dialog-content">
     <form [formGroup]="form" (ngSubmit)="onSubmit()" id="editProfileForm">
 
+      <!-- Campo email con doppio errore: campo obbligatorio + formato non valido -->
       <mat-form-field appearance="outline" class="full-width">
         <mat-label>Email</mat-label>
         <input matInput type="email" formControlName="email">
@@ -20,6 +46,12 @@
 
       <div class="section-label">Change Password <span class="optional">(optional)</span></div>
 
+      <!--
+        Campo password attuale con toggle visibilità.
+        [type]="showCurrentPassword ? 'text' : 'password'": alterna visibilità.
+        matSuffix: posiziona il bottone occhio dentro il campo, a destra.
+        hasError('wrong'): errore personalizzato impostato se il backend rifiuta la password.
+      -->
       <mat-form-field appearance="outline" class="full-width">
         <mat-label>Current Password</mat-label>
         <input matInput [type]="showCurrentPassword ? 'text' : 'password'" formControlName="currentPassword">
@@ -30,6 +62,7 @@
         </button>
       </mat-form-field>
 
+      <!-- Nuova password (opzionale: lasciare vuoto per non cambiarla) -->
       <mat-form-field appearance="outline" class="full-width">
         <mat-label>New Password</mat-label>
         <input matInput [type]="showPassword ? 'text' : 'password'" formControlName="password" placeholder="Leave blank to keep current">
@@ -38,6 +71,7 @@
         </button>
       </mat-form-field>
 
+      <!-- Conferma nuova password: errore 'passwordMismatch' dal validatore cross-field -->
       <mat-form-field appearance="outline" class="full-width">
         <mat-label>Confirm New Password</mat-label>
         <input matInput [type]="showConfirmPassword ? 'text' : 'password'" formControlName="confirmPassword">
@@ -47,6 +81,7 @@
         </button>
       </mat-form-field>
 
+      <!-- Messaggi di feedback globali (successo o errore HTTP) -->
       @if (successMessage) {
         <div class="success-message">{{ successMessage }}</div>
       }
@@ -57,6 +92,7 @@
     </form>
   </mat-dialog-content>
 
+  <!-- mat-dialog-actions: bottoni in fondo al dialog -->
   <mat-dialog-actions class="dialog-actions">
     <button mat-button (click)="onCancel()" class="cancel-btn" [disabled]="isLoading">Cancel</button>
     <button
@@ -66,6 +102,7 @@
       [disabled]="form.invalid || isLoading"
       (click)="onSubmit()"
     >
+      <!-- Spinner durante il caricamento, testo "Save" altrimenti -->
       @if (isLoading) {
         <mat-spinner diameter="18" class="spinner"></mat-spinner>
       } @else {

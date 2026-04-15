@@ -1,14 +1,57 @@
+<!--
+  REGISTER TEMPLATE
+  ──────────────────────────────────────────────────────────────────────────────
+  Form di registrazione con Angular Material + Reactive Forms.
+  Stesso pattern del login, con campi aggiuntivi e validazione cross-field per password.
+
+  DIFFERENZA CON LOGIN:
+  Il form di registrazione ha un validatore cross-field 'passwordMismatch' applicato
+  all'intero FormGroup (non a un singolo FormControl).
+  Per mostrare questo errore nel template si usa:
+    registerForm.hasError('passwordMismatch')   ← sull'intero form
+  invece di:
+    confirmPassword?.hasError('passwordMismatch') ← sul singolo campo
+  Entrambi funzionano se l'errore è impostato correttamente nel validatore.
+
+  form-row:
+  Contenitore CSS che mette due campi affiancati (display: grid/flex con 2 colonne).
+  Usato per: username+phone, firstName+lastName, password+confirmPassword.
+  I campi email e gli altri stanno in righe singole.
+
+  full-width:
+  Classe CSS che porta il campo alla larghezza massima (overrida il grid a 2 colonne).
+  Applicata all'email che deve occupare tutta la riga.
+
+  mat-error multipli per email:
+  È possibile avere più <mat-error> per un singolo campo.
+  Angular Material mostra il primo errore attivo (in base all'ordine nel DOM).
+  - 'required': mostrato se il campo è vuoto
+  - 'email': mostrato se il formato non è valido (Validators.email)
+  Mat-error viene mostrato solo quando il campo è touched e invalid.
+
+  Spinner + testo (loading state):
+  Stesso pattern del login: mat-spinner visibile durante isLoading,
+  testo "Register" visibile quando non si sta caricando.
+-->
 <div class="register-container">
   <mat-card class="register-card">
+
     <mat-card-header>
       <mat-card-title>Register</mat-card-title>
     </mat-card-header>
 
     <mat-card-content>
+      <!--
+        [formGroup]="registerForm": collega al FormGroup in register.ts
+        (ngSubmit)="onSubmit()": chiama onSubmit() al submit del form
+      -->
       <form [formGroup]="registerForm" (ngSubmit)="onSubmit()" class="register-form">
+
+        <!-- RIGA 1: Username + Telefono affiancati -->
         <div class="form-row">
           <mat-form-field appearance="outline" class="form-field">
             <mat-label>Username</mat-label>
+            <!-- formControlName collega l'input al FormControl 'userName' nel FormGroup -->
             <input matInput formControlName="userName" placeholder="Choose a userName">
             <mat-error *ngIf="userName?.hasError('required')">
               Username is required
@@ -24,6 +67,7 @@
           </mat-form-field>
         </div>
 
+        <!-- RIGA 2: Nome + Cognome affiancati -->
         <div class="form-row">
           <mat-form-field appearance="outline" class="form-field">
             <mat-label>First Name</mat-label>
@@ -42,17 +86,27 @@
           </mat-form-field>
         </div>
 
+        <!--
+          EMAIL — campo a larghezza piena
+          full-width: classe CSS che porta il campo alla larghezza massima
+          type="email": hint al browser per la tastiera mobile
+          Due mat-error: uno per 'required', uno per formato email non valido
+          Angular mostra il primo errore attivo in ordine DOM
+        -->
         <mat-form-field appearance="outline" class="form-field full-width">
           <mat-label>Email</mat-label>
           <input matInput type="email" formControlName="email" placeholder="Enter your email address">
+          <!-- Errore se il campo è vuoto -->
           <mat-error *ngIf="email?.hasError('required')">
             Email is required
           </mat-error>
+          <!-- Errore se il formato non è valido (Validators.email) -->
           <mat-error *ngIf="email?.hasError('email')">
             Please enter a valid email address
           </mat-error>
         </mat-form-field>
 
+        <!-- RIGA 3: Password + Conferma password affiancati -->
         <div class="form-row">
           <mat-form-field appearance="outline" class="form-field">
             <mat-label>Password</mat-label>
@@ -68,12 +122,26 @@
             <mat-error *ngIf="confirmPassword?.hasError('required')">
               Please confirm your password
             </mat-error>
+            <!--
+              ERRORE CROSS-FIELD: 'passwordMismatch'
+              Questo errore è impostato dal validatore cross-field in register.ts:
+              la funzione passwordMatchValidator() imposta l'errore sul FormGroup
+              quando password !== confirmPassword.
+              registerForm.hasError('passwordMismatch') legge l'errore del FormGroup
+              (non del singolo campo), ma viene mostrato sotto confirmPassword per UX.
+            -->
             <mat-error *ngIf="registerForm.hasError('passwordMismatch')">
               Passwords do not match
             </mat-error>
           </mat-form-field>
         </div>
 
+        <!--
+          MESSAGGI DI FEEDBACK GLOBALI
+          successMessage: impostato in register.ts dopo registrazione riuscita
+          errorMessage: impostato in register.ts in caso di errore HTTP (es. username già usato)
+          Entrambi usano *ngIf per mostrarsi solo quando hanno un valore non vuoto.
+        -->
         <div class="success-message" *ngIf="successMessage">
           {{ successMessage }}
         </div>
@@ -82,6 +150,11 @@
           {{ errorMessage }}
         </div>
 
+        <!--
+          BOTTONE SUBMIT
+          [disabled]="registerForm.invalid": disabilitato se form non è valido
+          Loading state: spinner durante isLoading, testo altrimenti
+        -->
         <button
           color="primary"
           type="submit"
@@ -94,6 +167,7 @@
       </form>
     </mat-card-content>
 
+    <!-- Link alla pagina di login per chi ha già un account -->
     <mat-card-actions class="card-actions">
       <span>Already have an account?</span>
       <a routerLink="/login" mat-button>Sign in</a>

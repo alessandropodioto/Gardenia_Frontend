@@ -1,7 +1,58 @@
+<!--
+  USER SHELL TEMPLATE — LAYOUT DELL'AREA UTENTE
+  ──────────────────────────────────────────────────────────────────────────────
+  Questo template è il "guscio" (shell) dell'area utente autenticata.
+  Non mostra contenuti di per sé: è un layout a due colonne con sidebar + contenuto.
+
+  SHELL PATTERN:
+  Il componente User (route: /user) è un componente "shell" — non ha logica di business
+  ma definisce il layout comune a tutte le pagine dell'area utente.
+  Tutte le sotto-route (/user/overview, /user/orders, ecc.) vengono iniettate
+  nel <router-outlet> di questo template come figli.
+
+  STRUTTURA:
+  ┌───────────────────────────────────────────────────────────┐
+  │  .user-dashboard-container                               │
+  │  ┌──────────────────────────────────────────────────────┐ │
+  │  │  .dashboard-grid (display: grid con 2 colonne)      │ │
+  │  │  ┌────────────┐  ┌────────────────────────────────┐ │ │
+  │  │  │ app-sidebar│  │ <main class="content-box">     │ │ │
+  │  │  │ (sidebar)  │  │   <router-outlet>              │ │ │
+  │  │  │            │  │   (overview / orders /         │ │ │
+  │  │  │            │  │    address / wishlist)         │ │ │
+  │  │  └────────────┘  └────────────────────────────────┘ │ │
+  │  └──────────────────────────────────────────────────────┘ │
+  └───────────────────────────────────────────────────────────┘
+
+  <app-sidebar>:
+  Componente Sidebar con i link di navigazione dell'area utente.
+  È standalone (standalone: true) — importa RouterModule autonomamente.
+
+  <router-outlet>:
+  Questo è un router-outlet FIGLIO (nested), diverso da quello in app.html.
+  Angular ha una gerarchia di outlet: quello radice in app.html gestisce /user,
+  questo figlio gestisce le sotto-route di /user (overview, orders, ecc.).
+  Quando si naviga a /user/overview, Angular:
+  1. Renderizza User in quello radice di app.html
+  2. Renderizza Overview in questo outlet figlio di user.html
+-->
 <div class="user-dashboard-container">
   <div class="dashboard-grid">
-    <app-sidebar></app-sidebar> <main class="content-box">
-      <router-outlet></router-outlet> 
+
+    <!--
+      SIDEBAR: navigazione dell'area utente (overview, wishlist, address, orders, logout)
+      Il componente è standalone e si gestisce i propri import (RouterModule incluso).
+    -->
+    <app-sidebar></app-sidebar>
+
+    <!--
+      CONTENUTO PRINCIPALE: router-outlet figlio
+      <main>: elemento HTML semantico per il contenuto principale della pagina.
+      Ogni navigazione a /user/* inserisce il componente corrispondente qui dentro.
+    -->
+    <main class="content-box">
+      <router-outlet></router-outlet>
     </main>
+
   </div>
 </div>

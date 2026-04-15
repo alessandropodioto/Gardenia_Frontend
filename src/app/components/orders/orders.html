@@ -1,41 +1,107 @@
+<!--
+  ORDERS TEMPLATE — STORICO ORDINI UTENTE
+  ──────────────────────────────────────────────────────────────────────────────
+  Lista degli ordini dell'utente con:
+  1. Stato loading durante il fetch
+  2. Lista ordini (infinite scroll via "View More")
+  3. @empty block per lista vuota
+  4. Bottone "Back to Top" che appare dopo lo scroll
+
+  DATI:
+  loading() → signal booleano
+  orders() → signal WritableSignal<Order[]>: array degli ordini
+  visibleCount() → signal numerico: quanti ordini mostrare (inizialmente 5, incrementato da showMore())
+  showScrollButton: boolean normale (non signal) — gestito da @HostListener('window:scroll')
+
+  PATTERN SLICE SU SIGNAL:
+  orders().slice(0, visibleCount()):
+  - orders() → legge il signal e ottiene l'array
+  - .slice(0, n) → estrae i primi n elementi senza modificare l'array originale
+  Quando visibleCount() aumenta (click "View More"), @for ricalcola automaticamente
+  perché dipende dal signal visibleCount().
+
+  [attr.data-status]:
+  Attributo HTML data-* impostato dinamicamente.
+  Alternativa a [ngClass]: permette di stilizzare con CSS tramite selettore di attributo:
+    [data-status="DELIVERED"] { color: green; }
+    [data-status="PENDING"] { color: orange; }
+  Questo approccio non richiede una classe CSS per ogni stato possibile.
+-->
 <div class="orders-container">
   <h1 class="page-title">My Orders</h1>
   <p class="page-subtitle">
     Here you can view your order history and monitor the status of your current orders.
   </p>
 
+  <!-- STATO LOADING: mostrato durante il fetch degli ordini -->
   @if (loading()) {
     <div class="loading-message">Loading your orders...</div>
   } @else {
+
+    <!--
+      LISTA ORDINI
+      orders().slice(0, visibleCount()): mostra solo i primi visibleCount() ordini
+      Quando l'utente clicca "View More", visibleCount() aumenta e @for si aggiorna.
+      track order.id: Angular usa l'id come chiave per il DOM diffing
+    -->
     @for (order of orders().slice(0, visibleCount()); track order.id) {
       <div class="address-card">
         <div class="card-header">
           <div class="user-info">
             <h3 class="user-name">Order #{{ order.id }}</h3>
             <p class="address-details">
+              <!--
+                | date: 'dd/MM/yyyy': pipe per formattare la data
+                Es: "14/04/2024"
+                order.date può essere string ISO 8601 o timestamp — la pipe accetta entrambi
+              -->
               <strong>Date:</strong> {{ order.date | date: 'dd/MM/yyyy' }}<br />
+              <!--
+                (order.totalPrice || 0): fallback a 0 se totalPrice è null/undefined
+                | currency: 'EUR': formatta come valuta euro
+              -->
               <strong>Total:</strong> {{ (order.totalPrice || 0) | currency: 'EUR' }}<br />
               <strong>Status:</strong>
+              <!--
+                [attr.data-status]="order.statusDescription":
+                Imposta l'attributo HTML data-status sul <span>.
+                Usato nel CSS per colorare diversamente ogni stato:
+                span[data-status="DELIVERED"] { color: green; }
+                span[data-status="PENDING"] { color: orange; }
+                Non serve una classe per ogni stato — più scalabile.
+              -->
               <span class="status-text" [attr.data-status]="order.statusDescription">
                 {{ order.statusDescription }}
               </span>
             </p>
           </div>
 
+          <!-- Data consegna stimata: mostrata solo se il campo è non-null -->
           @if (order.estimatedDelivery) {
             <div class="badge-shipping">
+              <!-- | date: 'MMMM d': formato "Aprile 14" -->
               Estimated delivery: {{ order.estimatedDelivery | date: 'MMMM d' }}
             </div>
           }
         </div>
 
         <div class="card-actions">
-          <a [routerLink]="['/user/orders', order.id]" class="action-link"> 
-              View order details 
+          <!--
+            [routerLink]="['/user/orders', order.id]": binding array per route dinamica
+            Costruisce il path: /user/orders/42 (se order.id = 42)
+            Equivalente a routerLink="/user/orders/{{ order.id }}" ma il binding con []
+            è la forma corretta per valori dinamici in Angular.
+          -->
+          <a [routerLink]="['/user/orders', order.id]" class="action-link">
+            View order details
           </a>
         </div>
       </div>
     } @empty {
+      <!--
+        @empty: blocco v17 mostrato quando orders().slice(0, visibleCount()) è un array vuoto.
+        Viene mostrato quando l'utente non ha ancora effettuato ordini.
+      -->
       <div class="info-card" style="margin-top: 30px">
         <h3 class="info-card-title">Order Status</h3>
         <p class="empty-state">You haven't placed any orders yet.</p>
@@ -43,6 +109,13 @@
       </div>
     }
 
+    <!--
+      BOTTONE "VIEW MORE"
+      Mostrato solo se ci sono più ordini del numero visibile.
+      orders().length > visibleCount(): condizione per mostrare il bottone.
+      showMore(): incrementa visibleCount con signal.update(n => n + 5)
+      Il testo mostra quanti ordini restano da visualizzare.
+    -->
     @if (orders().length > visibleCount()) {
       <div class="load-more-container">
         <button class="view-more-btn" (click)="showMore()">
@@ -51,6 +124,13 @@
       </div>
     }
 
+    <!--
+      BOTTONE "BACK TO TOP"
+      [class.show]="showScrollButton": aggiunge la classe CSS "show" che rende il bottone visibile.
+      showScrollButton è un boolean normale (non signal) aggiornato da @HostListener('window:scroll')
+      in orders.ts: diventa true quando lo scroll supera una soglia (es. 300px).
+      (click)="scrollToTop()": chiama window.scrollTo({top:0, behavior:'smooth'})
+    -->
     <button class="back-to-top" (click)="scrollToTop()" [class.show]="showScrollButton">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">
         <polyline points="18 15 12 9 6 15"></polyline>

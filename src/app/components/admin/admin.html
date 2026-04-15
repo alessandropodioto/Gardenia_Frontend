@@ -1,154 +1,148 @@
+<!--
+  ADMIN PANEL — gestione utenti, prodotti e ordini.
+  La vista attiva (users / products / orders) è controllata dalla sidebar.
+
+  *ngIf="isAdmin; else noAccess":
+  Se l'utente è admin mostra il pannello, altrimenti mostra il template #noAccess.
+
+  ANGULAR MATERIAL TABLE — come funziona:
+  La tabella Material non usa <th>/<td> normali. Si definiscono le colonne
+  in blocchi separati con ng-container, poi si dice alla tabella quali mostrare:
+    <ng-container matColumnDef="nomeColonna">  → definisce una colonna
+      <th *matHeaderCellDef>  → intestazione della colonna
+      <td *matCellDef="let riga">  → cella per ogni riga (riga = oggetto dati)
+    </ng-container>
+    <tr mat-header-row *matHeaderRowDef="['col1','col2',...]">  → riga intestazione
+    <tr mat-row *matRowDef="let row; columns: ['col1','col2',...]">  → righe dati
+-->
 <div class="admin-container">
+
   <div *ngIf="isAdmin; else noAccess">
     <div class="admin-layout">
-      <!-- Admin Sidebar -->
+
+      <!--
+        Sidebar admin con i bottoni Users / Products / Orders.
+        (viewChange): evento emesso dalla sidebar quando si clicca un bottone.
+        onViewChange($event): aggiorna activeView in admin.ts → cambia la sezione visibile.
+      -->
       <app-admin-sidebar (viewChange)="onViewChange($event)"></app-admin-sidebar>
 
-      <!-- Main Content Area -->
       <div class="admin-content-wrapper">
+
+        <!-- Messaggio di errore con bottone per riprovare -->
         <div *ngIf="error" class="error-message">
           <p>{{ error }}</p>
           <button mat-button (click)="activeView === 'users' ? loadUsers() : loadProducts()">Retry</button>
         </div>
 
         <div *ngIf="!error" class="admin-content">
-          <!-- Users Section -->
+
+          <!-- ── SEZIONE UTENTI ───────────────────────────────────────────── -->
           <div *ngIf="activeView === 'users'">
             <div class="table-header">
               <h2>User List</h2>
             </div>
 
             <div class="table-container">
+              <!-- [dataSource]="users": array degli utenti che alimenta la tabella -->
               <table mat-table [dataSource]="users" class="mat-table">
-                
-                <!-- Name Column -->
+
                 <ng-container matColumnDef="name">
                   <th mat-header-cell *matHeaderCellDef>Name</th>
                   <td mat-cell *matCellDef="let user">{{ user.firstName }} {{ user.lastName }}</td>
                 </ng-container>
 
-                <!-- Username Column -->
                 <ng-container matColumnDef="username">
                   <th mat-header-cell *matHeaderCellDef>Username</th>
                   <td mat-cell *matCellDef="let user">{{ user.userName }}</td>
                 </ng-container>
 
-                <!-- Email Column -->
                 <ng-container matColumnDef="email">
                   <th mat-header-cell *matHeaderCellDef>Email</th>
                   <td mat-cell *matCellDef="let user">{{ user.email }}</td>
                 </ng-container>
 
-                <!-- Phone Column -->
                 <ng-container matColumnDef="phone">
                   <th mat-header-cell *matHeaderCellDef>Phone</th>
                   <td mat-cell *matCellDef="let user">{{ user.phone }}</td>
                 </ng-container>
 
-                <!-- Role Column -->
                 <ng-container matColumnDef="role">
                   <th mat-header-cell *matHeaderCellDef>Role</th>
                   <td mat-cell *matCellDef="let user">{{ user.role }}</td>
                 </ng-container>
 
-                <!-- Actions Column -->
                 <ng-container matColumnDef="actions">
                   <th mat-header-cell *matHeaderCellDef>Actions</th>
                   <td mat-cell *matCellDef="let user" class="actions-cell">
-                    <button 
-                      mat-raised-button 
-                      color="warn" 
-                      (click)="openDeleteUserDialog(user)"
-                      class="action-btn delete-btn"
-                    >
+                    <button mat-raised-button color="warn" (click)="openDeleteUserDialog(user)" class="action-btn delete-btn">
                       Delete
                     </button>
                   </td>
                 </ng-container>
 
+                <!-- Queste due righe dichiarano quali colonne mostrare (ordine = ordine visivo) -->
                 <tr mat-header-row *matHeaderRowDef="['name', 'username', 'email', 'phone', 'role', 'actions']"></tr>
                 <tr mat-row *matRowDef="let row; columns: ['name', 'username', 'email', 'phone', 'role', 'actions']"></tr>
               </table>
 
-              <div *ngIf="users.length === 0" class="no-data">
-                <p>No users found</p>
-              </div>
+              <div *ngIf="users.length === 0" class="no-data"><p>No users found</p></div>
             </div>
           </div>
 
-          <!-- Products Section -->
+          <!-- ── SEZIONE PRODOTTI ─────────────────────────────────────────── -->
           <div *ngIf="activeView === 'products'">
             <div class="table-header with-button">
               <h2>Product List</h2>
-              <button 
-                mat-raised-button 
-                class="create-btn"
-                (click)="openCreateProductDialog()"
-              >
+              <button mat-raised-button class="create-btn" (click)="openCreateProductDialog()">
                 + New Product
               </button>
             </div>
 
             <div class="table-container">
               <table mat-table [dataSource]="products" class="mat-table">
-                
-                <!-- ID Column -->
+
                 <ng-container matColumnDef="id">
                   <th mat-header-cell *matHeaderCellDef>ID</th>
                   <td mat-cell *matCellDef="let product">{{ product.id }}</td>
                 </ng-container>
 
-                <!-- Name Column -->
                 <ng-container matColumnDef="name">
                   <th mat-header-cell *matHeaderCellDef>Name</th>
                   <td mat-cell *matCellDef="let product">{{ product.name }}</td>
                 </ng-container>
 
-                <!-- Description Column -->
                 <ng-container matColumnDef="description">
                   <th mat-header-cell *matHeaderCellDef>Description</th>
-                  <td mat-cell *matCellDef="let product">{{ product.description | slice:0:50 }}{{ product.description.length > 50 ? '...' : '' }}</td>
+                  <!-- | slice:0:50: mostra solo i primi 50 caratteri della descrizione -->
+                  <td mat-cell *matCellDef="let product">
+                    {{ product.description | slice:0:50 }}{{ product.description.length > 50 ? '...' : '' }}
+                  </td>
                 </ng-container>
 
-                <!-- Price Column -->
                 <ng-container matColumnDef="price">
                   <th mat-header-cell *matHeaderCellDef>Price</th>
                   <td mat-cell *matCellDef="let product">€{{ product.price.toFixed(2) }}</td>
                 </ng-container>
 
-                <!-- Stock Column -->
                 <ng-container matColumnDef="stock">
                   <th mat-header-cell *matHeaderCellDef>Stock</th>
+                  <!-- [class.low-stock]: aggiunge stile di allerta se stock < 5 -->
                   <td mat-cell *matCellDef="let product" [class.low-stock]="product.stock < 5">
                     {{ product.stock }}
                   </td>
                 </ng-container>
 
-                <!-- Subcategory Column -->
                 <ng-container matColumnDef="subcategory">
                   <th mat-header-cell *matHeaderCellDef>Subcategory</th>
                   <td mat-cell *matCellDef="let product">{{ product.subcategoryName }}</td>
                 </ng-container>
 
-                <!-- Actions Column -->
                 <ng-container matColumnDef="actions">
                   <th mat-header-cell *matHeaderCellDef>Actions</th>
                   <td mat-cell *matCellDef="let product" class="actions-cell">
-                    <button 
-                      mat-raised-button 
-                      class="action-btn edit-btn"
-                      (click)="openEditProductDialog(product)"
-                    >
-                      Edit
-                    </button>
-                    <button 
-                      mat-raised-button 
-                      color="warn" 
-                      (click)="openDeleteProductDialog(product)"
-                      class="action-btn delete-btn"
-                    >
-                      Delete
-                    </button>
+                    <button mat-raised-button class="action-btn edit-btn" (click)="openEditProductDialog(product)">Edit</button>
+                    <button mat-raised-button color="warn" (click)="openDeleteProductDialog(product)" class="action-btn delete-btn">Delete</button>
                   </td>
                 </ng-container>
 
@@ -156,13 +150,11 @@
                 <tr mat-row *matRowDef="let row; columns: ['id', 'name', 'description', 'price', 'stock', 'subcategory', 'actions']"></tr>
               </table>
 
-              <div *ngIf="products.length === 0" class="no-data">
-                <p>No products found</p>
-              </div>
+              <div *ngIf="products.length === 0" class="no-data"><p>No products found</p></div>
             </div>
           </div>
 
-          <!-- Orders Section -->
+          <!-- ── SEZIONE ORDINI ───────────────────────────────────────────── -->
           <div *ngIf="activeView === 'orders'">
             <div class="table-header">
               <h2>Order List</h2>
@@ -170,53 +162,55 @@
 
             <div class="table-container">
               <table mat-table [dataSource]="orders" class="mat-table">
-                
-                <!-- ID Column -->
+
                 <ng-container matColumnDef="id">
                   <th mat-header-cell *matHeaderCellDef>Order ID</th>
                   <td mat-cell *matCellDef="let order">{{ order.id }}</td>
                 </ng-container>
 
-                <!-- User ID Column -->
                 <ng-container matColumnDef="userName">
                   <th mat-header-cell *matHeaderCellDef>User ID</th>
                   <td mat-cell *matCellDef="let order">{{ order.userId }}</td>
                 </ng-container>
 
-                <!-- Date Column -->
                 <ng-container matColumnDef="date">
                   <th mat-header-cell *matHeaderCellDef>Date</th>
                   <td mat-cell *matCellDef="let order">{{ order.date }}</td>
                 </ng-container>
 
-                <!-- Total Price Column -->
                 <ng-container matColumnDef="totalPrice">
                   <th mat-header-cell *matHeaderCellDef>Total Price</th>
+                  <!-- ?.toFixed(): optional chaining — evita errori se totalPrice è null -->
                   <td mat-cell *matCellDef="let order">€{{ order.totalPrice?.toFixed(2) || '0.00' }}</td>
                 </ng-container>
 
-                <!-- Warehouse Column -->
                 <ng-container matColumnDef="warehouse">
                   <th mat-header-cell *matHeaderCellDef>Warehouse</th>
+                  <!-- NOTA: "wharehouse" è un typo nel backend, non modificare -->
                   <td mat-cell *matCellDef="let order">{{ order.wharehouse }}</td>
                 </ng-container>
 
-                <!-- Paid Column -->
                 <ng-container matColumnDef="isPaid">
                   <th mat-header-cell *matHeaderCellDef>Paid</th>
                   <td mat-cell *matCellDef="let order">
+                    <!-- [class.paid-yes/paid-no]: stile verde/rosso in base al pagamento -->
                     <span class="paid-badge" [class.paid-yes]="order.isPaid" [class.paid-no]="!order.isPaid">
                       {{ order.isPaid ? 'Yes' : 'No' }}
                     </span>
                   </td>
                 </ng-container>
 
-                <!-- Status Column with inline dropdown -->
                 <ng-container matColumnDef="status">
                   <th mat-header-cell *matHeaderCellDef>Status</th>
                   <td mat-cell *matCellDef="let order">
                     <div class="status-cell">
-                      <select 
+                      <!--
+                        [value]: mostra il valore in sospeso se l'admin l'ha modificato,
+                        altrimenti lo status attuale dell'ordine.
+                        $any($event.target).value: cast TypeScript per leggere .value
+                        dall'evento change senza errori di tipo.
+                      -->
+                      <select
                         class="status-select"
                         [value]="pendingStatusChanges[order.id!] || order.status"
                         (change)="onStatusChange(order.id!, $any($event.target).value)"
@@ -227,8 +221,12 @@
                         <option value="DELIVERED">DELIVERED</option>
                         <option value="REFUNDED">REFUNDED</option>
                       </select>
-                      <button 
-                        mat-raised-button 
+                      <!--
+                        [disabled]: il bottone è attivo solo se c'è una modifica
+                        pendente diversa dallo status attuale.
+                      -->
+                      <button
+                        mat-raised-button
                         class="confirm-btn"
                         (click)="updateOrderStatus(order)"
                         [disabled]="!pendingStatusChanges[order.id!] || pendingStatusChanges[order.id!] === order.status"
@@ -243,16 +241,19 @@
                 <tr mat-row *matRowDef="let row; columns: ['id', 'userName', 'date', 'totalPrice', 'warehouse', 'isPaid', 'status']"></tr>
               </table>
 
-              <div *ngIf="orders.length === 0" class="no-data">
-                <p>No orders found</p>
-              </div>
+              <div *ngIf="orders.length === 0" class="no-data"><p>No orders found</p></div>
             </div>
           </div>
+
         </div>
       </div>
     </div>
   </div>
 
+  <!--
+    Template "Access Denied": mostrato come branch "else" di *ngIf="isAdmin".
+    ng-template non appare nel DOM finché non viene richiamato dall'else.
+  -->
   <ng-template #noAccess>
     <div class="access-denied">
       <h1>Access Denied</h1>
@@ -260,4 +261,5 @@
       <p>Please log in with an administrator account.</p>
     </div>
   </ng-template>
+
 </div>

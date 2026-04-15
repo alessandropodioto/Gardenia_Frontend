@@ -1,7 +1,27 @@
+<!--
+  DIALOG "AGGIUNGI / MODIFICA INDIRIZZO"
+  Usato sia per creare un nuovo indirizzo sia per modificarne uno esistente.
+  isEditMode: booleano in address-dialog.ts che determina titolo e testo del bottone.
+
+  PATTERN DIALOG CON FORM:
+  Questo dialog NON usa mat-dialog-content/actions di Material.
+  Gestisce autonomamente il layout con classi CSS custom.
+  Al click di "Conferma", se il form è valido chiude il dialog passando
+  i dati del form a chi lo ha aperto (AddressComponent).
+  AddressComponent riceve i dati in afterClosed() e chiama il service HTTP.
+
+  [ngClass]="{'save-button-valid': addressForm.valid}":
+  Aggiunge la classe CSS "save-button-valid" al bottone quando il form è valido.
+  È un modo per cambiare lo stile visivo del bottone in base alla validità del form.
+-->
 <div class="dialog-container">
+
+  <!-- Titolo dinamico: "Edit Address" se modifica, "Add Address" se creazione -->
   <h2 class="dialog-title">{{ isEditMode ? 'Edit Address' : 'Add Address' }}</h2>
 
   <form [formGroup]="addressForm" class="dialog-form">
+
+    <!-- Via: obbligatoria, minimo 3 caratteri -->
     <mat-form-field appearance="outline" class="full-width">
       <mat-label>Street</mat-label>
       <input matInput formControlName="street" placeholder="Enter street name" />
@@ -9,6 +29,7 @@
       <mat-error *ngIf="street?.hasError('minlength')">Street must be at least 3 characters</mat-error>
     </mat-form-field>
 
+    <!-- Numero civico + Città affiancati -->
     <div class="form-row">
       <mat-form-field appearance="outline" class="half-width">
         <mat-label>Number</mat-label>
@@ -25,6 +46,7 @@
       </mat-form-field>
     </div>
 
+    <!-- CAP + Paese affiancati -->
     <div class="form-row">
       <mat-form-field appearance="outline" class="half-width">
         <mat-label>Postal Code</mat-label>
@@ -42,8 +64,17 @@
     </div>
 
     <div class="dialog-actions">
+      <!-- onCancel(): chiude il dialog restituendo false → AddressComponent non fa nulla -->
       <button mat-raised-button color="warn" type="button" (click)="onCancel()">Cancel</button>
-      <button mat-raised-button color="accent" type="button" (click)="onConfirm()" [disabled]="addressForm.invalid" [ngClass]="{'save-button-valid': addressForm.valid}">
+      <!--
+        onConfirm(): chiude il dialog restituendo i dati del form → AddressComponent
+        chiama createAddress() o updateAddress() in base alla modalità.
+        [disabled]: bloccato se il form ha errori di validazione.
+        [ngClass]: aggiunge classe CSS "save-button-valid" quando il form è valido.
+      -->
+      <button mat-raised-button color="accent" type="button" (click)="onConfirm()"
+        [disabled]="addressForm.invalid"
+        [ngClass]="{'save-button-valid': addressForm.valid}">
         {{ isEditMode ? 'Save Changes' : 'Add Address' }}
       </button>
     </div>

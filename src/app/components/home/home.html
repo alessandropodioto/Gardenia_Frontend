@@ -1,4 +1,13 @@
+<!--
+  HOME — griglia prodotti con paginazione.
+  Usato sia per /home (tutti i prodotti) sia per /category/:cat/:sub (filtrati per categoria).
+-->
 <div class="home-container">
+
+  <!--
+    Banner di benvenuto: visibile solo nella home, non nelle pagine categoria.
+    isHome() è un computed signal che vale true solo se la route è /home.
+  -->
   @if (isHome()) {
     <div class="banner-wrapper">
       <div class="banner-container">
@@ -12,6 +21,15 @@
 
   <section class="products-section">
     <div class="products-container">
+
+      <!--
+        STATI DELLA PAGINA (uno solo visibile per volta):
+        loading() → dati in arrivo dal backend
+        error()   → qualcosa è andato storto
+        products().length === 0 → nessun prodotto trovato
+        @else → tutto ok, mostra la griglia
+        Tutti e tre sono signal: si leggono con le parentesi ().
+      -->
       @if (loading()) {
         <div class="loading-message"><p>Loading products...</p></div>
       } @else if (error()) {
@@ -21,13 +39,22 @@
       } @else if (products().length === 0) {
         <div class="empty-message"><p>No products found</p></div>
       } @else {
+
         <div class="products-grid">
+          <!--
+            products().slice(pageIndex * pageSize, (pageIndex + 1) * pageSize):
+            Mostra solo i prodotti della pagina corrente, tagliando l'array con slice().
+            Es. pagina 0, pageSize 12 → slice(0, 12) → primi 12 prodotti.
+            track product.id → Angular identifica ogni card per aggiornarla senza ricrearla.
+          -->
           @for (
             product of products().slice(pageIndex * pageSize, (pageIndex + 1) * pageSize);
             track product.id
           ) {
             <div class="product-card">
+              <!-- (click): naviga al dettaglio del prodotto -->
               <div class="product-image" (click)="navigateToProductDetails(product.id)">
+                <!-- [src]: URL immagine calcolato da getImageUrl(); [alt]: testo alternativo -->
                 <img [src]="getImageUrl(product)" [alt]="product.name" class="card-image" />
               </div>
               <div class="product-info">
@@ -35,6 +62,10 @@
                   {{ product.name }}
                 </h3>
                 <p class="product-price">€{{ product.price.toFixed(2) }}</p>
+                <!--
+                  [class.low-stock]: aggiunge la classe CSS "low-stock" (testo rosso)
+                  solo se lo stock è inferiore a 5.
+                -->
                 <p class="product-stock" [class.low-stock]="product.stock < 5">
                   Stock: {{ product.stock }}
                 </p>
@@ -43,22 +74,25 @@
           }
         </div>
 
+        <!-- PAGINAZIONE: visibile solo se i prodotti sono più di una pagina -->
         @if (products().length > pageSize) {
           <div class="pagination-wrapper">
             <div class="pagination-row">
-              
+
+              <!-- Prima pagina / Pagina precedente: [disabled] se già alla prima -->
               <button class="nav-arrow" [disabled]="pageIndex === 0" (click)="onPageChange({ pageIndex: 0 })">
                 <span class="material-icons">first_page</span>
               </button>
-
               <button class="nav-arrow" [disabled]="pageIndex === 0" (click)="onPageChange({ pageIndex: pageIndex - 1 })">
                 <span class="material-icons">chevron_left</span>
               </button>
 
               <div class="page-numbers-row">
+                <!-- "..." se la finestra di pagine non inizia da 0 -->
                 @if (visiblePages[0] > 0) { <span class="dots">...</span> }
 
                 @for (n of visiblePages; track n) {
+                  <!-- [class.active]: evidenzia la pagina corrente -->
                   <button
                     class="page-num-btn"
                     [class.active]="n === pageIndex"
@@ -68,18 +102,25 @@
                   </button>
                 }
 
+                <!-- "..." se la finestra non arriva all'ultima pagina -->
                 @if (visiblePages[visiblePages.length - 1] < totalPagesCount - 1) { <span class="dots">...</span> }
               </div>
 
+              <!-- Pagina successiva / Ultima pagina: [disabled] se all'ultima -->
               <button class="nav-arrow" [disabled]="pageIndex >= totalPagesCount - 1" (click)="onPageChange({ pageIndex: pageIndex + 1 })">
                 <span class="material-icons">chevron_right</span>
               </button>
-
               <button class="nav-arrow" [disabled]="pageIndex >= totalPagesCount - 1" (click)="onPageChange({ pageIndex: totalPagesCount - 1 })">
                 <span class="material-icons">last_page</span>
               </button>
             </div>
 
+            <!--
+              Indicatore "1–12 of 48".
+              Math.min() serve per non superare il totale nell'ultima pagina.
+              Math è esposto come proprietà in home.ts perché nel template
+              non si può usare direttamente l'oggetto globale Math.
+            -->
             <div class="pagination-info">
               {{ pageIndex * pageSize + 1 }} –
               {{ Math.min((pageIndex + 1) * pageSize, products().length) }}
@@ -87,6 +128,7 @@
             </div>
           </div>
         }
+
       }
     </div>
   </section>

@@ -1,23 +1,72 @@
+<!--
+  ORDER DETAIL TEMPLATE — DETTAGLIO SINGOLO ORDINE
+  ──────────────────────────────────────────────────────────────────────────────
+  Mostra il dettaglio completo di un ordine specifico, identificato dall'ID nell'URL.
+  Esempio route: /user/orders/42
+
+  DATI:
+  loading() → signal booleano: true durante il fetch dell'ordine
+  order() → signal WritableSignal<Order | null>: l'ordine caricato (null se non trovato)
+  L'ordine viene caricato in order-detail.ts tramite ActivatedRoute.paramMap
+  che osserva i cambiamenti del parametro :id nella route.
+
+  CATENA CONDIZIONALE @if / @else if / @else:
+  1. @if (loading()) → mostro spinner di caricamento
+  2. @else if (order()) → mostro il contenuto dell'ordine (order() è truthy se non null)
+  3. @else → mostro "Order not found" (order() è null: ID non valido o ordine non dell'utente)
+
+  order().id, order().items, ecc.:
+  Nella catena @else if (order()), Angular ha già verificato che order() non è null,
+  quindi accedere a order().id è sicuro senza optional chaining.
+  (In TypeScript puro servirebbe order()?.id, ma nel template @if garantisce la non-nullità.)
+
+  LAYOUT A DUE COLONNE:
+  - .products-column (sinistra): lista dei prodotti nell'ordine
+  - .summary-column (destra, <aside>): riepilogo economico dell'ordine
+  <aside> ha significato semantico HTML: contenuto correlato ma non principale.
+-->
 <div class="order-detail-container">
+
+  <!-- Link di ritorno alla lista ordini -->
   <a routerLink="/user/orders" class="back-link">← Back to My Orders</a>
 
+  <!-- STATO LOADING -->
   @if (loading()) {
     <div class="loading-message">Loading order details...</div>
+
   } @else if (order()) {
+    <!-- ORDINE TROVATO: mostra intestazione + contenuto -->
+
     <div class="order-header">
+      <!-- order().id: accesso diretto — order() è garantito non-null in questo ramo -->
       <h1 class="page-title">Order #{{ order().id }}</h1>
+      <!--
+        | date:'MMMM d, yyyy': formatta la data come "April 14, 2024"
+        MMMM = mese per esteso, d = giorno, yyyy = anno 4 cifre
+      -->
       <p class="page-subtitle">Placed on {{ order().date | date:'MMMM d, yyyy' }}</p>
     </div>
 
     <div class="order-main-content">
-      
+
+      <!-- COLONNA PRODOTTI: lista degli item nell'ordine -->
       <div class="products-column">
         <h3 class="section-title">Items in your order</h3>
-        
+
+        <!--
+          @for (item of order().items; track item.id):
+          order().items è l'array di CartItem dell'ordine.
+          track item.id: chiave stabile per il DOM diffing di Angular.
+        -->
         @for (item of order().items; track item.id) {
           <div class="product-item">
             <div class="product-info">
               <div class="product-img">
+                <!--
+                  item.immagine || 'assets/images/placeholder.jpg':
+                  fallback se l'immagine non è disponibile
+                  [alt]="item.nome": testo alternativo per accessibilità
+                -->
                 <img [src]="item.immagine || 'assets/images/placeholder.jpg'" [alt]="item.nome">
               </div>
               <div class="product-text">
@@ -25,11 +74,21 @@
                 <p class="product-qty">Quantity: {{ item.amount }}</p>
               </div>
             </div>
+            <!--
+              Prezzo totale linea: prezzo unitario × quantità
+              .toFixed(2): formattazione a 2 decimali (alternativa alla pipe | currency)
+            -->
             <div class="product-price">{{ (item.price * item.amount).toFixed(2) }} €</div>
           </div>
         }
       </div>
 
+      <!--
+        RIEPILOGO ORDINE (colonna destra)
+        <aside>: elemento HTML semantico per contenuto correlato ma secondario
+        (order().totalPrice || 0): fallback a 0 se totalPrice è null/undefined
+        La spedizione è sempre "Free" in questa implementazione.
+      -->
       <aside class="summary-column">
         <div class="order-summary-card">
           <h3 class="summary-title">Order Summary</h3>
@@ -41,6 +100,7 @@
             <span>Shipping</span>
             <span>Free</span>
           </div>
+          <!-- Riga totale: stessa classe ma con CSS specifico per evidenziarla -->
           <div class="summary-line total">
             <span>Total</span>
             <span>{{ (order().totalPrice || 0).toFixed(2) }} €</span>
@@ -49,7 +109,9 @@
       </aside>
 
     </div>
+
   } @else {
+    <!-- ORDINE NON TROVATO: ID non valido o ordine non appartiene all'utente -->
     <div class="info-card">
       <p>Order not found.</p>
     </div>

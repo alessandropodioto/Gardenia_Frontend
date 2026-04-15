@@ -1,3 +1,11 @@
+/**
+ * DELETE ADDRESS DIALOG
+ * ─────────────────────────────────────────────────────────────────────────────
+ * Dialog di conferma per l'eliminazione di un indirizzo.
+ * Stesso pattern di DeleteUser: riceve i dati via MAT_DIALOG_DATA e restituisce
+ * true (conferma) o false (annulla) tramite MatDialogRef.close().
+ */
+
 import { Component, Inject } from '@angular/core';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 
@@ -25,7 +33,7 @@ export class DeleteAddress {
   ) {}
 
   onConfirm(): void {
-    this.dialogRef.close(true);
+    this.dialogRef.close(true); // Segnala ad AddressComponent di procedere con la DELETE
   }
 
   onCancel(): void {

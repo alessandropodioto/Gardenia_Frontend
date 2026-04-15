@@ -1,10 +1,26 @@
+/**
+ * SHOPPINGCART SERVICE (legacy)
+ * ─────────────────────────────────────────────────────────────────────────────
+ * Servizio alternativo per il carrello, con un approccio più "classico" rispetto
+ * a CartService (che usa signal()).
+ *
+ * DIFFERENZA CON CartService:
+ * - CartService usa signal() per lo stato reattivo → aggiorna automaticamente il DOM
+ * - ShoppingcartService è un semplice wrapper HTTP senza stato locale
+ *
+ * Attualmente CartService è il servizio principale usato dai componenti. Questo
+ * servizio potrebbe essere usato in scenari dove serve solo la chiamata HTTP senza
+ * bisogno di aggiornare lo stato globale dell'applicazione.
+ */
+
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { catchError, Observable, throwError } from 'rxjs';
 
+// Interfaccia che rispecchia la riga del carrello sul backend (ShoppingCartDTO)
 export interface ShoppingCart {
   id?: number;
-  idOrder: number;
+  idOrder: number;    // Null se carrello attivo; popolato quando l'ordine viene confermato
   idProduct: number;
   amount: number;
   price: number;
@@ -45,6 +61,7 @@ export class ShoppingcartService {
     );
   }
 
+  /** Recupera gli item del carrello associati a un ordine specifico */
   getcartItemsByOrderId(orderId: number): Observable<ShoppingCart[]> {
     return this.http.get<ShoppingCart[]>(`${this.baseUrl}/getByOrder/${orderId}`).pipe(
       catchError((error) => {
@@ -54,6 +71,7 @@ export class ShoppingcartService {
     );
   }
 
+  /** Recupera il carrello attivo dell'utente (item non ancora associati a un ordine) */
   getActiveCart(userName: string): Observable<ShoppingCart[]> {
     return this.http.get<ShoppingCart[]>(`${this.baseUrl}/activeCart/${userName}`).pipe(
       catchError((error) => {

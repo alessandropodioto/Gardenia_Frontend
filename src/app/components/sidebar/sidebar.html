@@ -1,10 +1,44 @@
+<!--
+  SIDEBAR TEMPLATE — NAVIGAZIONE AREA UTENTE
+  ──────────────────────────────────────────────────────────────────────────────
+  Barra laterale di navigazione per tutte le pagine dell'area utente (/user/*).
+
+  userName:
+  Proprietà in sidebar.ts letta da localStorage (o AuthService).
+  Mostra un saluto personalizzato: "Hello mario!" ecc.
+
+  routerLink + routerLinkActive="active":
+  Ogni link usa routerLink per la navigazione Angular (senza reload pagina).
+  routerLinkActive="active": Angular aggiunge automaticamente la classe CSS "active"
+  al link quando la route corrente corrisponde al suo routerLink.
+  Questo permette di evidenziare visivamente il link della pagina in cui ci si trova,
+  senza logica JavaScript manuale.
+
+  NOTA: routerLinkActive confronta il PATH, non l'intera URL.
+  Es: se si è su /user/overview, il link con routerLink="/user/overview" riceve "active",
+  gli altri link rimangono senza quella classe.
+
+  LOGOUT:
+  Il link Logout usa (click)="logout()" invece di routerLink.
+  Non naviga a una route ma chiama il metodo logout() in sidebar.ts
+  che a sua volta chiama AuthService.logout() → cancella il token → naviga a /home.
+  Non ha routerLinkActive perché non corrisponde a nessuna route.
+-->
 <aside class="sidebar-box">
+
+  <!-- Saluto personalizzato: userName letto da localStorage in sidebar.ts -->
   <h2 class="welcome-msg">Hello {{ userName }}!</h2>
+
   <nav class="nav-menu">
+
+    <!--
+      routerLinkActive="active": aggiunge la classe "active" quando la route corrente
+      corrisponde a /user/overview — evidenzia visivamente la pagina attiva nella sidebar.
+    -->
     <a routerLink="/user/overview" routerLinkActive="active" class="nav-item">
       Account Overview
     </a>
-    
+
     <a routerLink="/user/wishlist" routerLinkActive="active" class="nav-item">
       My Wishlist
     </a>
@@ -16,7 +50,12 @@
     <a routerLink="/user/orders" routerLinkActive="active" class="nav-item">
       My Orders
     </a>
-    
+
+    <!--
+      LOGOUT: usa (click) invece di routerLink.
+      logout() in sidebar.ts → AuthService.logout() → rimuove token → naviga a /home.
+      Non ha routerLinkActive: non deve mai risultare "attivo".
+    -->
     <a (click)="logout()" class="nav-item logout">Logout</a>
   </nav>
 </aside>

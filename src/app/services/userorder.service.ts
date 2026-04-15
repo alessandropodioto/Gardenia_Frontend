@@ -1,17 +1,26 @@
+/**
+ * USERORDER SERVICE
+ * ─────────────────────────────────────────────────────────────────────────────
+ * Gestisce le chiamate HTTP per gli ordini utente.
+ * Usato sia dalla pagina "I miei ordini" (utente) che dalla dashboard admin.
+ */
+
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { catchError, Observable, throwError } from 'rxjs';
 
+// Interfaccia che rispecchia l'OrderDTO del backend.
+// I campi opzionali (?) possono non essere presenti in tutte le risposte.
 export interface UserOrder {
   id?: number;
-  wharehouse: string;
+  wharehouse: string;         // Nota: typo "wharehouse" ereditato dal backend (corretto: warehouse)
   isPaid: boolean;
-  userId?: string;
+  userId?: string;            // Lo userName dell'utente (il backend lo chiama userId)
   addressId?: number;
-  statusDescription: string;
-  date: string;
+  statusDescription: string;  // Es. "PAID", "SHIPPED", "DELIVERED"
+  date: string;               // Formato YYYY-MM-DD
   totalPrice?: number;
-  items?: any[];
+  items?: any[];              // Lista prodotti nell'ordine (popolata da getById)
 }
 
 @Injectable({
@@ -22,9 +31,7 @@ export class UserorderService {
 
   constructor(private http: HttpClient) {}
 
-  /**
-   * Crea un nuovo ordine
-   */
+  /** Crea un nuovo ordine (chiamato da PagamentoComponent al completamento acquisto) */
   create(order: UserOrder): Observable<UserOrder> {
     return this.http.post<UserOrder>(`${this.apiUrl}/create`, order).pipe(
       catchError((error) => {
@@ -34,9 +41,7 @@ export class UserorderService {
     );
   }
 
-  /**
-   * Aggiorna uno stato o un ordine esistente
-   */
+  /** Aggiorna un ordine esistente (usato dall'admin per cambiare lo stato) */
   update(order: UserOrder): Observable<UserOrder> {
     return this.http.put<UserOrder>(`${this.apiUrl}/update`, order).pipe(
       catchError((error) => {
@@ -47,7 +52,9 @@ export class UserorderService {
   }
 
   /**
-   * Recupera la lista ordini di un utente (usata in My Orders)
+   * Recupera la lista degli ordini di un utente specifico.
+   * Usata dalla pagina "I miei ordini" (OrdersComponent).
+   * HttpParams costruisce il query param: /listByUser?userName=...
    */
   getOrdersByUser(userName: string): Observable<UserOrder[]> {
     const params = new HttpParams().set('userName', userName);
@@ -60,8 +67,9 @@ export class UserorderService {
   }
 
   /**
-   * Recupera il dettaglio completo di un ordine (usata in Order Detail)
-   * Include la lista dei prodotti grazie al mapping fatto nel Backend
+   * Recupera il dettaglio completo di un singolo ordine, inclusa la lista dei
+   * prodotti acquistati (campo "items"). Il mapping viene fatto lato backend.
+   * Usato da OrderDetail.
    */
   getById(id: number): Observable<UserOrder> {
     const params = new HttpParams().set('id', id.toString());
@@ -73,7 +81,8 @@ export class UserorderService {
     );
   }
 
-  list() : Observable<UserOrder[]> {
+  /** Recupera tutti gli ordini (usato solo dalla dashboard admin) */
+  list(): Observable<UserOrder[]> {
     return this.http.get<UserOrder[]>(`${this.apiUrl}/list`).pipe(
       catchError((error) => {
         console.error('Error fetching all orders:', error);

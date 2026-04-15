@@ -1,26 +1,68 @@
+<!--
+  ADMIN SIDEBAR TEMPLATE — NAVIGAZIONE PANNELLO ADMIN
+  ──────────────────────────────────────────────────────────────────────────────
+  Sidebar del pannello admin con tre pulsanti di navigazione: Users, Products, Orders.
+  Diversamente dalla Sidebar utente, questa NON usa routerLink ma bottoni con (click).
+  La navigazione avviene tramite @Output EventEmitter, non tramite il Router Angular.
+
+  PERCHÉ BOTTONI INVECE DI routerLink:
+  Il pannello admin è tutto nella stessa route (/admin).
+  Le sezioni (users / products / orders) NON sono route figlie separate —
+  sono semplicemente div mostrati/nascosti con *ngIf in admin.html.
+  Usare routerLink cambierebbe la URL (non desiderato qui); i bottoni con (click)
+  permettono di cambiare la vista senza cambiare la route.
+
+  @Output EventEmitter — COMUNICAZIONE FIGLIO → GENITORE:
+  switchView('users') in admin-sidebar.ts chiama:
+    this.viewChange.emit('users')
+  Admin (il genitore) riceve l'evento tramite:
+    <app-admin-sidebar (viewChange)="onViewChange($event)">
+  e aggiorna activeView in admin.ts.
+
+  activeView: string — proprietà di AdminSidebar che traccia la sezione attiva.
+  Viene aggiornata in switchView() prima di emettere l'evento.
+  Serve per applicare [class.active] al bottone corretto.
+
+  [class.active]="activeView === 'users'":
+  Binding di classe condizionale: aggiunge la classe CSS "active" al bottone
+  della sezione correntemente visualizzata. Il CSS può quindi evidenziarlo
+  con uno stile diverso (es. sfondo colorato, grassetto).
+-->
 <aside class="admin-sidebar">
   <h2 class="admin-title">Admin Panel</h2>
+
   <nav class="admin-nav">
-    <button 
-      class="nav-btn" 
+
+    <!--
+      BOTTONE USERS
+      [class.active]="activeView === 'users'": evidenzia se la vista attiva è "users"
+      (click)="switchView('users')": aggiorna activeView + emette viewChange al genitore (Admin)
+    -->
+    <button
+      class="nav-btn"
       [class.active]="activeView === 'users'"
       (click)="switchView('users')"
     >
       Users
     </button>
-    <button 
-      class="nav-btn" 
+
+    <!-- BOTTONE PRODUCTS -->
+    <button
+      class="nav-btn"
       [class.active]="activeView === 'products'"
       (click)="switchView('products')"
     >
       Products
     </button>
-    <button 
-      class="nav-btn" 
+
+    <!-- BOTTONE ORDERS -->
+    <button
+      class="nav-btn"
       [class.active]="activeView === 'orders'"
       (click)="switchView('orders')"
     >
       Orders
     </button>
+
   </nav>
 </aside>

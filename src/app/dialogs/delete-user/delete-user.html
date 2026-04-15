@@ -1,8 +1,24 @@
+<!--
+  DIALOG "ELIMINA UTENTE" — conferma prima di cancellare un utente.
+
+  STRUTTURA MATERIAL DIALOG:
+  mat-dialog-title   → titolo
+  mat-dialog-content → messaggio + dati dell'utente da eliminare
+  mat-dialog-actions → bottoni Cancel / Delete
+
+  data.user.*: dati ricevuti da Admin tramite MAT_DIALOG_DATA.
+  Mostrare il nome/email dell'utente evita eliminazioni accidentali.
+
+  onConfirm(): chiude il dialog restituendo true → Admin procede con la DELETE.
+  onCancel():  chiude il dialog restituendo false → Admin non fa nulla.
+-->
 <div class="delete-user-dialog">
   <h2 mat-dialog-title>Confirm User Deletion</h2>
+
   <mat-dialog-content class="dialog-content">
     <p>Are you sure you want to delete the following user?</p>
-    
+
+    <!-- Riepilogo dati utente per conferma visiva -->
     <div class="user-info">
       <div class="user-detail">
         <strong>Name:</strong> {{ data.user.firstName }} {{ data.user.lastName }}
@@ -14,16 +30,13 @@
         <strong>Email:</strong> {{ data.user.email }}
       </div>
     </div>
-    
+
     <p class="warning-text">Warning: This action is irreversible.</p>
   </mat-dialog-content>
-  
+
   <mat-dialog-actions class="dialog-actions">
-    <button mat-button (click)="onCancel()" class="cancel-btn">
-      Cancel
-    </button>
-    <button mat-raised-button color="warn" (click)="onConfirm()" class="confirm-btn">
-      Delete
-    </button>
+    <button mat-button (click)="onCancel()" class="cancel-btn">Cancel</button>
+    <!-- color="warn": stile rosso Material per azioni distruttive -->
+    <button mat-raised-button color="warn" (click)="onConfirm()" class="confirm-btn">Delete</button>
   </mat-dialog-actions>
 </div>

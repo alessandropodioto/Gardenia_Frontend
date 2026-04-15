@@ -1,16 +1,59 @@
+<!--
+  ADDRESS TEMPLATE — RUBRICA INDIRIZZI UTENTE
+  ──────────────────────────────────────────────────────────────────────────────
+  Lista degli indirizzi salvati dell'utente con possibilità di aggiungere,
+  modificare ed eliminare indirizzi tramite dialog Material.
+
+  DATI:
+  addresses: Address[] — array caricato da AddressService in address.ts
+  userFirstName, userLastName: string — dati dell'utente loggato (da AuthService)
+
+  PATTERN DIALOG:
+  Tutti e tre i bottoni (Add, Edit, Remove) aprono un Material Dialog.
+  Il dialog si chiude restituendo i dati (o false) tramite MatDialogRef.close().
+  address.ts sottoscrive afterClosed() per ricevere il risultato e agire:
+  - openAddDialog() → AddressDialog (create mode) → afterClosed() → createAddress()
+  - openEditDialog(addr) → AddressDialog (edit mode, dati prefillati) → updateAddress()
+  - openDeleteDialog(addr) → DeleteAddress (conferma) → deleteAddress()
+
+  *ngIf con else su ng-template:
+  *ngIf="addresses.length > 0; else noAddresses": mostra la lista se ci sono indirizzi,
+  altrimenti mostra il ng-template #noAddresses (messaggio "no addresses").
+  Questo è il pattern "if/else" della vecchia sintassi Angular — equivalente a:
+    @if (addresses.length > 0) { ... } @else { ... }
+
+  $event.preventDefault():
+  I link "Edit" e "Remove" sono <a href="#">.
+  Senza preventDefault() il click seguirebbe href="#" che fa scroll to top della pagina.
+  Il pattern (click)="fn(); $event.preventDefault()" esegue la funzione E previene il default.
+  Alternativa moderna: usare un <button> o href="javascript:void(0)".
+-->
 <div class="address-book-container">
   <h1 class="page-title">Address Book</h1>
   <p class="page-subtitle">This is your Address Book page, where you can view or modify your addresses.</p>
 
+  <!--
+    BOTTONE AGGIUNGI INDIRIZZO
+    openAddDialog(): apre AddressDialog in modalità "create" (nessun dato prefillato).
+    Dopo la chiusura, address.ts crea il nuovo indirizzo tramite AddressService.
+  -->
   <button class="add-address-btn" (click)="openAddDialog()">
     <span class="plus-icon">+</span> Add address
   </button>
 
+  <!--
+    LISTA INDIRIZZI
+    *ngIf="addresses.length > 0; else noAddresses": mostra la lista o il template vuoto.
+    *ngFor="let address of addresses": itera l'array degli indirizzi.
+    Non usa trackBy — aggiungibile come ottimizzazione se la lista è lunga.
+  -->
   <div *ngIf="addresses.length > 0; else noAddresses">
     <div class="address-card" *ngFor="let address of addresses">
       <div class="card-header">
         <div class="user-info">
+          <!-- Intestazione card: nome cognome dell'utente -->
           <h3 class="user-name">{{userFirstName}} {{userLastName}}</h3>
+          <!-- Dati indirizzo su righe separate tramite <br> -->
           <p class="address-details">
             {{address.street}} {{address.number}}<br>
             {{address.city}}<br>
@@ -21,14 +64,42 @@
       </div>
 
       <div class="card-actions">
-        <a href="#" class="action-link" (click)="openEditDialog(address); $event.preventDefault()">Edit</a>
-        <a href="#" class="action-link" (click)="openDeleteDialog(address); $event.preventDefault()">Remove</a>
+        <!--
+          LINK EDIT
+          (click)="openEditDialog(address); $event.preventDefault()":
+          - openEditDialog(address): apre AddressDialog in modalità "edit" con i dati dell'indirizzo
+          - $event.preventDefault(): previene che href="#" faccia scroll to top
+          Entrambe le espressioni sono separate da ; ed eseguite in sequenza.
+        -->
+        <a href="#" class="action-link"
+          (click)="openEditDialog(address); $event.preventDefault()">Edit</a>
+
+        <!--
+          LINK REMOVE
+          openDeleteDialog(address): apre DeleteAddress dialog di conferma.
+          Se l'utente conferma, address.ts chiama addressService.deleteAddress(id).
+        -->
+        <a href="#" class="action-link"
+          (click)="openDeleteDialog(address); $event.preventDefault()">Remove</a>
+
+        <!-- Link "Set as billing address": non ancora implementato (non ha (click) handler) -->
         <a href="#" class="action-link secondary">Set as billing address</a>
       </div>
     </div>
   </div>
 
+  <!--
+    NG-TEMPLATE: STATO VUOTO
+    #noAddresses: template reference usata da *ngIf "else noAddresses" sopra.
+    Mostrato quando non ci sono indirizzi salvati.
+    Il link inline chiama openAddDialog() per invitare l'utente ad aggiungere il primo.
+    $event.preventDefault(): stesso pattern dei link sopra.
+  -->
   <ng-template #noAddresses>
-    <p class="no-addresses-message">You don't have any saved addresses yet. <a href="#" class="add-link" (click)="openAddDialog(); $event.preventDefault()">Add your first address</a></p>
+    <p class="no-addresses-message">
+      You don't have any saved addresses yet.
+      <a href="#" class="add-link"
+        (click)="openAddDialog(); $event.preventDefault()">Add your first address</a>
+    </p>
   </ng-template>
 </div>

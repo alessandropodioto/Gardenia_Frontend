@@ -1,12 +1,49 @@
+<!--
+  PAGAMENTO (CHECKOUT) TEMPLATE
+  ──────────────────────────────────────────────────────────────────────────────
+  Pagina di checkout con:
+  1. Form dati spedizione (solo UI — i campi non sono collegati a un FormGroup)
+  2. Selezione metodo di pagamento (carta / PayPal) con sezioni condizionali
+  3. Riepilogo ordine con subtotale, spedizione e totale
+  4. Bottone conferma con loading state
+  5. Toast notification per feedback all'utente
+
+  NOTA SULL'IMPLEMENTAZIONE DEI FORM:
+  I campi input (Full Name, Address, ecc.) NON sono collegati a un Reactive Form
+  o a un [(ngModel)]. Sono campi HTML puri non bindati. In un'implementazione
+  completa andrebbero collegati a un FormGroup per validazione e raccolta dati.
+  La logica di business (completaAcquisto) usa i dati del carrello per l'ordine.
+
+  DATI:
+  metodoScelto: string — 'carta' | 'paypal' | '' — proprietà normale in pagamento.ts
+  subtotale: number — calcolato da CartService
+  totale: number — subtotale + spedizione
+  shippingCost() → signal: 0 se subtotale > soglia, altrimenti costo fisso
+  loading() → signal: true durante la chiamata HTTP dell'ordine
+  items: array CartItem dal CartService
+  showToast() → signal: toast visibile
+  toastMessage() → signal: testo toast
+-->
 <div class="checkout-container">
+
   <div class="checkout-header">
     <h2>Secure Checkout</h2>
     <p>Complete your order by entering the details below.</p>
   </div>
 
   <div class="checkout-content">
+
+    <!--
+      SEZIONE FORM (sinistra): dati spedizione + metodo pagamento
+    -->
     <div class="form-section">
       <h3>Shipping Details</h3>
+
+      <!--
+        CAMPI SPEDIZIONE (non bindati)
+        Questi input raccolgono dati visualmente ma non sono collegati a
+        nessun FormControl — in un'app completa andrebbero gestiti con Reactive Forms.
+      -->
       <div class="form-group">
         <input type="text" placeholder="Full Name" class="input-field" />
       </div>
@@ -19,6 +56,13 @@
       </div>
 
       <h3 class="mt-30">Payment Method</h3>
+
+      <!--
+        BOTTONI SELEZIONE METODO PAGAMENTO
+        [class.active]="metodoScelto === 'carta'": aggiunge classe "active" al bottone selezionato
+        (click)="impostaMetodo('carta')": imposta metodoScelto in pagamento.ts
+        La classe "active" in CSS evidenzia visivamente il metodo scelto.
+      -->
       <div class="payment-methods">
         <button
           class="payment-btn"
@@ -36,6 +80,11 @@
         </button>
       </div>
 
+      <!--
+        SEZIONE CARTA DI CREDITO
+        *ngIf="metodoScelto === 'carta'": mostrata solo se l'utente sceglie "carta"
+        Mostra i campi numero carta, scadenza e CVV.
+      -->
       <div class="card-details" *ngIf="metodoScelto === 'carta'">
         <div class="form-group">
           <input type="text" placeholder="Card Number" class="input-field" />
@@ -46,32 +95,68 @@
         </div>
       </div>
 
+      <!--
+        SEZIONE PAYPAL
+        *ngIf="metodoScelto === 'paypal'": mostrata solo se l'utente sceglie "paypal"
+        In un'implementazione reale qui ci sarebbe il widget/SDK di PayPal.
+      -->
       <div class="paypal-details" *ngIf="metodoScelto === 'paypal'">
         <p>You will be redirected to PayPal's website to complete the payment securely.</p>
       </div>
     </div>
 
+    <!--
+      RIEPILOGO ORDINE (destra)
+    -->
     <div class="summary-section">
       <h3>Order Summary</h3>
 
+      <!--
+        RIGA SUBTOTALE
+        subtotale: calcolato in pagamento.ts da CartService.items() signal
+        | currency: 'EUR': pipe Angular per formattare come euro
+      -->
       <div class="summary-item">
         <span>Subtotal</span>
         <span>{{ subtotale | currency: 'EUR' }}</span>
       </div>
-      
+
+      <!--
+        RIGA SPEDIZIONE
+        shippingCost() → signal che vale 0 (spedizione gratuita) o un costo fisso.
+        Due *ngIf alternati:
+        - se shippingCost() === 0 → mostra "Free"
+        - se shippingCost() > 0 → mostra il costo formattato
+      -->
       <div class="summary-item">
         <span>Shipping</span>
+        <!-- Spedizione gratuita: mostrato se shippingCost() è 0 -->
         <span class="free" *ngIf="shippingCost() === 0">Free</span>
+        <!-- Costo spedizione: mostrato se shippingCost() > 0 -->
         <span *ngIf="shippingCost() > 0">{{ shippingCost() | currency: 'EUR' }}</span>
       </div>
 
       <div class="divider"></div>
 
+      <!-- TOTALE FINALE: subtotale + spedizione -->
       <div class="summary-item total">
         <span>Total</span>
         <span>{{ totale | currency: 'EUR' }}</span>
       </div>
 
+      <!--
+        BOTTONE CONFERMA PAGAMENTO
+        mat-flat-button: bottone Material senza bordo, riempito
+        (click)="completaAcquisto()": chiama il metodo in pagamento.ts che:
+          1. Crea l'ordine sul backend (orderService.createOrder())
+          2. Resetta il carrello (cartService.resetCartSignal())
+          3. Naviga a /home
+        [disabled]: bloccato durante loading O se il carrello è vuoto
+
+        Loading state:
+        @if (loading()) → spinner + "Processing..."
+        @else → "Confirm and Pay"
+      -->
       <button
         mat-flat-button
         class="pay-btn"
@@ -89,14 +174,21 @@
         }
       </button>
 
+      <!-- Badge sicurezza: icona lucchetto + testo rassicurante per l'utente -->
       <div class="secure-badge">
-        <mat-icon style="vertical-align: middle; margin-right: 5px;">lock</mat-icon> 
+        <mat-icon style="vertical-align: middle; margin-right: 5px;">lock</mat-icon>
         Encrypted and secure payment
       </div>
     </div>
   </div>
 </div>
 
+<!--
+  TOAST NOTIFICATION
+  [class.active]="showToast()": CSS transition attivata dal signal
+  toastMessage(): testo del feedback (es. "Order placed successfully!" o messaggio errore)
+  Non ha un bottone chiudi: il toast scompare automaticamente dopo un timeout in pagamento.ts.
+-->
 <div class="custom-alert" [class.active]="showToast()">
   <div class="alert-body">
     <p style="margin: 0;">{{ toastMessage() }}</p>

@@ -1,3 +1,22 @@
+/**
+ * PRODUCT DIALOG
+ * ─────────────────────────────────────────────────────────────────────────────
+ * Dialog riusabile per creare o modificare un prodotto (usato dall'Admin).
+ * In modalità "edit" il form viene prepopolato e i link delle immagini esistenti
+ * vengono caricati nel campo imageUrls per permetterne la modifica.
+ *
+ * GESTIONE IMMAGINI:
+ * Le immagini non vengono caricate come file ma come URL (link).
+ * Il campo imageUrls è una stringa dove ogni URL è separato da un newline (\n).
+ * Al salvataggio, Admin:
+ *   1. In modalità edit: elimina prima le immagini vecchie (forkJoin), poi carica le nuove
+ *   2. In modalità create: carica le nuove immagini dopo aver creato il prodotto
+ * Il dialog restituisce { productData, imageUrls, deletedImageIds } ad Admin.
+ *
+ * Il campo imageUrls viene prefillato con i link esistenti in modalità edit;
+ * imageToDeleteIds contiene gli ID delle immagini da rimuovere (le esistenti).
+ */
+
 import { Component, Inject, OnInit, ChangeDetectorRef } from '@angular/core';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
@@ -5,7 +24,7 @@ import { Product } from '../../services/product.service';
 import { SubcategoryService, Subcategory } from '../../services/subcategory.service';
 
 export interface ProductDialogData {
-  product: Product | null;
+  product: Product | null; // null = modalità creazione; Product = modalità modifica
   mode: 'create' | 'edit';
 }
 
@@ -20,11 +39,11 @@ export class ProductDialog implements OnInit {
   mode: 'create' | 'edit';
   isEditMode: boolean;
 
-  subcategories: Subcategory[] = [];
+  subcategories: Subcategory[] = [];  // Lista per il <mat-select> sottocategoria
   loadingSubcategories = false;
-  
-  // 1. ECCO DOVE ANDAVA: abbiamo sostituito la vecchia variabile con l'array
-  imageToDeleteIds: number[] = []; 
+
+  // ID delle immagini esistenti da eliminare prima di salvare le nuove (solo in edit)
+  imageToDeleteIds: number[] = [];
 
   constructor(
     public dialogRef: MatDialogRef<ProductDialog>,
@@ -35,18 +54,19 @@ export class ProductDialog implements OnInit {
   ) {
     this.mode = data.mode;
     this.isEditMode = data.mode === 'edit';
-    
-    // Inizializza il form
+
+    // Inizializza il form con i valori del prodotto esistente (edit) o vuoti (create)
+    // data.product?.name: l'operatore ?. evita errori se product è null
     this.productForm = this.fb.group({
-      id: [data.product?.id || 0],
-      name: [data.product?.name || '', [Validators.required, Validators.minLength(3)]],
-      description: [data.product?.description || '', [Validators.required]],
-      price: [data.product?.price || 0, [Validators.required, Validators.min(0)]],
-      stock: [data.product?.stock || 0, [Validators.required, Validators.min(0)]],
-      subcategoryId: [data.product?.subcategoryId || null, [Validators.required]],
+      id:              [data.product?.id || 0],
+      name:            [data.product?.name || '',            [Validators.required, Validators.minLength(3)]],
+      description:     [data.product?.description || '',     [Validators.required]],
+      price:           [data.product?.price || 0,            [Validators.required, Validators.min(0)]],
+      stock:           [data.product?.stock || 0,            [Validators.required, Validators.min(0)]],
+      subcategoryId:   [data.product?.subcategoryId || null, [Validators.required]],
       subcategoryName: [data.product?.subcategoryName || ''],
-      isDeleted: [data.product?.isDeleted || false],
-      imageUrls: [''] 
+      isDeleted:       [data.product?.isDeleted || false],
+      imageUrls:       [''] // Stringa con URL separati da \n; popolata in ngOnInit se edit
     });
   }
 
@@ -54,16 +74,21 @@ export class ProductDialog implements OnInit {
     this.loadSubcategories();
 
     if (this.isEditMode && this.data.product?.images && this.data.product.images.length > 0) {
-        // Prende tutti i link dal database e li unisce con un "a capo" (\n)
-        const savedLinks = this.data.product.images.map((img: any) => img.link).join('\n');
-        this.productForm.patchValue({ imageUrls: savedLinks });
-        
-        // 2. MODIFICA: Salviamo la lista degli ID da eliminare usando il nuovo array
-        this.imageToDeleteIds = this.data.product.images.map((img: any) => img.imageId || img.id);
+      // Prefill campo imageUrls con i link esistenti (uno per riga)
+      // In questo modo l'admin può vedere e modificare i link correnti
+      const savedLinks = this.data.product.images.map((img: any) => img.link).join('\n');
+      this.productForm.patchValue({ imageUrls: savedLinks });
+      // patchValue() aggiorna solo i campi specificati (a differenza di setValue() che richiede tutti)
+
+      // Salviamo gli ID delle immagini esistenti: Admin le eliminerà prima di caricare le nuove
+      this.imageToDeleteIds = this.data.product.images.map((img: any) => img.imageId || img.id);
     }
   }
 
+  /** Carica tutte le sottocategorie per il select del form */
   loadSubcategories(): void {
+    // setTimeout(...) senza delay: posticipa al microtask successivo per evitare
+    // ExpressionChangedAfterItHasBeenChecked (Angular NG0100) durante il bootstrap del dialog
     setTimeout(() => {
       this.loadingSubcategories = true;
       this.subcategoryService.getAllSubcategories().subscribe({
@@ -81,24 +106,28 @@ export class ProductDialog implements OnInit {
     });
   }
 
+  /**
+   * Chiude il dialog passando ad Admin tutti i dati necessari per il salvataggio:
+   * - productData: i campi del prodotto (da inviare al backend)
+   * - imageUrls: stringa con i link delle immagini (Admin la parsificherà)
+   * - deletedImageIds: ID delle immagini da eliminare (solo in edit con nuovi URL)
+   */
   onConfirm(): void {
     if (this.productForm.valid) {
+      // Spread + override id: garantisce che l'id del prodotto esistente venga preservato
       const finalProductData = {
-         ...this.productForm.value,
-         id: this.data.product?.id
+        ...this.productForm.value,
+        id: this.data.product?.id
       };
-      
-      // 3. MODIFICA: Corretto il console log per leggere 'imageUrls' al plurale
-      console.log("LINK CHE STO PASSANDO ALL'ADMIN:", this.productForm.value.imageUrls);
 
-      // Chiude la modale e passa i dati ad admin.ts
+      // Chiude il dialog e passa l'oggetto risultato ad Admin
       this.dialogRef.close({
         productData: finalProductData,
         imageUrls: this.productForm.value.imageUrls,
-        // 4. MODIFICA: Passiamo il nuovo array all'admin
         deletedImageIds: this.imageToDeleteIds
       });
     } else {
+      // Marca tutti i campi come "touched" per far apparire i messaggi di errore
       this.productForm.markAllAsTouched();
     }
   }
@@ -107,9 +136,10 @@ export class ProductDialog implements OnInit {
     this.dialogRef.close(false);
   }
 
-  get name() { return this.productForm.get('name'); }
-  get description() { return this.productForm.get('description'); }
-  get price() { return this.productForm.get('price'); }
-  get stock() { return this.productForm.get('stock'); }
+  // ── Getter per i FormControl ────────────────────────────────────────────
+  get name()          { return this.productForm.get('name'); }
+  get description()   { return this.productForm.get('description'); }
+  get price()         { return this.productForm.get('price'); }
+  get stock()         { return this.productForm.get('stock'); }
   get subcategoryId() { return this.productForm.get('subcategoryId'); }
 }

@@ -1,15 +1,60 @@
+<!--
+  WISHLIST TEMPLATE — LISTA DEI DESIDERI
+  ──────────────────────────────────────────────────────────────────────────────
+  Lista dei prodotti salvati nella wishlist, con possibilità di aggiungere al carrello
+  o rimuovere dalla wishlist.
+
+  ACCESSO DIRETTO AL SERVICE NEL TEMPLATE:
+  wishlistService.items(): il service è iniettato come proprietà pubblica in wishlist.ts
+  e viene letto DIRETTAMENTE nel template. Questo è possibile perché wishlistService
+  è dichiarato senza modificatore di accesso (o come public) nel costruttore.
+  items() è un signal WritableSignal<WishlistItem[]> — letto chiamandolo come funzione.
+  Ogni volta che il signal cambia (aggiunta/rimozione), il template si aggiorna.
+
+  OPERATORE ?? (nullish coalescing) NEL TEMPLATE:
+  (item.productStock ?? item.stock ?? 0):
+  Questo operatore ritorna il primo valore che NON è null né undefined.
+  - Prima prova item.productStock (campo principale dal backend)
+  - Se è null/undefined prova item.stock (campo alternativo)
+  - Se anche quello è null/undefined usa 0 come fallback
+  Questo multi-fallback esiste perché il backend ha restituito questi dati
+  in formati diversi in diverse versioni dell'API.
+
+  DIFFERENZA ?? vs ||:
+  || (OR logico): considera falsy anche 0, '', false
+  ?? (nullish coalescing): considera solo null e undefined
+  Importante qui: stock = 0 è un valore valido (prodotto esaurito) — ?? lo preserva,
+  || lo tratterebbe come falso e passerebbe al prossimo fallback.
+
+  [class.out-of-stock-img]: applica uno stile di opacità all'immagine se fuori stock.
+  [class.out]: applica stile rosso allo span di stato se fuori stock.
+-->
 <div class="cart-page-container">
   <div class="cart-header">
     <h2>Wishlist</h2>
   </div>
 
+  <!--
+    LISTA PRODOTTI NELLA WISHLIST
+    *ngIf="wishlistService.items().length > 0": accesso diretto al signal del service
+    *ngFor="let item of wishlistService.items()": itera il signal — Angular rileva
+    automaticamente quando items() cambia e aggiorna la lista nel DOM.
+  -->
   <div class="cart-items" *ngIf="wishlistService.items().length > 0">
     <div class="cart-item" *ngFor="let item of wishlistService.items()">
-      
+
+      <!--
+        IMMAGINE PRODOTTO
+        [routerLink]="['/product', item.productId]": naviga al dettaglio prodotto
+        formatImg(item.immagine): metodo in wishlist.ts che normalizza l'URL dell'immagine
+                                  (gestisce URL assoluti, relativi, e placeholder)
+        [class.out-of-stock-img]: classe CSS che riduce l'opacità se il prodotto è esaurito
+        (item.productStock ?? item.stock ?? 0) <= 0: controlla lo stock con multi-fallback ??
+      -->
       <a [routerLink]="['/product', item.productId]" class="img-link">
-        <img 
-          [src]="formatImg(item.immagine)" 
-          [alt]="item.productName" 
+        <img
+          [src]="formatImg(item.immagine)"
+          [alt]="item.productName"
           class="product-img"
           [class.out-of-stock-img]="(item.productStock ?? item.stock ?? 0) <= 0" />
       </a>
@@ -19,25 +64,46 @@
           <h4>{{ item.productName }}</h4>
         </a>
         <div class="status-wrapper">
+          <!--
+            [class.out]="...": aggiunge classe "out" (testo rosso) se fuori stock
+            Ternary per testo stato:
+            stock > 0 → "In Stock - Ready to ship"
+            stock <= 0 → "Out of Stock"
+            ?? usato per multi-fallback come spiegato sopra
+          -->
           <span class="stock-status" [class.out]="(item.productStock ?? item.stock ?? 0) <= 0">
             {{ (item.productStock ?? item.stock ?? 0) > 0 ? 'In Stock - Ready to ship' : 'Out of Stock' }}
           </span>
         </div>
       </div>
 
+      <!-- PREZZO: | currency: 'EUR' formatta come valuta euro -->
       <div class="item-price">
         {{ item.price | currency: 'EUR' }}
       </div>
 
       <div class="wishlist-actions">
-        <button 
-          mat-flat-button 
-          class="checkout-btn wishlist-add-btn" 
+        <!--
+          BOTTONE "ADD TO CART"
+          mat-flat-button: bottone Material pieno
+          addToCart(item): in wishlist.ts aggiunge al carrello E rimuove dalla wishlist
+          [disabled]: disabilitato se il prodotto è esaurito (stock <= 0)
+          Testo dinamico: "ADD TO CART" se disponibile, "SOLD OUT" se esaurito
+        -->
+        <button
+          mat-flat-button
+          class="checkout-btn wishlist-add-btn"
           (click)="addToCart(item)"
           [disabled]="(item.productStock ?? item.stock ?? 0) <= 0">
           {{ (item.productStock ?? item.stock ?? 0) > 0 ? 'ADD TO CART' : 'SOLD OUT' }}
         </button>
 
+        <!--
+          BOTTONE RIMUOVI DALLA WISHLIST
+          mat-icon-button color="warn": bottone icona rosso
+          remove(item.id): chiama wishlistService.removeFromWishlist(id)
+          che aggiorna il signal items() rimuovendo l'elemento
+        -->
         <button mat-icon-button color="warn" class="remove-btn" (click)="remove(item.id)">
           <mat-icon>delete</mat-icon>
         </button>
@@ -46,6 +112,10 @@
     </div>
   </div>
 
+  <!--
+    STATO WISHLIST VUOTA
+    *ngIf="wishlistService.items().length === 0": mostrato quando la wishlist è vuota
+  -->
   <div *ngIf="wishlistService.items().length === 0" class="empty-cart">
     <img src="https://cdn-icons-png.flaticon.com/512/10238/10238421.png" alt="Empty" class="empty-cart-img" />
     <h3>Your wishlist is empty!</h3>
@@ -53,6 +123,14 @@
   </div>
 </div>
 
+<!--
+  TOAST NOTIFICATION
+  [class.active]="showToast() && toastMessage() !== ''":
+  Doppia condizione: il toast è attivo SOLO SE showToast è true E c'è un messaggio.
+  Questo evita che compaia un toast vuoto durante il reset dei signal.
+  showToast() e toastMessage() sono entrambi signal in wishlist.ts.
+  (click)="showToast.set(false)": chiude il toast — .set() del signal chiamato dal template.
+-->
 <div class="custom-alert" [class.active]="showToast() && toastMessage() !== ''">
   <div class="alert-body">
     <div class="alert-icon">
@@ -62,11 +140,10 @@
         <line x1="12" y1="16" x2="12.01" y2="16" />
       </svg>
     </div>
-    
     <div class="alert-text">
       <p>{{ toastMessage() }}</p>
     </div>
-    
+    <!-- Chiude il toast chiamando .set(false) direttamente sul signal nel template -->
     <button class="alert-close" (click)="showToast.set(false)">✕</button>
   </div>
 </div>

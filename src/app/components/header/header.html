@@ -1,56 +1,92 @@
+<!--
+  HEADER — barra di navigazione principale dell'app.
+  Si divide in:
+  - top-banner: fascia con frasi promozionali a rotazione
+  - navbar-main: logo, menu categorie con dropdown, azioni utente
+-->
 <header class="main-header">
+
+  <!-- ── FASCIA SUPERIORE: frasi a rotazione ────────────────────────────── -->
   <div class="top-banner">
     <div class="container">
       <div class="carousel-wrapper">
+        <!--
+          @for: ciclo su tutte le frasi.
+          @if: mostra solo quella con l'indice uguale a currentIndex.
+          currentIndex cambia ogni N secondi (setInterval in header.ts) → effetto carosello.
+        -->
         @for (phrase of phrases; track $index) {
-        @if ($index === currentIndex) {
-        <p class="fade-text">{{ phrase }}</p>
-        }
+          @if ($index === currentIndex) {
+            <p class="fade-text">{{ phrase }}</p>
+          }
         }
       </div>
     </div>
   </div>
 
+  <!-- ── NAVBAR PRINCIPALE ──────────────────────────────────────────────── -->
   <div class="navbar-main">
     <div class="container navbar-content">
 
+      <!-- Logo cliccabile: torna alla home -->
       <div class="logo">
         <a routerLink="/">
           <img src="img/image3.png" alt="Logo" class="logo-img logo-small" />
         </a>
       </div>
 
+      <!--
+        MENU CATEGORIE CON DROPDOWN
+        @for: crea un elemento <li> per ogni categoria.
+        [class.open]: aggiunge la classe CSS "open" (che fa apparire il dropdown)
+          solo se activeMenu corrisponde al nome della categoria corrente.
+        (mouseleave): quando il mouse esce dal contenitore, chiude il dropdown.
+        (mouseenter): quando il mouse entra sull'ancora, apre il dropdown.
+        (click)="$event.stopPropagation()": evita che il click sul submenu
+          si propaghi ai listener dei genitori e chiuda involontariamente il menu.
+      -->
       <nav class="nav-menu">
         @for (category of categories; track $index) {
-        <li class="has-dropdown" [class.open]="activeMenu === category.name">
-          <div class="menu-container" (mouseleave)="activeMenu = null">
-            <a href="javascript:void(0)" (mouseenter)="toggleMenu(category.name, $event)" routerLinkActive="active">
-              {{ category.name }} <span class="arrow">▼</span>
-            </a>
-            <ul class="submenu" (click)="$event.stopPropagation()">
-              @for (sub of subcategoriesMap[category.id]; track sub.id) {
-              <li>
-                <a routerLink="/category/{{ category.name }}/{{ sub.subcategoryName }}"
-                  [queryParams]="{ subcategoryId: sub.id }">
-                  {{ sub.subcategoryName }}
-                </a>
-              </li>
-              }
-            </ul>
-          </div>
-        </li>
+          <li class="has-dropdown" [class.open]="activeMenu === category.name">
+            <div class="menu-container" (mouseleave)="activeMenu = null">
+              <a href="javascript:void(0)" (mouseenter)="toggleMenu(category.name, $event)" routerLinkActive="active">
+                {{ category.name }} <span class="arrow">▼</span>
+              </a>
+              <ul class="submenu" (click)="$event.stopPropagation()">
+                @for (sub of subcategoriesMap[category.id]; track sub.id) {
+                  <li>
+                    <!--
+                      Link con interpolazione + [queryParams]:
+                      costruisce l'URL es. /category/Piante/Interno?subcategoryId=3
+                      HomeComponent usa il queryParam per filtrare i prodotti.
+                    -->
+                    <a routerLink="/category/{{ category.name }}/{{ sub.subcategoryName }}"
+                      [queryParams]="{ subcategoryId: sub.id }">
+                      {{ sub.subcategoryName }}
+                    </a>
+                  </li>
+                }
+              </ul>
+            </div>
+          </li>
         }
-
         <li><a routerLink="/about-us" routerLinkActive="active">About Us</a></li>
       </nav>
 
+      <!-- ── AZIONI UTENTE: wishlist, carrello, admin, profilo/login ──────── -->
       <div class="user-actions">
 
+        <!-- Wishlist: visibile solo se loggato -->
         <a *ngIf="isLoggedIn" routerLink="/user/wishlist" class="action-link" routerLinkActive="active">
           <mat-icon>favorite_border</mat-icon>
           <span>Wishlist</span>
         </a>
 
+        <!--
+          Carrello con badge numerico.
+          cartService.cartCount() è un signal: si legge chiamandolo come funzione.
+          Il badge appare solo se ci sono prodotti nel carrello.
+        -->
         <a routerLink="/cart" class="action-link cart-link" routerLinkActive="active">
           <div class="icon-container"
             style="position: relative; display: flex; align-items: center; justify-content: center;">
@@ -62,11 +98,21 @@
           <span>Cart</span>
         </a>
 
+        <!-- Pannello Admin: visibile solo agli amministratori -->
         <a *ngIf="isAdmin" routerLink="/admin" class="action-link" routerLinkActive="active">
           <mat-icon>admin_panel_settings</mat-icon>
           <span>Admin</span>
         </a>
 
+        <!--
+          TOGGLE PROFILO / LOGIN
+          ng-container: contenitore invisibile che non aggiunge tag HTML nel DOM.
+          *ngIf="isLoggedIn; else loginLink":
+            - se loggato → mostra "Profile" e "Logout"
+            - altrimenti → usa il template #loginLink (solo "Login")
+          ng-template #loginLink: blocco di HTML che NON appare di default,
+            viene inserito solo come branch "else" dell'*ngIf sopra.
+        -->
         <ng-container *ngIf="isLoggedIn; else loginLink">
           <a routerLink="/user/overview" class="action-link" routerLinkActive="active">
             <mat-icon>account_circle</mat-icon>
@@ -79,6 +125,7 @@
           </button>
         </ng-container>
 
+        <!-- Template "else": mostrato solo quando l'utente NON è loggato -->
         <ng-template #loginLink>
           <a routerLink="/login" class="action-link" routerLinkActive="active">
             <mat-icon>person</mat-icon>

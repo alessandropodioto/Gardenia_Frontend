@@ -1,155 +1,203 @@
+<!--
+  PRODUCT DETAILS — pagina di dettaglio di un singolo prodotto.
+  Contiene: galleria immagini, info prodotto, bottoni azione,
+  dialog di login, toast, e sezione recensioni.
+-->
 <div class="product-wrap">
+
   @if (loading()) {
-  <div class="loading-container">
-    <p>Loading product details...</p>
-  </div>
+    <div class="loading-container"><p>Loading product details...</p></div>
   }
 
   @if (error()) {
-  <div class="error-container">
-    <p>{{ error() }}</p>
-  </div>
+    <div class="error-container"><p>{{ error() }}</p></div>
   }
 
+  <!-- Contenuto principale: visibile solo dopo il caricamento del prodotto -->
   @if (!loading() && !error() && product()) {
-  <div class="gallery-col">
-    <div class="thumbs-rail">
-      <button *ngFor="let img of images(); let i = index" class="thumb" [class.is-active]="i === activeImageIndex()"
-        (click)="selectImage(i)">
-        <img [src]="img.url" [alt]="img.alt" loading="lazy" />
-      </button>
-    </div>
 
-    <div class="main-img-box">
-      <img class="main-img" [src]="images()[activeImageIndex()].url" [alt]="images()[activeImageIndex()].alt" />
-
-      <div class="dots">
-        <button *ngFor="let img of images(); let i = index" class="dot" [class.is-active]="i === activeImageIndex()"
-          (click)="selectImage(i)"></button>
-      </div>
-    </div>
-  </div>
-
-  <div class="info-col">
-    <h1 class="product-title">{{ product()!.name }}</h1>
-
-    <div class="rating-summary-top" (click)="scrollToReviews()"
-      style="cursor: pointer; display: flex; align-items: center; gap: 8px; margin: 10px 0">
-      <div class="stars-display" style="display: flex; gap: 2px">
-        @for (s of [1, 2, 3, 4, 5]; track s) {
-        <span class="star-small" [style.color]="s <= +averageRating() ? '#f1c40f' : '#ccc'"
-          style="font-size: 18px">★</span>
-        }
-      </div>
-
-      <span style="font-weight: bold; font-size: 16px">{{ averageRating() }}</span>
-
-      <span style="color: #666; font-size: 14px; text-decoration: underline">
-        ({{ reviews().length }} {{ reviews().length === 1 ? 'review' : 'reviews' }})
-      </span>
-    </div>
-
-    <div class="price-block">
-      <span class="price-original">€ {{ product()!.price.toFixed(2) }}</span>
-    </div>
-
-    <hr class="divider" />
-
-    <div class="buy-row">
-      <div class="qty-box">
-        <button class="qty-btn" (click)="decreaseQty()" [disabled]="quantity() <= 1">−</button>
-        <input class="qty-input" type="number" [value]="quantity()" (change)="setQty($event)" />
-        <button class="qty-btn" (click)="increaseQty()"
-          [disabled]="quantity() >= 10 || quantity() >= (product()?.stock || 0)">
-          +
+    <!-- ── GALLERIA IMMAGINI ──────────────────────────────────────────────── -->
+    <div class="gallery-col">
+      <div class="thumbs-rail">
+        <!--
+          *ngFor: crea un bottone thumbnail per ogni immagine.
+          [class.is-active]: evidenzia il thumbnail dell'immagine mostrata.
+          loading="lazy": il browser carica l'immagine solo quando è vicina allo schermo.
+        -->
+        <button *ngFor="let img of images(); let i = index" class="thumb"
+          [class.is-active]="i === activeImageIndex()"
+          (click)="selectImage(i)">
+          <img [src]="img.url" [alt]="img.alt" loading="lazy" />
         </button>
       </div>
 
-      <button class="cart-btn" (click)="addToCart()" [class.is-added]="addedToCart()"
-        [disabled]="product()?.stock! <= 0">
-        <ng-container *ngIf="!addedToCart()">
-          <svg class="cart-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <circle cx="9" cy="21" r="1" />
-            <circle cx="20" cy="21" r="1" />
-            <path d="M1 1h4l2.68 13.39A2 2 0 0 0 9.64 16h9.72a2 2 0 0 0 1.97-1.67L23 6H6" />
-          </svg>
-          <span>Add to cart</span>
-        </ng-container>
+      <div class="main-img-box">
+        <!-- images()[activeImageIndex()]: legge l'immagine attiva dall'array -->
+        <img class="main-img"
+          [src]="images()[activeImageIndex()].url"
+          [alt]="images()[activeImageIndex()].alt" />
 
-        <ng-container *ngIf="addedToCart()">
-          <svg class="cart-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-            <polyline points="20 6 9 17 4 12" />
-          </svg>
-          <span>Added!</span>
-        </ng-container>
-      </button>
-      <button class="wishlist-btn" (click)="toggleWishlist()">
-        <svg class="heart-icon" [class.is-favorite]="isFavorite()" viewBox="0 0 24 24"
-          xmlns="http://www.w3.org/2000/svg">
-          <path vector-effect="non-scaling-stroke"
-            d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" />
-        </svg>
-      </button>
+        <!-- Pallini di navigazione (come in uno slideshow) -->
+        <div class="dots">
+          <button *ngFor="let img of images(); let i = index" class="dot"
+            [class.is-active]="i === activeImageIndex()"
+            (click)="selectImage(i)"></button>
+        </div>
+      </div>
     </div>
 
-    <p class="stock-status" [style.color]="product()!.stock > 0 ? '#2ecc71' : '#e74c3c'">
-      {{ product()!.stock > 0 ? 'Available: ' + product()!.stock : 'Out of stock' }}
-    </p>
+    <!-- ── INFO PRODOTTO ──────────────────────────────────────────────────── -->
+    <div class="info-col">
+      <!-- product()!.name: il ! dice a TypeScript "so che product() non è null qui" -->
+      <h1 class="product-title">{{ product()!.name }}</h1>
 
-    <div class="checklist">
-      <ul class="feature-list">
-        <li><span>✓</span> Delivery throughout Italy within 24 hours</li>
-        <li><span>✓</span> Plants in excellent health</li>
-        <li><span>✓</span> Biodegradable packaging materials</li>
-      </ul>
+      <!--
+        Rating cliccabile: scorre alla sezione recensioni.
+        @for ([1,2,3,4,5]): crea 5 stelle.
+        [style.color]: stella gialla se il suo numero è ≤ alla media, grigia altrimenti.
+        +averageRating(): converte il signal da stringa a numero.
+      -->
+      <div class="rating-summary-top" (click)="scrollToReviews()" style="cursor: pointer; display: flex; align-items: center; gap: 8px; margin: 10px 0">
+        <div class="stars-display" style="display: flex; gap: 2px">
+          @for (s of [1, 2, 3, 4, 5]; track s) {
+            <span class="star-small" [style.color]="s <= +averageRating() ? '#f1c40f' : '#ccc'" style="font-size: 18px">★</span>
+          }
+        </div>
+        <span style="font-weight: bold; font-size: 16px">{{ averageRating() }}</span>
+        <span style="color: #666; font-size: 14px; text-decoration: underline">
+          ({{ reviews().length }} {{ reviews().length === 1 ? 'review' : 'reviews' }})
+        </span>
+      </div>
+
+      <div class="price-block">
+        <span class="price-original">€ {{ product()!.price.toFixed(2) }}</span>
+      </div>
+
+      <hr class="divider" />
+
+      <!-- ── SELETTORE QUANTITÀ + BOTTONI ────────────────────────────────── -->
+      <div class="buy-row">
+        <div class="qty-box">
+          <!-- [disabled]: non si può andare sotto 1 -->
+          <button class="qty-btn" (click)="decreaseQty()" [disabled]="quantity() <= 1">−</button>
+          <input class="qty-input" type="number" [value]="quantity()" (change)="setQty($event)" />
+          <!-- [disabled]: non si può superare 10 o lo stock disponibile -->
+          <button class="qty-btn" (click)="increaseQty()"
+            [disabled]="quantity() >= 10 || quantity() >= (product()?.stock || 0)">+</button>
+        </div>
+
+        <!--
+          Bottone "Add to Cart".
+          [class.is-added]: cambia lo stile dopo l'aggiunta (diventa un checkmark).
+          addedToCart() è un signal che torna false dopo 1.5 secondi.
+          Mostra due contenuti diversi prima/dopo l'aggiunta con ng-container + *ngIf.
+        -->
+        <button class="cart-btn" (click)="addToCart()" [class.is-added]="addedToCart()"
+          [disabled]="product()?.stock! <= 0">
+          <ng-container *ngIf="!addedToCart()">
+            <svg class="cart-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="9" cy="21" r="1" />
+              <circle cx="20" cy="21" r="1" />
+              <path d="M1 1h4l2.68 13.39A2 2 0 0 0 9.64 16h9.72a2 2 0 0 0 1.97-1.67L23 6H6" />
+            </svg>
+            <span>Add to cart</span>
+          </ng-container>
+          <ng-container *ngIf="addedToCart()">
+            <svg class="cart-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+              <polyline points="20 6 9 17 4 12" />
+            </svg>
+            <span>Added!</span>
+          </ng-container>
+        </button>
+
+        <!--
+          Bottone wishlist (cuore).
+          [class.is-favorite]: riempie il cuore se il prodotto è già nella wishlist.
+          isFavorite() è un computed signal che controlla la lista della wishlist.
+        -->
+        <button class="wishlist-btn" (click)="toggleWishlist()">
+          <svg class="heart-icon" [class.is-favorite]="isFavorite()" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <path vector-effect="non-scaling-stroke"
+              d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" />
+          </svg>
+        </button>
+      </div>
+
+      <!-- [style.color]: verde se disponibile, rosso se esaurito -->
+      <p class="stock-status" [style.color]="product()!.stock > 0 ? '#2ecc71' : '#e74c3c'">
+        {{ product()!.stock > 0 ? 'Available: ' + product()!.stock : 'Out of stock' }}
+      </p>
+
+      <div class="checklist">
+        <ul class="feature-list">
+          <li><span>✓</span> Delivery throughout Italy within 24 hours</li>
+          <li><span>✓</span> Plants in excellent health</li>
+          <li><span>✓</span> Biodegradable packaging materials</li>
+        </ul>
+      </div>
     </div>
-  </div>
   }
 </div>
 
+<!-- ── PRODOTTI SUGGERITI ────────────────────────────────────────────────── -->
+<!--
+  suggestedProducts() è un computed signal: filtra i prodotti della stessa categoria,
+  esclude quello corrente e i prodotti eliminati (soft delete).
+  [routerLink]="['/product', p.id]": binding array → costruisce il path dinamicamente.
+-->
 @if (suggestedProducts().length > 0) {
-<section class="suggestions-section">
-  <h2 class="suggestions-title">We also suggest...</h2>
-  <div class="suggestions-grid">
-    @for (p of suggestedProducts(); track p.id) {
-    <a class="suggestion-card" [routerLink]="['/product', p.id]">
-      <div class="suggestion-img-wrap">
-        <img [src]="
-                p.images && p.images.length > 0
-                  ? p.images[0].link.startsWith('http')
-                    ? p.images[0].link
-                    : 'http://localhost:8080/uploads/' + p.images[0].link
-                  : '/no_image.png'
-              " [alt]="p.name" loading="lazy" />
-      </div>
-      <div class="suggestion-info">
-        <p class="suggestion-name">{{ p.name }}</p>
-        <p class="suggestion-price">€ {{ p.price.toFixed(2) }}</p>
-      </div>
-    </a>
-    }
-  </div>
-</section>
+  <section class="suggestions-section">
+    <h2 class="suggestions-title">We also suggest...</h2>
+    <div class="suggestions-grid">
+      @for (p of suggestedProducts(); track p.id) {
+        <a class="suggestion-card" [routerLink]="['/product', p.id]">
+          <div class="suggestion-img-wrap">
+            <!-- URL immagine con gestione dei tre casi: assoluto, relativo, assente -->
+            <img [src]="
+              p.images && p.images.length > 0
+                ? p.images[0].link.startsWith('http')
+                  ? p.images[0].link
+                  : 'http://localhost:8080/uploads/' + p.images[0].link
+                : '/no_image.png'
+            " [alt]="p.name" loading="lazy" />
+          </div>
+          <div class="suggestion-info">
+            <p class="suggestion-name">{{ p.name }}</p>
+            <p class="suggestion-price">€ {{ p.price.toFixed(2) }}</p>
+          </div>
+        </a>
+      }
+    </div>
+  </section>
 }
 
+<!--
+  DIALOG NATIVO HTML5 per richiedere il login.
+  <dialog> non è di Angular Material: si apre/chiude con .showModal()/.close()
+  chiamati tramite @ViewChild in product-details.ts.
+  #authDialog: nome con cui il TypeScript recupera questo elemento DOM.
+-->
 <dialog #authDialog class="auth-modal">
   <div class="modal-content">
     <h2>Login or Register</h2>
-
     <p>
       {{ dialogMessage() }}
       If you don't have an account, you can register for free.
     </p>
-
     <div class="modal-actions">
       <button class="btn-login" (click)="goTo('/login')">Login</button>
       <button class="btn-register" (click)="goTo('/register')">Register</button>
     </div>
-
     <button class="btn-close" (click)="closeDialog()">Maybe later</button>
   </div>
 </dialog>
 
+<!--
+  TOAST NOTIFICATION.
+  [class.active]: aggiunge la classe "active" (che fa apparire il toast via CSS)
+  solo quando showToast() è true.
+  showToast.set(false): chiama direttamente il metodo del signal per chiudere il toast.
+-->
 <div class="custom-alert" [class.active]="showToast()">
   <div class="alert-body">
     <div class="alert-icon">
@@ -166,61 +214,75 @@
   </div>
 </div>
 
+<!-- ── SEZIONE RECENSIONI ────────────────────────────────────────────────── -->
+<!-- id="reviews-anchor": usato da scrollToReviews() per scorrere qui -->
 <section class="suggestions-section" id="reviews-anchor">
   <h2 class="suggestions-title">Customer Reviews</h2>
 
   <div class="reviews-wrapper">
 
+    <!--
+      Form per scrivere una recensione: visibile solo se l'utente è loggato.
+      getUserName() legge l'username da localStorage (null se non loggato).
+    -->
     @if (getUserName()) {
-    <div class="review-form">
-      <h3>{{ isEditing() ? 'Edit your review' : 'Write a review' }}</h3>
+      <div class="review-form">
+        <h3>{{ isEditing() ? 'Edit your review' : 'Write a review' }}</h3>
 
-      <div class="rating-input-container">
-        <span class="rating-label">Your Rating:</span>
-        <div class="stars-input-group" style="display: flex; gap: 5px">
-          @for (s of [1, 2, 3, 4, 5]; track s) {
-          <span class="star-input" [class.filled]="s <= selectedRating()" (click)="setRating(s)">★</span>
+        <!-- Stelle cliccabili per scegliere il rating -->
+        <div class="rating-input-container">
+          <span class="rating-label">Your Rating:</span>
+          <div class="stars-input-group" style="display: flex; gap: 5px">
+            @for (s of [1, 2, 3, 4, 5]; track s) {
+              <!-- [class.filled]: riempie le stelle fino al valore scelto -->
+              <span class="star-input" [class.filled]="s <= selectedRating()" (click)="setRating(s)">★</span>
+            }
+          </div>
+        </div>
+
+        <!--
+          [(ngModel)]: "two-way binding" — il testo scritto aggiorna reviewComment
+          e viceversa. Sintassi abbreviata per [value] + (input).
+        -->
+        <textarea [(ngModel)]="reviewComment" class="review-textarea"
+          placeholder="Share your experience..." maxlength="1000"></textarea>
+
+        <div style="text-align: right; font-size: 12px; color: #888;">
+          {{ reviewComment.length }} / 500
+        </div>
+
+        <div class="form-actions">
+          <button (click)="submitReview()" class="btn-submit" [disabled]="selectedRating() === 0">
+            {{ isEditing() ? 'Update' : 'Post Review' }}
+          </button>
+          @if (isEditing() || selectedRating() > 0 || reviewComment.length > 0) {
+            <button (click)="cancelEdit()" class="btn-cancel">Cancel</button>
           }
         </div>
       </div>
-
-      <textarea [(ngModel)]="reviewComment" class="review-textarea" placeholder="Share your experience..."
-        maxlength="1000"> </textarea>
-
-      <div style="text-align: right; font-size: 12px; color: #888;">
-        {{ reviewComment.length }} / 500
-      </div>
-
-      <div class="form-actions">
-        <button (click)="submitReview()" class="btn-submit" [disabled]="selectedRating() === 0">
-          {{ isEditing() ? 'Update' : 'Post Review' }}
-        </button>
-
-        @if (isEditing() || selectedRating() > 0 || reviewComment.length > 0) {
-        <button (click)="cancelEdit()" class="btn-cancel">Cancel</button>
-        }
-      </div>
-    </div>
     } @else {
-    <div class="review-form" style="text-align: center; border: 2px dashed #ddd; background: #f9f9f9; padding: 20px;">
-      <p style="color: #666; margin: 0;">Log in to write a review and share your thoughts!</p>
-    </div>
+      <div class="review-form" style="text-align: center; border: 2px dashed #ddd; background: #f9f9f9; padding: 20px;">
+        <p style="color: #666; margin: 0;">Log in to write a review and share your thoughts!</p>
+      </div>
     }
 
+    <!-- Bottoni ordinamento e filtro per stelle -->
     <div class="reviews-controls">
       <div class="control-group">
         <span class="control-label">Sort by:</span>
+        <!-- [class.active-sort]: evidenzia il criterio di ordinamento attivo -->
         <button (click)="toggleSort('date')" [class.active-sort]="sortBy() === 'date'" class="btn-filter">Date</button>
-        <button (click)="toggleSort('rating')" [class.active-sort]="sortBy() === 'rating'"
-          class="btn-filter">Rating</button>
+        <button (click)="toggleSort('rating')" [class.active-sort]="sortBy() === 'rating'" class="btn-filter">Rating</button>
       </div>
-
       <div class="control-group" style="margin-left: auto">
         <span class="control-label">Filter:</span>
         @for (s of [5, 4, 3, 2, 1]; track s) {
-        <button (click)="setFilter(s)" [class.active-star]="filterStars() === s" class="btn-star-filter">{{ s }}
-          ★</button>
+          <button (click)="setFilter(s)" [class.active-star]="filterStars() === s" class="btn-star-filter">{{ s }} ★</button>
         }
+        <!--
+          [style.visibility]: "hidden" nasconde il bottone mantenendo lo spazio nel layout.
+          Diverso da display:none che rimuoverebbe lo spazio.
+        -->
         <button (click)="setFilter(0)" class="btn-reset-filter"
           [style.visibility]="filterStars() > 0 ? 'visible' : 'hidden'">
           Reset
@@ -228,48 +290,55 @@
       </div>
     </div>
 
+    <!--
+      processedReviews() è un computed signal che applica automaticamente
+      filtro per stelle, ordinamento e limite di visualizzazione.
+      @empty: blocco mostrato quando l'array è vuoto (nessuna recensione trovata).
+    -->
     <div class="reviews-list">
       @for (rev of processedReviews(); track rev.id) {
-      <div class="review-card">
-        <div class="review-header">
-          <div class="user-info">
-            <span class="review-user">{{ rev.userName }}</span>
-            <div class="stars-display" style="display: flex; gap: 2px; margin-top: 4px">
-              @for (s of [1, 2, 3, 4, 5]; track s) {
-              <span class="star-small" [class.filled]="s <= rev.rating">★</span>
-              }
+        <div class="review-card">
+          <div class="review-header">
+            <div class="user-info">
+              <span class="review-user">{{ rev.userName }}</span>
+              <div class="stars-display" style="display: flex; gap: 2px; margin-top: 4px">
+                @for (s of [1, 2, 3, 4, 5]; track s) {
+                  <span class="star-small" [class.filled]="s <= rev.rating">★</span>
+                }
+              </div>
             </div>
+            <!-- | date: pipe Angular per formattare la data -->
+            <span class="review-date">{{ rev.date | date: 'dd MMMM yyyy - HH:mm:ss' }}</span>
           </div>
-          <span class="review-date">
-            {{ rev.date | date: 'dd MMMM yyyy - HH:mm:ss' }}
-          </span>
-        </div>
 
-        @if (rev.comment && rev.comment.trim().length > 0) {
-        <p class="review-text">"{{ rev.comment }}"</p>
-        }
+          @if (rev.comment && rev.comment.trim().length > 0) {
+            <p class="review-text">"{{ rev.comment }}"</p>
+          }
 
-        @if (getUserName() === rev.userName) {
-        <div class="review-actions">
-          <button (click)="startEdit(rev)" class="btn-edit">Edit</button>
-          <button (click)="openConfirmDialog(rev.id!)" class="btn-delete-chip">Delete</button>
+          <!-- Bottoni Edit/Delete: visibili solo all'autore della recensione -->
+          @if (getUserName() === rev.userName) {
+            <div class="review-actions">
+              <button (click)="startEdit(rev)" class="btn-edit">Edit</button>
+              <!-- rev.id!: il ! dice a TypeScript che id non è null -->
+              <button (click)="openConfirmDialog(rev.id!)" class="btn-delete-chip">Delete</button>
+            </div>
+          }
         </div>
-        }
-      </div>
       } @empty {
-      <div class="empty-reviews">
-        <p>No reviews found with these criteria.</p>
-      </div>
+        <div class="empty-reviews">
+          <p>No reviews found with these criteria.</p>
+        </div>
       }
     </div>
 
     @if (reviews().length > limit() && filterStars() === 0) {
-    <div style="text-align: center; margin-top: 40px; padding-bottom: 20px">
-      <button (click)="showMore()" class="btn-show-more">Show More Reviews</button>
-    </div>
+      <div style="text-align: center; margin-top: 40px; padding-bottom: 20px">
+        <button (click)="showMore()" class="btn-show-more">Show More Reviews</button>
+      </div>
     }
   </div>
 
+  <!-- Dialog nativo di conferma eliminazione recensione (stesso pattern di #authDialog) -->
   <dialog #confirmDeleteDialog class="cart-confirm-modal">
     <div class="cart-modal-content">
       <h2 class="modal-title" style="margin-bottom: 10px;">Remove Review</h2>
