@@ -7,7 +7,7 @@ import { Observable } from 'rxjs';
 @Injectable({ providedIn: 'root' })
 export class CartService {
   private baseUrl = 'http://localhost:8080/rest/shoppingCart';
-  
+
   private platformId = inject(PLATFORM_ID);
 
   cartItems = signal<any[]>([]);
@@ -42,15 +42,21 @@ export class CartService {
    */
   loadCart(): void {
     const user = this.getUserName();
-    if (!user) return;
 
-    // MODIFICA QUI: Da 'getActiveCartByUser' a 'activeCart' come da tuo Controller BE
+    if (!user) {
+      this.cartItems.set([]);
+      return;
+    }
+
     this.http.get<any[]>(`${this.baseUrl}/activeCart/${user}`).subscribe({
       next: (items) => {
         const sortedItems = items.sort((a, b) => a.id - b.id);
         this.cartItems.set(sortedItems);
       },
-      error: (err) => console.error('Errore nel caricamento del carrello:', err),
+      error: (err) => {
+        console.error('Errore nel caricamento del carrello:', err);
+        this.cartItems.set([]);
+      },
     });
   }
 
@@ -60,23 +66,31 @@ export class CartService {
   }
 
   addItem(prodId: number, qta: number, prezzo: number): Observable<any> {
-    const esistente = this.cartItems().find((i) => i.idProduct === prodId);
+    const itemsAttuali = this.cartItems();
+    const esistente = itemsAttuali.find((i) => i.idProduct === prodId);
     const user = this.getUserName();
 
     if (esistente) {
-      return this.updateQuantity(esistente.id, esistente.amount + qta, prezzo);
+      const nuovaQty = esistente.amount + qta;
+
+      if (nuovaQty > 10) {
+        console.warn('Limit of 10 reached for product:', prodId);
+        return new Observable((obs) => {
+          obs.error('Maximum 10 items allowed');
+        });
+      }
+
+      return this.updateQuantity(esistente.id, nuovaQty, prezzo);
     } else {
       const body = {
         idProduct: prodId,
-        amount: qta,
+        amount: qta > 10 ? 10 : qta,
         price: prezzo,
         idOrder: null,
         userName: user,
       };
 
-      return this.http.post(`${this.baseUrl}/create`, body).pipe(
-        tap(() => this.loadCart())
-      );
+      return this.http.post(`${this.baseUrl}/create`, body).pipe(tap(() => this.loadCart()));
     }
   }
 
@@ -87,15 +101,11 @@ export class CartService {
       price: prezzo,
       userName: this.getUserName(),
     };
-    return this.http.put(`${this.baseUrl}/update`, body).pipe(
-      tap(() => this.loadCart())
-    );
+    return this.http.put(`${this.baseUrl}/update`, body).pipe(tap(() => this.loadCart()));
   }
 
   removeItem(idCart: number): Observable<any> {
-    return this.http.delete(`${this.baseUrl}/delete/${idCart}`).pipe(
-      tap(() => this.loadCart())
-    );
+    return this.http.delete(`${this.baseUrl}/delete/${idCart}`).pipe(tap(() => this.loadCart()));
   }
 
   resetCartSignal(): void {

@@ -54,14 +54,11 @@ export class Wishlist implements OnInit {
       return;
     }
 
-    // 2. Aggiungi al carrello
     this.cartService.addItem(item.productId, 1, item.price).subscribe({
       next: () => {
-        // 3. SE l'aggiunta ha successo, lo rimuoviamo dalla wishlist
         this.wishlistService.removeFromWishlist(item.id).subscribe({
           next: () => {
             this.notify('Moved to cart!');
-            // Non serve fare altro, il Signal della wishlist si aggiornerà da solo
           },
           error: () => this.notify('Added to cart, but failed to remove from wishlist.'),
         });
@@ -74,8 +71,14 @@ export class Wishlist implements OnInit {
   }
 
   notify(msg: string) {
+    if (!msg) return;
+
     this.toastMessage.set(msg);
     this.showToast.set(true);
-    setTimeout(() => this.showToast.set(false), 3000);
+
+    setTimeout(() => {
+      this.showToast.set(false);
+      setTimeout(() => this.toastMessage.set(''), 400);
+    }, 3000);
   }
 }

@@ -1,7 +1,6 @@
 import { Component, OnInit, OnDestroy, ChangeDetectionStrategy, ChangeDetectorRef } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
-// 1. ECCO LA SOLUZIONE ALL'ERRORE: abbiamo aggiunto forkJoin qui!
-import { Subject, forkJoin } from 'rxjs'; 
+import { Subject, forkJoin } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { AuthService } from '../../services/auth.service';
 import { AdminServices, User } from '../../services/admin.service';
@@ -23,8 +22,13 @@ export class Admin implements OnInit, OnDestroy {
   products: Product[] = [];
   orders: UserOrder[] = [];
   error: string | null = null;
+
+
   activeView: string = 'users';
+
+
   pendingStatusChanges: { [orderId: number]: string } = {};
+
 
   private destroy$ = new Subject<void>();
 
@@ -34,13 +38,14 @@ export class Admin implements OnInit, OnDestroy {
     private productService: ProductService,
     private userorderService: UserorderService,
     private dialog: MatDialog,
-    private cdr: ChangeDetectorRef
+    private cdr: ChangeDetectorRef 
   ) {}
 
   ngOnInit(): void {
     if (typeof window !== 'undefined') {
       const userData = this.authService.getUserData();
       this.isAdmin = userData && userData.role === 'ADMIN';
+
 
       if (this.isAdmin) {
         this.loadUsers();
@@ -57,6 +62,7 @@ export class Admin implements OnInit, OnDestroy {
     const viewStr = typeof view === 'string' ? view : '';
     this.activeView = viewStr;
     this.error = null;
+
     if (viewStr === 'products') {
       this.loadProducts();
     } else if (viewStr === 'orders') {
@@ -65,12 +71,9 @@ export class Admin implements OnInit, OnDestroy {
     this.cdr.markForCheck();
   }
 
-  // ==============================
-  // USER MANAGEMENT METHODS
-  // ==============================
+
   loadUsers(): void {
     this.error = null;
-
     this.adminService.getUsers()
       .pipe(takeUntil(this.destroy$))
       .subscribe({
@@ -86,6 +89,7 @@ export class Admin implements OnInit, OnDestroy {
       });
   }
 
+ 
   openDeleteUserDialog(user: User): void {
     const dialogRef = this.dialog.open(DeleteUser, {
       width: '400px',
@@ -102,7 +106,7 @@ export class Admin implements OnInit, OnDestroy {
     dialogRef.afterClosed()
       .pipe(takeUntil(this.destroy$))
       .subscribe(result => {
-        if (result === true) {
+        if (result === true) { 
           this.confirmDeleteUser(user.userName);
         }
       });
@@ -124,12 +128,10 @@ export class Admin implements OnInit, OnDestroy {
       });
   }
 
-  // ==============================
-  // PRODUCT MANAGEMENT METHODS
-  // ==============================
+
+
   loadProducts(): void {
     this.error = null;
-
     this.productService.getProducts()
       .pipe(takeUntil(this.destroy$))
       .subscribe({
@@ -154,109 +156,98 @@ export class Admin implements OnInit, OnDestroy {
     dialogRef.afterClosed()
       .pipe(takeUntil(this.destroy$))
       .subscribe(result => {
-        if (!result) return;
+        if (!result) return; 
 
-        const productToSave = result.productData; 
+        const productToSave = result.productData;
         const urlsText = result.imageUrls; 
+
 
         this.productService.create(productToSave)
           .pipe(takeUntil(this.destroy$))
           .subscribe({
             next: (response: any) => {
-              
               if (urlsText && urlsText.trim() !== '' && response && response.id) {
-                
                 const urlArray = urlsText.split('\n')
-                                         .map((u: string) => u.trim()) 
-                                         .filter((u: string) => u !== ''); 
+                  .map((u: string) => u.trim())
+                  .filter((u: string) => u !== '');
 
                 if (urlArray.length > 0) {
-                  const uploadRequests = urlArray.map((url: string) => 
-                      this.productService.createImageLink(url, response.id)
+                  const uploadRequests = urlArray.map((url: string) =>
+                    this.productService.createImageLink(url, response.id)
                   );
-
                   forkJoin(uploadRequests).pipe(takeUntil(this.destroy$)).subscribe({
-                    next: () => {
-                      console.log("Tutte le immagini salvate con successo!");
-                      this.loadProducts(); 
-                    },
+                    next: () => this.loadProducts(),
                     error: (err) => {
-                      console.error("Errore salvataggio di alcune immagini", err);
-                      this.loadProducts(); 
+                      console.error('Errore salvataggio di alcune immagini', err);
+                      this.loadProducts();
                     }
                   });
                 } else {
                   this.loadProducts();
                 }
               } else {
-                this.loadProducts();
+                this.loadProducts(); 
               }
             },
             error: (err) => {
               this.error = 'Error creating product';
               this.cdr.markForCheck();
-              console.error("Errore durante la creazione del prodotto:", err);
+              console.error('Errore durante la creazione del prodotto:', err);
             }
           });
       });
   }
 
+
   openEditProductDialog(product: Product): void {
     const dialogRef = this.dialog.open(ProductDialog, {
       width: '600px',
-      data: {
-        product: product,
-        mode: 'edit'
-      } as ProductDialogData,
+      data: { product: product, mode: 'edit' } as ProductDialogData,
     });
 
     dialogRef.afterClosed()
       .pipe(takeUntil(this.destroy$))
       .subscribe(result => {
         if (!result) return;
-        
+
         const productToUpdate = result.productData;
-        const urlsText = result.imageUrls; 
+        const urlsText = result.imageUrls;
         const imageIdsToDelete: number[] = result.deletedImageIds || [];
 
-        // Se l'utente ha modificato e inserito nuovi link, eliminiamo TUTTE le immagini vecchie
+
         if (urlsText && urlsText.trim() !== '' && imageIdsToDelete.length > 0) {
-           
-           const deleteRequests = imageIdsToDelete.map(id => this.productService.deleteImage(id));
-           
-           forkJoin(deleteRequests).pipe(takeUntil(this.destroy$)).subscribe({
-             next: () => this.updateProduct(productToUpdate, urlsText),
-             error: () => this.updateProduct(productToUpdate, urlsText) 
-           });
+          const deleteRequests = imageIdsToDelete.map(id => this.productService.deleteImage(id));
+          forkJoin(deleteRequests).pipe(takeUntil(this.destroy$)).subscribe({
+            next: () => this.updateProduct(productToUpdate, urlsText),
+            error: () => this.updateProduct(productToUpdate, urlsText) 
+          });
         } else {
-           this.updateProduct(productToUpdate, urlsText);
+          this.updateProduct(productToUpdate, urlsText);
         }
       });
   }
+
 
   updateProduct(product: Product, urlsText: string | null = null): void {
     this.productService.update(product)
       .pipe(takeUntil(this.destroy$))
       .subscribe({
-        next: (updatedProduct: any) => {
-          
+        next: (_updatedProduct: any) => { 
           if (urlsText && urlsText.trim() !== '' && product && product.id) {
-             
-             const urlArray = urlsText.split('\n')
-                                      .map((u: string) => u.trim())
-                                      .filter((u: string) => u !== '');
-                                      
-             if (urlArray.length > 0) {
-               const uploadRequests = urlArray.map((url: string) => 
-                   this.productService.createImageLink(url, product.id) 
-               );
-               
-               forkJoin(uploadRequests).pipe(takeUntil(this.destroy$)).subscribe(() => this.loadProducts());
-             } else {
-               this.loadProducts();
-             }
+            const urlArray = urlsText.split('\n')
+              .map((u: string) => u.trim())
+              .filter((u: string) => u !== '');
+
+            if (urlArray.length > 0) {
+              const uploadRequests = urlArray.map((url: string) =>
+                this.productService.createImageLink(url, product.id)
+              );
+              forkJoin(uploadRequests).pipe(takeUntil(this.destroy$)).subscribe(() => this.loadProducts());
+            } else {
+              this.loadProducts();
+            }
           } else {
-             this.loadProducts();
+            this.loadProducts();
           }
         },
         error: (err) => {
@@ -284,17 +275,17 @@ export class Admin implements OnInit, OnDestroy {
       .pipe(takeUntil(this.destroy$))
       .subscribe(result => {
         if (result === true) {
-          this.deleteProduct(product.id);
+          this.deleteProduct(product); 
         }
       });
   }
 
-  deleteProduct(productId: number): void {
-    this.productService.delete(productId)
+  deleteProduct(product: Product): void {
+    this.productService.softDelete(product)
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: () => {
-          this.products = this.products.filter(p => p.id !== productId);
+          this.products = this.products.filter(p => p.id !== product.id);
           this.cdr.markForCheck();
         },
         error: (err) => {
@@ -305,12 +296,9 @@ export class Admin implements OnInit, OnDestroy {
       });
   }
 
-  // ==============================
-  // ORDER MANAGEMENT METHODS
-  // ==============================
+
   loadOrders(): void {
     this.error = null;
-
     this.userorderService.list()
       .pipe(takeUntil(this.destroy$))
       .subscribe({
@@ -326,24 +314,20 @@ export class Admin implements OnInit, OnDestroy {
       });
   }
 
+
   updateOrderStatus(order: UserOrder): void {
     const newStatus = this.pendingStatusChanges[order.id!];
-    if (!newStatus) {
-      return;
-    }
+    if (!newStatus) return; 
 
-    const updatedOrder = { ...order, status: newStatus };
-    
+    const updatedOrder = { ...order, status: newStatus }; 
     this.userorderService.update(updatedOrder)
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: () => {
-          // Update the order in the list
           const index = this.orders.findIndex(o => o.id === order.id);
           if (index !== -1) {
             this.orders[index].statusDescription = newStatus;
-            // Clear the pending status change
-            delete this.pendingStatusChanges[order.id!];
+            delete this.pendingStatusChanges[order.id!]; 
             this.cdr.markForCheck();
           }
         },
@@ -354,6 +338,7 @@ export class Admin implements OnInit, OnDestroy {
         }
       });
   }
+
 
   onStatusChange(orderId: number, newStatus: string): void {
     this.pendingStatusChanges[orderId] = newStatus;

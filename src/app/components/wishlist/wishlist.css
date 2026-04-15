@@ -62,12 +62,12 @@
   margin: 0;
   font-size: 20px;
   font-weight: 700;
-  text-decoration: none !important; /* Rimuove linea di default */
+  text-decoration: none !important;
   transition: color 0.2s;
 }
 
 .title-link:hover h4 {
-  text-decoration: underline !important; /* Appare solo al passaggio del mouse */
+  text-decoration: underline !important;
   color: #2ecc71 !important;
 }
 
@@ -181,9 +181,9 @@
    ========================================================================== */
 .custom-alert {
   position: fixed;
-  top: 30px;
-  right: 30px;
-  z-index: 9999;
+  top: 20px;
+  right: 20px;
+  z-index: 10000;
   visibility: hidden;
   opacity: 0;
   transform: translateX(50px);
@@ -197,30 +197,50 @@
 }
 
 .alert-body {
-  background: white;
-  border-left: 5px solid #2ecc71;
-  box-shadow: 0 10px 40px rgba(0,0,0,0.12);
-  border-radius: 10px;
+  background: var(--c-white, white);
+  border-left: 5px solid var(--c-green, #5a8a3c);
+  box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+  border-radius: 8px;
   display: flex;
   align-items: center;
-  padding: 16px 24px;
+  padding: 16px 20px;
+  min-width: 320px;
+  max-width: 450px;
   gap: 15px;
-  min-width: 280px;
+}
+
+.alert-icon {
+  color: var(--c-green, #5a8a3c);
+  width: 24px;
+  height: 24px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
 }
 
 .alert-text p {
   margin: 0;
   font-size: 14px;
-  font-weight: 600;
-  color: #2c3e50;
+  font-weight: 500;
+  color: var(--c-text, #2c3e50);
+  line-height: 1.4;
 }
 
-.close-toast {
+.alert-close {
   background: none;
   border: none;
+  font-size: 18px;
   color: #ccc;
-  cursor: pointer;
   margin-left: auto;
+  padding-left: 10px;
+  cursor: pointer;
+  transition: color 0.2s;
+  display: flex;
+  align-items: center;
+}
+
+.alert-close:hover {
+  color: #e74c3c; /* Rosso per la chiusura */
 }
 
 /* 1. Make the "Out of Stock" text RED */
@@ -240,22 +260,4 @@
 .out-of-stock-img {
   filter: grayscale(1);
   opacity: 0.5;
-}
-
-/* 4. Alert/Toast Styling */
-.custom-alert {
-  position: fixed;
-  bottom: 20px;
-  left: 50%;
-  transform: translateX(-50%) translateY(100px);
-  background: #333;
-  color: white;
-  padding: 12px 24px;
-  border-radius: 8px;
-  transition: transform 0.3s ease;
-  z-index: 9999;
-}
-
-.custom-alert.active {
-  transform: translateX(-50%) translateY(0);
 }

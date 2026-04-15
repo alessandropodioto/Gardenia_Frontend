@@ -1,9 +1,8 @@
-import { Injectable, inject, PLATFORM_ID } from '@angular/core';
+import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
-import { isPlatformBrowser } from '@angular/common';
 import { catchError, Observable, throwError } from 'rxjs';
 
-// Interfaccia allineata al ProductDTO del Backend
+
 export interface Product {
   id: number;
   name: string;
@@ -12,10 +11,10 @@ export interface Product {
   stock: number;
   subcategoryId: number;
   subcategoryName: string;
-  isDeleted: boolean;
+  isDeleted: boolean;     
   images?: {
     imageId: number;
-    link: string;
+    link: string;         
   }[];
 }
 
@@ -28,20 +27,14 @@ export class ProductService {
 
   constructor(private http: HttpClient) {}
 
-  // --- GESTIONE PRODOTTI ---
 
-  /**
-   * Recupera tutti i prodotti attivi
-   */
   getProducts(): Observable<Product[]> {
     return this.http.get<Product[]>(`${this.apiUrl}/list`).pipe(
       catchError(this.handleError('getProducts'))
     );
   }
 
-  /**
-   * Trova un prodotto per ID tramite Query Param (?id=...)
-   */
+
   getProductById(id: number): Observable<Product> {
     const params = new HttpParams().set('id', id.toString());
     return this.http.get<Product>(`${this.apiUrl}/findById`, { params }).pipe(
@@ -49,9 +42,6 @@ export class ProductService {
     );
   }
 
-  /**
-   * Filtra i prodotti per sottocategoria tramite Query Param (?subcategoryId=...)
-   */
   getProductsBySubcategory(subcategoryId: number): Observable<Product[]> {
     const params = new HttpParams().set('subcategoryId', subcategoryId.toString());
     return this.http.get<Product[]>(`${this.apiUrl}/findBySubcategory`, { params }).pipe(
@@ -71,13 +61,13 @@ export class ProductService {
     );
   }
 
-  delete(id: number): Observable<void> {
-    return this.http.delete<void>(`${this.apiUrl}/delete/${id}`).pipe(
-      catchError(this.handleError('deleteProduct'))
+  
+  softDelete(product: Product): Observable<void> {
+    return this.http.put<void>(`${this.apiUrl}/softDelete`, product).pipe(
+      catchError(this.handleError('softDeleteProduct'))
     );
   }
 
-  // --- GESTIONE IMMAGINI ---
 
   deleteImage(imageId: number): Observable<void> {
     return this.http.delete<void>(`${this.imageApiUrl}/delete/${imageId}`).pipe(
@@ -85,20 +75,18 @@ export class ProductService {
     );
   }
 
+
   createImageLink(linkStr: string, productIdNum: number): Observable<any> {
     const payload = {
       link: linkStr,
       productId: productIdNum
     };
-
     return this.http.post<any>(`${this.imageApiUrl}/create`, payload).pipe(
       catchError(this.handleError('createImageLink'))
     );
   }
 
-  /**
-   * Gestore errori centralizzato per il service
-   */
+
   private handleError(operation = 'operation') {
     return (error: any): Observable<never> => {
       console.error(`${operation} failed:`, error);

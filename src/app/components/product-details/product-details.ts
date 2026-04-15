@@ -72,6 +72,7 @@ export class ProductDetails implements OnInit {
     this.activatedRoute.params.subscribe((params) => {
       const productId = params['id'];
       if (productId) {
+        window.scrollTo(0, 0);
         const id = parseInt(productId, 10);
         this.loadProduct(id);
         this.loadReviews(id);
@@ -281,20 +282,25 @@ export class ProductDetails implements OnInit {
       this.authDialog.nativeElement.showModal();
       return;
     }
+
     const p = this.product();
     if (!p) return;
+
     const qtyInCart = this.cartService.getItemQuantity(p.id);
     const requested = this.quantity();
+
     if (qtyInCart + requested > p.stock) {
       this.notify('Maximum stock reached.');
       return;
     }
+
     this.cartService.addItem(p.id, requested, p.price).subscribe({
       next: () => {
         this.addedToCart.set(true);
+        this.notify('Product added to cart!');
         setTimeout(() => this.addedToCart.set(false), 2000);
       },
-      error: () => this.notify('Error adding to cart.'),
+      error: (err) => this.notify(err),
     });
   }
 
