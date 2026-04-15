@@ -11,13 +11,12 @@ import { Router } from '@angular/router';
 })
 export class PagamentoComponent {
   
-  // Stato caricamento e notifiche
   loading = signal(false);
   showToast = signal(false);
   toastMessage = signal('');
+  isError = signal(false);
   
-  // Gestione costi
-  shippingCost = signal(0); // Impostato a 0 per spedizione gratuita
+  shippingCost = signal(0);
   metodoScelto: string = 'carta';
 
   constructor(
@@ -26,7 +25,6 @@ export class PagamentoComponent {
     private router: Router
   ) {}
 
-  // Recupera gli articoli reali dal carrello
   get items() {
     return this.cartService.cartItems();
   }
@@ -59,6 +57,7 @@ export class PagamentoComponent {
     }
 
     if (!userIdentifier) {
+      this.isError.set(true);
       this.notify('Please log in to confirm the order.');
       this.loading.set(false);
       return;
@@ -77,13 +76,16 @@ export class PagamentoComponent {
       next: () => {
         this.cartService.resetCartSignal();
         this.loading.set(false);
-        this.notify('Order confirmed! Redirecting...');
+        this.isError.set(false);
+        this.notify('Order placed successfully! Redirecting...');
         setTimeout(() => this.router.navigate(['/user/orders']), 2000);
       },
       error: (err) => {
         this.loading.set(false);
-        this.notify('Error during payment. Please try again.');
-        console.error('Order failed:', err);
+        this.isError.set(true);
+        const errorMessage = err.error?.message || err.error || 'Error during payment. Please check product availability.';      
+        this.notify(errorMessage);       
+        console.error('Order failed details:', err);
       }
     });
   }
