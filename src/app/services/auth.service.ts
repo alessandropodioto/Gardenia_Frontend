@@ -4,6 +4,7 @@ import { isPlatformBrowser } from '@angular/common';
 import { Observable, throwError, BehaviorSubject } from 'rxjs';
 import { catchError, tap } from 'rxjs/operators';
 import { HttpParams } from '@angular/common/http';
+import { CartService } from './cart.service';
 export interface RegisterData {
   userName: string;
   firstName: string;
@@ -26,7 +27,7 @@ export interface AuthResponse {
 export interface LoginResponse {
   id: string;
   role: string;
-  userName?: string; 
+  userName?: string;
 }
 
 @Injectable({
@@ -35,7 +36,9 @@ export interface LoginResponse {
 export class AuthService {
   private apiUrl = 'http://localhost:8080/rest/user';
   private platformId = inject(PLATFORM_ID);
-  
+
+  private cartService = inject(CartService);
+
   private authState = new BehaviorSubject<any>(this.getUserData());
 
   constructor(private http: HttpClient) {}
@@ -64,33 +67,34 @@ export class AuthService {
           response.userName = loginData.userName;
         }
       }),
-      catchError(this.handleError)
+      catchError(this.handleError),
     );
   }
 
   register(registerData: RegisterData): Observable<AuthResponse> {
     const endpoint = `${this.apiUrl}/register`;
-    return this.http.post<AuthResponse>(endpoint, registerData).pipe(
-      catchError(this.handleError)
-    );
+    return this.http.post<AuthResponse>(endpoint, registerData).pipe(catchError(this.handleError));
   }
 
   /**
    * Aggiorna i dati dell'utente (email, phone, password)
    */
-  updateUser(data: { userName: string; email?: string; phone?: string; password?: string }): Observable<any> {
-    return this.http.put<any>(`${this.apiUrl}/update`, data).pipe(
-      catchError(this.handleError)
-    );
+  updateUser(data: {
+    userName: string;
+    email?: string;
+    phone?: string;
+    password?: string;
+  }): Observable<any> {
+    return this.http.put<any>(`${this.apiUrl}/update`, data).pipe(catchError(this.handleError));
   }
 
   /**
    * Recupera i dati completi dell'utente dal backend
    */
   getUserByUserName(userName: string): Observable<any> {
-    return this.http.get<any>(`${this.apiUrl}/findByUserName`, { params: { id: userName } }).pipe(
-      catchError(this.handleError)
-    );
+    return this.http
+      .get<any>(`${this.apiUrl}/findByUserName`, { params: { id: userName } })
+      .pipe(catchError(this.handleError));
   }
 
   /**
@@ -99,8 +103,9 @@ export class AuthService {
   logout(): void {
     if (isPlatformBrowser(this.platformId)) {
       localStorage.removeItem('user_data');
-      localStorage.removeItem('username'); // Puliamo tutto
+      localStorage.removeItem('username');
     }
+    this.cartService.resetCartSignal();
     this.emitAuthState(null);
   }
 
@@ -145,24 +150,24 @@ export class AuthService {
    * Valida l'email tramite l'ID ricevuto dal backend
    */
   validateEmail(id: string): Observable<any> {
-    const params = new HttpParams().set("id", id);
+    const params = new HttpParams().set('id', id);
     // VVV-- QUI DEVE ESSERE this.http.get --VVV
-    return this.http.get<any>(`${this.apiUrl}/emailValidate`, { params }).pipe(
-      catchError(this.handleError)
-    );
+    return this.http
+      .get<any>(`${this.apiUrl}/emailValidate`, { params })
+      .pipe(catchError(this.handleError));
   }
   /** Richiede l'invio dell'email per il reset della password */
   requestPasswordReset(userName: string): Observable<any> {
-    const params = new HttpParams().set("userName", userName);
-    return this.http.get<any>(`${this.apiUrl}/requestResetPassword`, { params }).pipe(
-      catchError(this.handleError)
-    );
+    const params = new HttpParams().set('userName', userName);
+    return this.http
+      .get<any>(`${this.apiUrl}/requestResetPassword`, { params })
+      .pipe(catchError(this.handleError));
   }
 
   /** Invia la nuova password al database */
   changePassword(req: any): Observable<any> {
-    return this.http.post<any>(`${this.apiUrl}/changePassword`, req).pipe(
-      catchError(this.handleError)
-    );
+    return this.http
+      .post<any>(`${this.apiUrl}/changePassword`, req)
+      .pipe(catchError(this.handleError));
   }
 }
