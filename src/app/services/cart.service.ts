@@ -66,15 +66,25 @@ export class CartService {
   }
 
   addItem(prodId: number, qta: number, prezzo: number): Observable<any> {
-    const esistente = this.cartItems().find((i) => i.idProduct === prodId);
+    const itemsAttuali = this.cartItems();
+    const esistente = itemsAttuali.find((i) => i.idProduct === prodId);
     const user = this.getUserName();
 
     if (esistente) {
-      return this.updateQuantity(esistente.id, esistente.amount + qta, prezzo);
+      const nuovaQty = esistente.amount + qta;
+
+      if (nuovaQty > 10) {
+        console.warn('Limit of 10 reached for product:', prodId);
+        return new Observable((obs) => {
+          obs.error('Maximum 10 items allowed');
+        });
+      }
+
+      return this.updateQuantity(esistente.id, nuovaQty, prezzo);
     } else {
       const body = {
         idProduct: prodId,
-        amount: qta,
+        amount: qta > 10 ? 10 : qta,
         price: prezzo,
         idOrder: null,
         userName: user,
